@@ -36,9 +36,23 @@
 		font-weight:400;
 		src:url('//cdn.df.nexon.com/img/common/font/DNFBitBitv2.otf')format('opentype')
 	}
+	@font-face {
+	    font-family: 'SUITE-Regular';
+	    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/SUITE-Regular.woff2') format('woff2');
+	    font-weight: 400;
+	    font-style: normal;
+	}
+	@font-face {
+	    font-family: 'SUITE-ExtraBold';
+	    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/SUITE-ExtraBold.woff2') format('woff2');
+	    font-weight: 800;
+	    font-style: normal;
+	}
+	* {box-sizing: border-box;}
 	html, body, .darkmode {
 		background-color: #161d25;
 		color: #b2bdce;
+		font-family: 'SUITE-Regular';
 	}
 	main {
 		padding: 20px;
@@ -110,6 +124,68 @@
 		border-radius: 10px;
 		object-fit: cover;
 	}
+	.content1 {
+		display: flex;
+		margin-top: 20px;
+		gap: 30px;
+	}
+	.news, .mygames {
+		flex: 1 1;
+	}
+	.news-title, .mygames-title {
+		font-family: 'SUITE-ExtraBold';
+		font-size: 24px;
+		color: #fff;
+		margin-bottom: 5px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.more {
+		color: #b2bdce;
+		font-family: 'SUITE-Regular';
+		font-size: 16px;
+	}
+	.content-box {
+		flex-wrap: wrap;
+		padding: 20px;
+		background-color: #161d25;
+		border-radius: 10px;
+		height: calc(100% - 38px);
+	}
+	.news-text {
+	  	overflow: hidden;
+	  	text-overflow: ellipsis;
+	  	display: -webkit-box;
+	  	-webkit-line-clamp: 1;
+	  	-webkit-box-orient: vertical;
+	}
+	hr {
+		border-top: 1px solid #b2bdce30;
+    	margin: 10px 0;
+	}
+	.news-img {
+		display: flex;
+		justify-content: center;
+		gap: 0 15px;
+	}
+	.news-img div {
+	    flex: 1;
+	    display: flex;
+	    flex-direction: column;
+	  	overflow: hidden;
+	  	text-overflow: ellipsis;
+	  	display: -webkit-box;
+	  	-webkit-line-clamp: 2;
+	  	-webkit-box-orient: vertical;
+	}
+	.news-img img {
+		width: 100%;
+		height: 110px;
+		object-fit: cover;
+		border-radius: 10px;
+		margin-bottom: 10px;
+	}
 	@media screen and (max-width: 991px) {
 		main {
 			padding: 20px 0;
@@ -150,6 +226,9 @@
 			height: 60%;
 			border-radius: 10px;
 			object-fit: cover;
+		}
+		.content1 {
+			flex-direction: column;
 		}
 	}
 </style>
@@ -211,6 +290,43 @@
 <main>
 	<div class="container">
 		<div class="banner"><img alt="배너" src="${ctp}/resources/images/banner1.jpg" width="100%"></div>
+		<div class="content1">
+			<div class="news">
+				<div class="news-title">
+					<span>📄 뉴스</span>
+					<span class="more">더보기</span>
+				</div>
+				<div class="content-box">
+					<div class="news-img">
+						<div>
+							<img src="${ctp}/resources/images/news1.jpg" alt="뉴스이미지">
+							<div>서머 게임 페스트 2024 발표 게임 총정리 (1/2)</div>
+						</div>
+						<div>
+							<img src="${ctp}/resources/images/news2.jpg" alt="뉴스이미지">
+							<div>2024년 6월 닌텐도 다이렉트 총정리</div>
+						</div>
+					</div>
+					<hr/>
+					<div class="news-text">[6월 넷째 주 뉴스레터] 크래프톤 : 해당 문제 가능성에 대해 충분히 예상</div>
+					<hr/>
+					<div class="news-text">7년째 개발 중! 슬롯 매니징 로그라이크 'RP7'을 개발한 박선용 디렉터 인터뷰</div>
+					<hr/>
+					<div class="news-text">닌텐도 스위치용 ‘에이스 컴뱃 7: 스카이즈 언노운 디럭스 에디션’(한국어판) 패키지 선주문 판매 6월 26일(수) 오후 3시 시작!</div>
+					<hr/>
+					<div class="news-text">'슈퍼 몽키 볼 바나나 럼블', 6월 25일(화) 발매</div>
+				</div>
+			</div>
+			<div class="mygames">
+				<div class="mygames-title">
+					<span>🎮 내 게임</span>
+					<span class="more">내 게임</span>
+				</div>
+				<div class="content-box">
+					
+				</div>
+			</div>
+		</div>
 	</div>
 </main>
 <footer>

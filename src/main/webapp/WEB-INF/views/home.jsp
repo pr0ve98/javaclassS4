@@ -7,8 +7,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>나만의 인겜토리!</title>
+<link rel="icon" type="image/x-icon" href="${ctp}/images/ingametory.ico">
 <jsp:include page="/WEB-INF/views/include/bs4.jsp" />
+<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 <script>
+	'use strict';
+	
 	function w3_open() {
 	  document.getElementById("mySidebar").style.display = "block";
 	}
@@ -28,12 +32,71 @@
 	    x.previousElementSibling.className.replace(" darkmode-hover", "");
 	  }
 	}
+
+    function showPopupJoin() {
+    	const popup = document.querySelector('#popup-join');
+    	const html = document.querySelector('html');
+        popup.classList.remove('hide');
+        html.classList.add('popup-open');
+    }
+
+    function closePopupJoin() {
+    	const popup = document.querySelector('#popup-join');
+    	const html = document.querySelector('html');
+        popup.classList.add('hide');
+        html.classList.remove('popup-open');
+    }
+
+    function showPopupLogin() {
+    	const popup = document.querySelector('#popup-login');
+    	const html = document.querySelector('html');
+        popup.classList.remove('hide');
+        html.classList.add('popup-open');
+    }
+
+    function closePopupLogin() {
+    	const popup = document.querySelector('#popup-login');
+    	const html = document.querySelector('html');
+        popup.classList.add('hide');
+        html.classList.remove('popup-open');
+    }
+    
+ 	// 그 외 부분 클릭시 팝업 닫기
+    document.addEventListener('click', function(e) {
+        const popupjoin = document.querySelector('#popup-join');
+        const contentjoin = document.querySelector('#popup-join .popup-join-content');
+        if (!contentjoin.contains(e.target) && !popupjoin.classList.contains('hide') && e.target !== joinBtn && e.target !== joinBtn2) {
+        	closePopupJoin();
+        }
+        
+        const popuplogin = document.querySelector('#popup-login');
+        const contentlogin = document.querySelector('#popup-login .popup-login-content');
+        if (!contentlogin.contains(e.target) && !popuplogin.classList.contains('hide') && e.target !== joinPopupLoginBtn && e.target !== joinBtn2) {
+        	closePopupLogin();
+        }
+    });
+ 	
+ 	function kakaoLogin() {
+ 		window.Kakao.init("f1fade264b3d07d67f8e358b3d68803e");
+ 		
+ 		window.Kakao.Auth.login({
+			scope: 'profile_nickname, account_email',
+			success : function(autoObj) {
+				//console.log(Kakao.Auth.getAccessToken(), "정상 토큰 발급됨");
+				window.Kakao.API.request({
+					url : '/v2/user/me',
+					success : function(res) {
+						const kakao_account = res.kakao_account;
+						console.log(kakao_account);
+						location.href = "${ctp}/member/kakaoLogin?nickname="+kakao_account.profile.nickname+"&email="+kakao_account.email+"&accessToken="+Kakao.Auth.getAccessToken();
+					}
+				});
+			}
+		});
+	}
+
 </script>
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
-<script>
-	'use strict';
-	
-</script>
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
@@ -75,29 +138,31 @@
 			<div class="mygames">
 				<div class="mygames-title">
 					<span>🎮 내 게임</span>
-					<span class="more">내 게임</span>
+					<c:if test="${sMid != null}"><span class="more">내 게임</span></c:if>
 				</div>
 				<div class="content-box">
 			        <div class="game-status">
 			            <div class="game-info">
 			                <div class="game-title">내 게임</div>
-			                <div class="game-count">109</div>
-			                <div class="game-details">
-			                    <div class="cnt-item"><span>5점 게임</span><span>16</span></div>
-			                    <div class="cnt-item"><span>3점이상 게임</span><span>93</span></div>
-			                    <div class="cnt-item"><span>2점이하 게임</span><span>28</span></div>
-			                </div>
+			                <div class="game-count">${sMid != null ? '109' : '-'}</div>
+			                <c:if test="${sMid != null}">
+				                <div class="game-details">
+				                    <div class="cnt-item"><span>5점 게임</span><span>16</span></div>
+				                    <div class="cnt-item"><span>3점이상 게임</span><span>93</span></div>
+				                    <div class="cnt-item"><span>2점이하 게임</span><span>28</span></div>
+				                </div>
+			                </c:if>
 			            </div>
 			            <div class="status-info">
 			                <div class="status">
 			                    <div class="game-title">게임 상태</div>
 			                    <div class="status-detail">
-			                        <div class="cnt-item"><span><i class="fa-solid fa-play fa-sm" style="color: #0085eb;"></i>&nbsp;&nbsp;하고있어요</span><span>3</span></div>
-			                        <div class="cnt-item"><span><i class="fa-solid fa-check" style="color: #00c722;"></i>&nbsp;&nbsp;다했어요</span><span>42</span></div>
-			                        <div class="cnt-item"><span><i class="fa-solid fa-xmark" style="color: #f50000;"></i>&nbsp;&nbsp;그만뒀어요</span><span>29</span></div>
-			                        <div class="cnt-item"><span><i class="fa-solid fa-thumbtack fa-sm" style="color: #fff700;"></i>&nbsp;&nbsp;관심있어요</span><span>12</span></div>
-			                        <div class="cnt-item"><span><i class="fa-solid fa-folder fa-sm" style="color: #d9d9d9;"></i>&nbsp;&nbsp;모셔놨어요</span><span>10</span></div>
-			                        <div class="cnt-item"><span><i class="fa-solid fa-ellipsis" style="color:#37414cd6;"></i>&nbsp;&nbsp;상태없음</span><span>12</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-play fa-sm" style="color: #0085eb;"></i>&nbsp;&nbsp;하고있어요</span><span>${sMid != null ? '3' : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-check" style="color: #00c722;"></i>&nbsp;&nbsp;다했어요</span><span>${sMid != null ? '42' : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-xmark" style="color: #f50000;"></i>&nbsp;&nbsp;그만뒀어요</span><span>${sMid != null ? '29' : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-thumbtack fa-sm" style="color: #fff700;"></i>&nbsp;&nbsp;관심있어요</span><span>${sMid != null ? '12' : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-folder fa-sm" style="color: #d9d9d9;"></i>&nbsp;&nbsp;모셔놨어요</span><span>${sMid != null ? '10' : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-ellipsis" style="color:#37414cd6;"></i>&nbsp;&nbsp;상태없음</span><span>${sMid != null ? '12' : '-'}</span></div>
 			                    </div>
 			                </div>
 			            </div>
@@ -113,10 +178,18 @@
 			                </select>
 			            </div>
 			            <div class="game-list">
-			            	<span class="game-item"><img src="${ctp}/game/명조.jpg"><span class="playState"><img src="${ctp}/images/playIcon.svg"></span></span>
-			            	<span class="game-item"><img src="${ctp}/game/사건탐정해결부.jpg"><span class="playState"><img src="${ctp}/images/pinIcon.svg"></span></span>
-			            	<span class="game-item"><img src="${ctp}/game/스테퍼케이스.jpg"><span class="playState"><img src="${ctp}/images/doneIcon.svg"></span></span>
-			            	<span class="game-item"><img src="${ctp}/game/원신.jpg"><span class="playState"><img src="${ctp}/images/playIcon.svg"></span></span>
+			            	<c:if test="${sMid != null}">
+				            	<span class="game-item"><img src="${ctp}/game/명조.jpg"><span class="playState"><img src="${ctp}/images/playIcon.svg"></span></span>
+				            	<span class="game-item"><img src="${ctp}/game/사건탐정해결부.jpg"><span class="playState"><img src="${ctp}/images/pinIcon.svg"></span></span>
+				            	<span class="game-item"><img src="${ctp}/game/스테퍼케이스.jpg"><span class="playState"><img src="${ctp}/images/doneIcon.svg"></span></span>
+				            	<span class="game-item"><img src="${ctp}/game/원신.jpg"><span class="playState"><img src="${ctp}/images/playIcon.svg"></span></span>
+			            	</c:if>
+			            	<c:if test="${sMid == null}">
+				            	<span class="game-item"><img src="${ctp}/images/nomygameimage.jpg"></span>
+				            	<span class="game-item"><img src="${ctp}/images/nomygameimage.jpg"></span>
+				            	<span class="game-item"><img src="${ctp}/images/nomygameimage.jpg"></span>
+				            	<span class="game-item"><img src="${ctp}/images/nomygameimage.jpg"></span>
+			            	</c:if>
 			            </div>
 			        </div>
 				</div>
@@ -357,5 +430,38 @@
 	</div>
 </main>
 <jsp:include page="/WEB-INF/views/include/footer.jsp" />
+<div id="popup-join" class="hide">
+  <div class="popup-join-content">
+		<div class="popup-join-header">
+			<span style="cursor: pointer;"><i class="fa-solid fa-headset fa-lg" style="color: #b2bdce;"></i>&nbsp;&nbsp;문의하기</span>
+    		<a href="" onclick="closePopupJoin()"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+		</div>
+		<div class="popup-join-main">
+			<div class="socialBtn" onclick="kakaoLogin()">
+				<span class="mr-2"><img src="${ctp}/images/kakaoIcon.png"></span>
+				<span>카카오로 시작하기</span>
+			</div>
+			<div class="socialBtn ingametory">
+				<span class="mr-2"><img src="${ctp}/images/ingametory.png" width="20px"></span>
+				<span>이메일로 시작하기</span>
+			</div>
+			<div style="margin: 30px 0 20px;">이미 계정이 있으신가요? <span style="font-weight: bold; color: #00c722; cursor: pointer;" onclick="showPopupLogin()" id="joinPopupLoginBtn">로그인</span></div>
+		</div>
+  </div>
+</div>
+<div id="popup-login" class="hide">
+  <div class="popup-login-content">
+		<div class="popup-login-header">
+			<span style="cursor: pointer;"><i class="fa-solid fa-headset fa-lg" style="color: #b2bdce;"></i>&nbsp;&nbsp;문의하기</span>
+    		<a href="" onclick="closePopupJoin()"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+		</div>
+		<div class="popup-login-main">
+			<div class="socialBtn" onclick="kakaoLogin()">
+				<span class="mr-2"><img src="${ctp}/images/kakaoIcon.png"></span>
+				<span>카카오로 로그인하기</span>
+			</div>
+		</div>
+  </div>
+</div>
 </body>
 </html>

@@ -35,7 +35,7 @@
 					<img src="${ctp}/images/profile.jpg" alt="프로필" width="40px">
 				</c:if>
 				<c:if test="${sMid == null}">
-					<button class="joinBtn">회원가입</button>
+					<button class="joinBtn" onclick="showPopupJoin()" id="joinBtn2">회원가입</button>
 				</c:if>
 			</div>
 		</div>
@@ -58,8 +58,8 @@
 					<img src="${ctp}/images/profile.jpg" alt="프로필" width="50px">
 				</c:if>
 				<c:if test="${sMid == null}">
-					<a href="">로그인</a>
-					<button class="joinBtn">회원가입</button>
+					<a href="javascript:showPopupLogin()" id="loginBtn">로그인</a>
+					<button class="joinBtn" onclick="showPopupJoin()" id="joinBtn">회원가입</button>
 				</c:if>
 			</div>
 		</div>

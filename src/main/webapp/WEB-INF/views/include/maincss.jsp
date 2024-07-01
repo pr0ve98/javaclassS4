@@ -53,7 +53,7 @@
 	}
 	.menu-item {
 		padding: 5px 10px;
-		font-size: 18pt;
+		font-size: 18px;
 	}
 	.selected {
 		color: #00c722;
@@ -457,6 +457,66 @@
 		font-weight: bold;
 		margin-bottom: 50px;
 	}
+	#popup-join, #popup-login {
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 100%;
+	  background: rgba(0, 0, 0, .7);
+	  z-index: 1000;
+	}
+	
+	#popup-join.hide, #popup-login.hide {
+	  display: none;
+	}
+	
+	#popup-join .popup-join-content, #popup-login .popup-login-content {
+	  padding: 20px;
+	  background: #32373d;
+	  border-radius: 5px;
+	  box-shadow: 1px 1px 3px rgba(0, 0, 0, .3);
+	  overflow-y: auto;
+	  min-width: 330px;
+	}
+	
+	.popup-open {
+		overflow: hidden;
+	}
+	.popup-join-header, .popup-login-header {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 30px;
+	}
+	.popup-join-main, .popup-login-main {
+		text-align: center;
+	}
+	.socialBtn {
+		position: relative;
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    width: 100%;
+	    padding: 0 28px;
+	    text-align: center;
+	    line-height: 48px;
+	    border-radius: 25px;
+	    cursor: pointer;
+	    border: 2px solid #e9d51c;
+	    font-size: 15px;
+	    letter-spacing: -.36px;
+	    background-color: #fee500;
+	    color: #181600;
+	    margin-bottom: 10px;
+	}
+	.ingametory {
+	    border: 2px solid #079920;
+		background-color: #00c722;
+	    color: #fff;
+	}
 	
 		
 	@media screen and (min-width: 1200px) {
@@ -471,6 +531,9 @@
 		}
 		.v-line {
 			margin: 0 30px;
+		}
+		#popup-join .popup-join-content {
+			min-width: 450px;
 		}
 
 	}

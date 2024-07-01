@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaclassS4.dao.MemberDAO">
+	<select id="getMemberEmailCheck" resultType="com.spring.javaclassS4.vo.MemberVO">
+		select * from itMember where email=#{email};
+	</select>
+	<select id="getMemberIdCheck" resultType="com.spring.javaclassS4.vo.MemberVO">
+		select * from itMember where mid=#{mid};
+	</select>
+	
+	<insert id="setMemberInput">
+		insert into itMember values(default,#{vo.mid},#{vo.nickname},#{vo.email},#{vo.pwd});
+	</insert>
+</mapper>

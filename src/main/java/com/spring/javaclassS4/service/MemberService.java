@@ -8,6 +8,6 @@ public interface MemberService {
 
 	public MemberVO getMemberIdCheck(String mid);
 
-	public void setMemberInput(MemberVO vo);
+	public int setMemberInput(MemberVO vo);
 
 }

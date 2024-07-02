@@ -23,8 +23,8 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void setMemberInput(MemberVO vo) {
-		memberDAO.setMemberInput(vo);
+	public int setMemberInput(MemberVO vo) {
+		return memberDAO.setMemberInput(vo);
 		
 	}
 }

@@ -10,6 +10,6 @@ public interface MemberDAO {
 
 	public MemberVO getMemberIdCheck(@Param("mid") String mid);
 
-	public void setMemberInput(@Param("vo") MemberVO vo);
+	public int setMemberInput(@Param("vo") MemberVO vo);
 
 }

@@ -9,6 +9,6 @@
 	</select>
 	
 	<insert id="setMemberInput">
-		insert into itMember values(default,#{vo.mid},#{vo.nickname},#{vo.email},#{vo.pwd});
+		insert into itMember values(default,#{vo.mid},#{vo.nickname},#{vo.email},#{vo.pwd},default,default,default);
 	</insert>
 </mapper>

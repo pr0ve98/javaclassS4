@@ -468,6 +468,7 @@
 	  height: 100%;
 	  background: rgba(0, 0, 0, .7);
 	  z-index: 1000;
+	  overflow: hidden;
 	}
 	
 	#popup-join.hide, #popup-login.hide {
@@ -480,18 +481,29 @@
 	  border-radius: 5px;
 	  box-shadow: 1px 1px 3px rgba(0, 0, 0, .3);
 	  overflow-y: auto;
+   	  max-height: 80vh;
 	  min-width: 330px;
 	}
 	
 	.popup-open {
 		overflow: hidden;
 	}
-	.popup-join-header, .popup-login-header {
+	.popup-join-header {
 		display: flex;
 		justify-content: space-between;
 		margin-bottom: 30px;
 	}
+	.popup-login-header {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 30px;
+	}
 	.popup-join-main, .popup-login-main {
+		text-align: center;
+		padding: 0 20px 20px;
+	}
+	.popup-login-footer {
+		margin: 15px 0;
 		text-align: center;
 	}
 	.socialBtn {
@@ -517,7 +529,68 @@
 		background-color: #00c722;
 	    color: #fff;
 	}
+	#join-form {
+		margin: 20px auto 0;
+	}
+	.forminput {
+		border: none;
+		background-color: #32373d;
+		border-bottom: 2px solid #b2bdce;
+		border-radius: 0;
+		width: 80%;
+		margin: 0 auto;
+		color: #b2bdce;
+	}
+	.form-control:focus {
+	    color: #b2bdce;
+    	background-color: #32373d;
+    	border-color: #b2bdce;
+		box-shadow: 0 0 0;
+	}
+	input:-webkit-autofill,
+	input:-webkit-autofill:hover,
+	input:-webkit-autofill:focus {
+	    background-color: #32373d !important;
+	    color: #b2bdce !important;
+	    border-bottom: 2px solid #b2bdce;
+	    -webkit-text-fill-color: #b2bdce !important;
+	    transition: background-color 5000s ease-in-out 0s;
+	}
+	/* 자동 완성 목록의 텍스트 색상 */
+	input:-webkit-autofill::first-line {
+	    color: #b2bdce;
+	}
+	.error-message {
+	    color: red;
+	    font-size: 14px;
+	    display: none;
+	    text-align: left;
+	}
+	.error-form {
+		border-color: red;
+	}
+	.scrollbar { 
+	  overflow-y: scroll; /*  */
+	}
 	
+	/* 스크롤바의 폭 너비 */
+	.scrollbar::-webkit-scrollbar {
+	    width: 3px;  
+	}
+	
+	.scrollbar::-webkit-scrollbar-thumb {
+	    background: #b2bdce38; /* 스크롤바 색상 */
+	    border-radius: 10px; /* 스크롤바 둥근 테두리 */
+	}
+	
+	.scrollbar::-webkit-scrollbar-track {
+	    background: #32373d;  /*스크롤바 뒷 배경 색상*/
+	}
+	.pwdReset {
+		font-size: 12px;
+		margin-right: 22px;
+		cursor: pointer;
+	}
 		
 	@media screen and (min-width: 1200px) {
 		.game-item {

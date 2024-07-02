@@ -9,5 +9,8 @@ public class MemberVO {
 	private String nickname;
 	private String email;
 	private String pwd;
+	private String memImg;
+	private int level;
+	private String title;
 	
 }

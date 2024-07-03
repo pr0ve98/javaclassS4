@@ -591,7 +591,60 @@
 		margin-right: 22px;
 		cursor: pointer;
 	}
-		
+	
+	/* 프로필 드롭다운 메뉴 스타일 */
+	#profileDropdown {
+		display: none;
+	    position: absolute;
+	    right: 1px;
+	    top: 60px;
+	    background-color: #32373d;
+	    color: #b2bdce;
+	    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	    z-index: 1;
+	    border-radius: 5px;
+	    padding: 10px;
+	    font-family: 'SUITE-Regular';
+	    width: 260px;
+	}
+	#mprofileDropdown {
+	    display: none;
+	    position: absolute;
+	    right: 1px;
+	    top: 50px;
+	    background-color: #32373d;
+	    color: #b2bdce;
+	    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	    z-index: 1;
+	    border-radius: 5px;
+	    padding: 10px;
+	    font-family: 'SUITE-Regular';
+	    width: 200px;
+	}
+	
+	#profileDropdown a, #mprofileDropdown a {
+	    color: #b2bdce;
+	    padding: 12px 16px;
+	    text-decoration: none;
+	    display: block;
+	}
+	
+	#profileDropdown a:hover, #mprofileDropdown a:hover {
+	    background-color: #161d25;
+	}
+	
+	.profile-info {
+	    display: flex;
+	    align-items: center;
+	    padding: 10px;
+	}
+	
+	.profile-pic {
+	    border-radius: 50%;
+	    width: 50px;
+	    height: 50px;
+	    margin-right: 10px;
+	}
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;
@@ -608,7 +661,6 @@
 		#popup-join .popup-join-content {
 			min-width: 450px;
 		}
-
 	}
 	@media screen and (max-width: 991px) {
 		main {
@@ -712,6 +764,10 @@
 			gap: 10px;
 			font-size: 16px;
 			margin: 30px 10px;
+		}
+		.layer_profile {
+			top: 67px;
+		    right: 20px;
 		}
 	}
 </style>

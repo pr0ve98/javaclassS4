@@ -1,5 +1,8 @@
 package com.spring.javaclassS4.controller;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -53,6 +56,7 @@ public class MemberController {
 		session.setAttribute("sNickname", vo.getNickname());
 		session.setAttribute("sLevel", vo.getLevel());
 		session.setAttribute("sMemImg", vo.getMemImg());
+		session.setAttribute("sKakao", "OK");
 		
 		return "redirect:/message/memberLoginOk?mid="+vo.getMid();
 	}
@@ -68,8 +72,35 @@ public class MemberController {
 			session.setAttribute("sNickname", vo.getNickname());
 			session.setAttribute("sLevel", vo.getLevel());
 			session.setAttribute("sMemImg", vo.getMemImg());
+			session.setAttribute("sKakao", "NO");
 			return "redirect:/message/memberLoginOk?mid="+vo.getMid();
 		}
+	}
+	
+	@RequestMapping(value = "/memberLogout", method = RequestMethod.GET)
+	public String memberLogoutGet(HttpSession session) {
+		session.invalidate();
+		return "redirect:/";
+	}
+	
+	@RequestMapping(value = "/kakaoLogout", method = RequestMethod.GET)
+	public String kakaoLogoutGet(HttpSession session) {
+		String accessToken = (String) session.getAttribute("sAccessToken");
+		String reqURL = "https://kapi.kakao.com/v1/user/unlink";
+		
+		try {
+			URL url = new URL(reqURL);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("POST");
+			conn.addRequestProperty("Authorization", " " + accessToken);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		session.invalidate();
+		
+		return "redirect:/";
 	}
 	
 	@RequestMapping(value = "/memberJoin", method = RequestMethod.POST)

@@ -591,7 +591,145 @@
 		margin-right: 22px;
 		cursor: pointer;
 	}
+	
+	/* 프로필 드롭다운 메뉴 스타일 */
+	#profileDropdown {
+		display: none;
+	    position: absolute;
+	    right: 1px;
+	    top: 60px;
+	    background-color: #32373d;
+	    color: #b2bdce;
+	    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	    z-index: 1;
+	    border-radius: 5px;
+	    padding: 10px;
+	    font-family: 'SUITE-Regular';
+	    width: 260px;
+	}
+	#mprofileDropdown {
+	    display: none;
+	    position: absolute;
+	    right: 1px;
+	    top: 50px;
+	    background-color: #32373d;
+	    color: #b2bdce;
+	    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	    z-index: 1;
+	    border-radius: 5px;
+	    padding: 10px;
+	    font-family: 'SUITE-Regular';
+	    width: 200px;
+	}
+	
+	#profileDropdown a, #mprofileDropdown a {
+	    color: #b2bdce;
+	    padding: 12px 16px;
+	    text-decoration: none;
+	    display: block;
+	}
+	
+	#profileDropdown a:hover, #mprofileDropdown a:hover {
+	    background-color: #161d25;
+	}
+	
+	.profile-info {
+	    display: flex;
+	    align-items: center;
+	    padding: 10px;
+	}
+	
+	.profile-pic {
+	    border-radius: 50%;
+	    width: 50px;
+	    height: 50px;
+	    margin-right: 10px;
+	}
+	.community {
+		color: #fff;
+		display: flex;
+		gap: 40px;
 		
+	}
+	.cm-menu {
+		position: sticky;
+	    top: 130px;
+	    left: 0;
+	    height: 100%;
+	}
+	.cb, .cn {
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+		cursor: pointer;
+		justify-content: center;
+		
+	}
+	.cb img, .cn img {
+		width: 35px;
+		height: 35px;
+	}
+	.communityBtn {
+       width: 60px;
+       height: 60px;
+       padding: 12px;
+       border-radius: 50%;
+       text-align: center;
+       background-color: #161d25;
+       color: #b2bdce;
+       margin-bottom: 5px;
+    }
+    .cb-active {
+    	background-color: #00c722;
+    	color: #00c722;
+    }
+    .cb-text {
+    	color: #b2bdce;
+    }
+    .cb-text-active {
+    	color: #00c722;
+    }
+    .c-buttons{
+    	margin-bottom: 20px;
+    }
+    .c-button {
+    	background: #161d25;
+    	color: #b2bdce;
+    	font-size: 18px;
+    	padding: 10px 15px;
+    	margin-right: 6px;
+    	border-radius: 8px;
+    }
+    .c-button-active {
+    	background: #00c722;
+    	color: #fff;
+    	font-weight: bold;
+    }
+   	.cm-box {
+		flex-wrap: wrap;
+		padding: 20px;
+		background-color: #161d25;
+		border-radius: 10px;
+		box-shadow: 0 4px 5px rgba(0, 0, 0, .06), 0 1px 10px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .4);
+		margin-bottom: 20px;
+	}
+	.text-pic {
+		border-radius: 50%;
+	    width: 50px;
+	    height: 50px;
+	    margin-right: 10px;
+	}
+	.text-input {
+		white-space: nowrap;
+	    border-radius: 20px;
+	    background-color: #32373d;
+	    line-height: 22px;
+	    padding: 9px 16px;
+	    cursor: text;
+	    font-size: 15px;
+	    color: #b2bdce;
+	    width: 100%;
+	}
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;
@@ -608,12 +746,10 @@
 		#popup-join .popup-join-content {
 			min-width: 450px;
 		}
-
 	}
 	@media screen and (max-width: 991px) {
 		main {
 			padding: 20px 0;
-			min-height: 1000px;
 			background-color: #32373d;
 		}
 		#pc-menu {
@@ -713,5 +849,20 @@
 			font-size: 16px;
 			margin: 30px 10px;
 		}
+		.layer_profile {
+			top: 67px;
+		    right: 20px;
+		}
+		.cm-menu {display: none;}
+		.cm-box img {
+			width: 40px;
+			height: 40px;
+		}
+		.c-button {
+			display: flex;
+	    	flex-wrap: nowrap;
+	    	margin-bottom: 5px;
+	    }
+	    .text-input {font-size: 14px;}
 	}
 </style>

@@ -55,6 +55,7 @@
 					<span class="mr-2"><img src="${ctp}/images/ingametory.png" width="20px"></span>
 					<span>이메일로 로그인</span>
 				</div>
+				<input type="hidden" name="flag" id="flag" value="${flag}" />
 			</form>
 		</div>
 		<hr/>

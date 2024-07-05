@@ -67,6 +67,10 @@
 		border-radius: 50%;
 		object-fit: cover;
 	}
+	.profile-menu img {
+		width: 50px;
+		height: 50px;
+	}
 	.search-container {
 	    position: relative;
 	}
@@ -541,11 +545,25 @@
 		margin: 0 auto;
 		color: #b2bdce;
 	}
+	.form-control:disabled {
+		background-color: #32373d;
+		color: #68717f;
+	}
 	.form-control:focus {
 	    color: #b2bdce;
     	background-color: #32373d;
     	border-color: #b2bdce;
 		box-shadow: 0 0 0;
+	}
+	.textarea {
+		border: none;
+		background-color: #161d25;
+		border-radius: 8px;
+		margin: 0 auto;
+		color: #b2bdce;
+	}
+	.textarea:focus {
+		background-color: #161d25;
 	}
 	input:-webkit-autofill,
 	input:-webkit-autofill:hover,
@@ -561,11 +579,18 @@
 	    color: #b2bdce;
 	}
 	.error-message {
-	    color: red;
+	    color: #ff5e5e;
 	    font-size: 14px;
 	    display: none;
 	    text-align: left;
 	}
+	.error-msg {
+		color: #ff5e5e;
+		font-size: 14px;
+		margin-top: 3px;
+	}
+	.loding-msg {color: #8dc3ff;}
+	.success-msg {color: #00c722;}
 	.error-form {
 		border-color: red;
 	}
@@ -644,9 +669,8 @@
 	    width: 50px;
 	    height: 50px;
 	    margin-right: 10px;
+	    object-fit: cover;
 	}
-<<<<<<< HEAD
-=======
 	.community {
 		color: #fff;
 		display: flex;
@@ -701,6 +725,9 @@
     	padding: 10px 15px;
     	margin-right: 6px;
     	border-radius: 8px;
+    	text-wrap: nowrap;
+		display: inline-block;
+		cursor: pointer;
     }
     .c-button-active {
     	background: #00c722;
@@ -732,7 +759,29 @@
 	    color: #b2bdce;
 	    width: 100%;
 	}
->>>>>>> branch 'master' of https://github.com/pr0ve98/javaclassS4
+	.mobile {display: none;}
+	.setting-main {
+		display: flex;
+		gap: 30px;
+		padding: 0 20px;
+		margin-bottom: 50px;
+		color: #fff;
+	}
+	.setting-left {
+		flex-grow: 1;
+	}
+	.setting-right {
+		flex-grow: 2;
+	}
+	.setting-right h2 {
+		font-family: DNFBitBitv2;
+		margin-bottom: 30px;
+	}
+	.setting-title {
+		font-weight: bold;
+		font-size: 16px;
+		margin-bottom: 20px;
+	}
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;
@@ -754,6 +803,9 @@
 		main {
 			padding: 20px 0;
 			background-color: #32373d;
+		}
+		.mobile {
+			display: block;
 		}
 		#pc-menu {
 			display: none;
@@ -856,19 +908,25 @@
 			top: 67px;
 		    right: 20px;
 		}
-<<<<<<< HEAD
-=======
 		.cm-menu {display: none;}
 		.cm-box img {
 			width: 40px;
 			height: 40px;
 		}
 		.c-button {
-			display: flex;
-	    	flex-wrap: nowrap;
-	    	margin-bottom: 5px;
+	    	font-size: 14px;
+	    	padding: 5px 8px;
+	    	margin-right: 2px;
+	    	border-radius: 8px;
 	    }
-	    .text-input {font-size: 14px;}
->>>>>>> branch 'master' of https://github.com/pr0ve98/javaclassS4
+	    .profile-menu img {
+			width: 40px;
+			height: 40px;
+		}
+	}
+	@media screen and (max-width: 359px) {
+		.c-button {
+	    	font-size: 12px;
+	    }
 	}
 </style>

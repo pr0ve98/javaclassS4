@@ -12,4 +12,8 @@ public interface MemberDAO {
 
 	public int setMemberInput(@Param("vo") MemberVO vo);
 
+	public int setMemberIdChange(@Param("mid") String mid, @Param("sMid") String sMid);
+
+	public int setmemberPhotoChangePost(@Param("mid") String mid, @Param("sFileName") String sFileName);
+
 }

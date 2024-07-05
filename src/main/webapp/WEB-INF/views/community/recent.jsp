@@ -39,6 +39,10 @@
 				</span>
 			</span>
 			<div style="width:100%;">
+				<div class="mobile mb-3">
+					<span class="c-button row" style="width: 50%;">피드</span>
+					<span class="c-button row" style="width: 50%;">뉴스</span>
+				</div>
 				<div class="c-buttons">
 					<span class="c-button">팔로우</span>
 					<span class="c-button c-button-active">최신</span>

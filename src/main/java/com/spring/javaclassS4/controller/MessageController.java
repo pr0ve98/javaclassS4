@@ -16,28 +16,32 @@ public class MessageController {
 			@RequestParam(name="mid", defaultValue = "", required = false) String mid,
 			@RequestParam(name="idx", defaultValue = "", required = false) String idx,
 			@RequestParam(name="pag", defaultValue = "1", required = false) String pag,
-			@RequestParam(name="pageSize", defaultValue = "5", required = false) String pageSize
+			@RequestParam(name="pageSize", defaultValue = "5", required = false) String pageSize,
+			@RequestParam(name="flag", defaultValue = "main", required = false) String flag
 			) {
 		
 		if(msgFlag.equals("memberLoginOk")) {
 			model.addAttribute("msg", mid+"님 로그인 되었습니다!");
-			model.addAttribute("url", "/");
+			if(flag.equals("main")) model.addAttribute("url", "main");
+			else if(flag.equals("community")) model.addAttribute("url", "community/recent");
+			else if(flag.equals("review")) model.addAttribute("url", "review");
+			else if(flag.equals("store")) model.addAttribute("url", "store");
 		}
 		else if(msgFlag.equals("memberLoginNo")) {
 			model.addAttribute("msg", "해당 유저가 없거나 비밀번호가 틀립니다\\n카카오로 가입했다면 카카오 로그인을 해주세요");
-			model.addAttribute("url", "/");
+			model.addAttribute("url", "main");
 		}
 		else if(msgFlag.equals("emailNo")) {
 			model.addAttribute("msg", "중복되는 이메일입니다! 다시 시도해주세요");
-			model.addAttribute("url", "/");
+			model.addAttribute("url", "main");
 		}
 		else if(msgFlag.equals("memberJoinOk")) {
 			model.addAttribute("msg", "회원가입 완료! 로그인해주세요");
-			model.addAttribute("url", "/");
+			model.addAttribute("url", "main");
 		}
 		else if(msgFlag.equals("memberJoinNo")) {
 			model.addAttribute("msg", "회원가입 실패...");
-			model.addAttribute("url", "/");
+			model.addAttribute("url", "main");
 		}
 		
 		return "include/message";

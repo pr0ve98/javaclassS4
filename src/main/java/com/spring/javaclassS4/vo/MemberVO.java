@@ -12,5 +12,6 @@ public class MemberVO {
 	private String memImg;
 	private int level;
 	private String title;
+	private String idChange;
 	
 }

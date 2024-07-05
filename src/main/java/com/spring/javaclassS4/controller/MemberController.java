@@ -13,6 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS4.service.MemberService;
 import com.spring.javaclassS4.vo.MemberVO;
@@ -28,7 +30,7 @@ public class MemberController {
 	BCryptPasswordEncoder passwordEncoder;
 	
 	@RequestMapping(value = "/kakaoLogin", method = RequestMethod.GET)
-	public String kakaoLoginGet(String accessToken, String nickname, String email,
+	public String kakaoLoginGet(String accessToken, String nickname, String email, String flag,
 			HttpServletRequest request, HttpSession session) throws MessagingException {
 		
 		session.setAttribute("sAccessToken", accessToken);
@@ -59,11 +61,11 @@ public class MemberController {
 		session.setAttribute("sMemImg", vo.getMemImg());
 		session.setAttribute("sKakao", "OK");
 		
-		return "redirect:/message/memberLoginOk?mid="+vo.getMid();
+		return "redirect:/message/memberLoginOk?mid="+vo.getMid()+"&flag="+flag;
 	}
 	
 	@RequestMapping(value = "/memberLogin", method = RequestMethod.POST)
-	public String memberLoginPost(String email, String pwd, HttpSession session) {
+	public String memberLoginPost(String email, String pwd, String flag, HttpSession session) {
 		MemberVO vo = memberService.getMemberEmailCheck(email);
 		
 		if(vo == null) return "redirect:/message/memberLoginNo";
@@ -74,7 +76,7 @@ public class MemberController {
 			session.setAttribute("sLevel", vo.getLevel());
 			session.setAttribute("sMemImg", vo.getMemImg());
 			session.setAttribute("sKakao", "NO");
-			return "redirect:/message/memberLoginOk?mid="+vo.getMid();
+			return "redirect:/message/memberLoginOk?mid="+vo.getMid()+"&flag="+flag;
 		}
 	}
 	
@@ -126,4 +128,34 @@ public class MemberController {
 		if(res != 0) return "redirect:/message/memberJoinOk";
 		else return "redirect:/message/memberJoinNo";
 	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/memberIdCheck", method = RequestMethod.POST)
+	public String memberIdCheckPost(String mid) {
+		MemberVO vo = memberService.getMemberIdCheck(mid);
+		if(vo != null) return "0";
+		else return "1";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/memberIdChange", method = RequestMethod.POST)
+	public String memberIdChangePost(String mid, HttpSession session) {
+		String sMid = (String) session.getAttribute("sMid");
+		int res = memberService.setMemberIdChange(mid, sMid);
+		if(res != 0) {
+			session.setAttribute("sMid", mid);
+			return "1";
+		}
+		else return "0";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/memberPhotoChange", method = RequestMethod.POST)
+	public String memberPhotoChangePost(String mid, HttpSession session, MultipartFile fName, HttpServletRequest request) {
+		int res = memberService.setmemberPhotoChangePost(mid, fName, request, session);
+		
+		if(res != 0) return "1";
+		else return "0";
+	}
+	
 }

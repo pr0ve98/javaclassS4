@@ -29,22 +29,23 @@
 								<c:if test="${sMid != null}">
 					<i class="fa-solid fa-bell fa"></i>
 					<span class="profile-menu" style="position: relative;">
-						<img src="${ctp}/images/profile.jpg" alt="프로필" width="40px" onclick="mtoggleProfileMenu()">
+						<img src="${ctp}/member/${sMemImg}" alt="프로필" width="40px" onclick="mtoggleProfileMenu()">
 						<!-- 프로필 메뉴 드롭다운 -->
 					    <div id="mprofileDropdown" class="dropdown-content">
 					        <div class="profile-info">
-					            <img src="${ctp}/images/profile.jpg" alt="프로필" class="profile-pic">
+					            <img src="${ctp}/member/${sMemImg}" alt="프로필" class="profile-pic">
 					        	<div style="display: flex; flex-direction: column;">
 						            <div class="profile-nickname">${sNickname}</div>
 						            <div class="profile-name">@${sMid}</div>
 					            </div>
 					        </div>
+					        <a href="#">마이페이지 홈</a>
 					        <a href="#">내 게임</a>
 					        <a href="#">일지</a>
 					        <a href="#">리뷰</a>
 					        <a href="#">업적</a>
 					        <a href="#">통계</a>
-					        <a href="#">설정</a>
+					        <a href="${ctp}/setting/profile">설정</a>
 					        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>
 					        <c:if test="${sKakao == 'NO'}"><a href="${ctp}/member/memberLogout">로그아웃</a></c:if>
 					    </div>
@@ -72,22 +73,23 @@
 			    <c:if test="${sMid != null}">
 					<i class="fa-solid fa-bell fa-lg"></i>
 					<span class="profile-menu" style="position: relative;">
-						<img src="${ctp}/images/profile.jpg" alt="프로필" width="50px" onclick="toggleProfileMenu()">
+						<img src="${ctp}/member/${sMemImg}" alt="프로필" width="50px" onclick="toggleProfileMenu()">
 						    <!-- 프로필 메뉴 드롭다운 -->
 						    <div id="profileDropdown" class="dropdown-content">
 						        <div class="profile-info">
-						            <img src="${ctp}/images/profile.jpg" alt="프로필" class="profile-pic">
+						            <img src="${ctp}/member/${sMemImg}" alt="프로필" class="profile-pic">
 						            <div style="display: flex; flex-direction: column;">
 							            <div class="profile-nickname">${sNickname}</div>
 							            <div class="profile-name">@${sMid}</div>
 						            </div>
 						        </div>
+						        <a href="#">마이페이지 홈</a>
 						        <a href="#">내 게임</a>
 						        <a href="#">일지</a>
 						        <a href="#">리뷰</a>
 						        <a href="#">업적</a>
 						        <a href="#">통계</a>
-						        <a href="#">설정</a>
+						        <a href="${ctp}/setting/profile">설정</a>
 						        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>
 					        	<c:if test="${sKakao == 'NO'}"><a href="${ctp}/member/memberLogout">로그아웃</a></c:if>
 						    </div>

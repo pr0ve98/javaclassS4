@@ -49,25 +49,6 @@
         html.classList.remove('popup-open');
     }
 
- 	function kakaoLogin() {
- 		window.Kakao.init("f1fade264b3d07d67f8e358b3d68803e");
- 		
- 		window.Kakao.Auth.login({
-			scope: 'profile_nickname, account_email',
-			success : function(autoObj) {
-				//console.log(Kakao.Auth.getAccessToken(), "정상 토큰 발급됨");
-				window.Kakao.API.request({
-					url : '/v2/user/me',
-					success : function(res) {
-						const kakao_account = res.kakao_account;
-						console.log(kakao_account);
-						location.href = "${ctp}/member/kakaoLogin?nickname="+kakao_account.profile.nickname+"&email="+kakao_account.email+"&accessToken="+Kakao.Auth.getAccessToken();
-					}
-				});
-			}
-		});
-	}
- 	
  	document.addEventListener('DOMContentLoaded', function() {
  	    const email = document.getElementById('joinemail');
  	    const pwd = document.getElementById('joinpwd');
@@ -185,7 +166,7 @@
 					success : function(res) {
 						const kakao_account = res.kakao_account;
 						console.log(kakao_account);
-						location.href = "${ctp}/member/kakaoLogin?nickname="+kakao_account.profile.nickname+"&email="+kakao_account.email+"&accessToken="+Kakao.Auth.getAccessToken();
+						location.href = "${ctp}/member/kakaoLogin?nickname="+kakao_account.profile.nickname+"&email="+kakao_account.email+"&accessToken="+Kakao.Auth.getAccessToken()+"&flag=${flag}";
 					}
 				});
 			}

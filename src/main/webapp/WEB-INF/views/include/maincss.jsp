@@ -645,6 +645,94 @@
 	    height: 50px;
 	    margin-right: 10px;
 	}
+<<<<<<< HEAD
+=======
+	.community {
+		color: #fff;
+		display: flex;
+		gap: 40px;
+		
+	}
+	.cm-menu {
+		position: sticky;
+	    top: 130px;
+	    left: 0;
+	    height: 100%;
+	}
+	.cb, .cn {
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+		cursor: pointer;
+		justify-content: center;
+		
+	}
+	.cb img, .cn img {
+		width: 35px;
+		height: 35px;
+	}
+	.communityBtn {
+       width: 60px;
+       height: 60px;
+       padding: 12px;
+       border-radius: 50%;
+       text-align: center;
+       background-color: #161d25;
+       color: #b2bdce;
+       margin-bottom: 5px;
+    }
+    .cb-active {
+    	background-color: #00c722;
+    	color: #00c722;
+    }
+    .cb-text {
+    	color: #b2bdce;
+    }
+    .cb-text-active {
+    	color: #00c722;
+    }
+    .c-buttons{
+    	margin-bottom: 20px;
+    }
+    .c-button {
+    	background: #161d25;
+    	color: #b2bdce;
+    	font-size: 18px;
+    	padding: 10px 15px;
+    	margin-right: 6px;
+    	border-radius: 8px;
+    }
+    .c-button-active {
+    	background: #00c722;
+    	color: #fff;
+    	font-weight: bold;
+    }
+   	.cm-box {
+		flex-wrap: wrap;
+		padding: 20px;
+		background-color: #161d25;
+		border-radius: 10px;
+		box-shadow: 0 4px 5px rgba(0, 0, 0, .06), 0 1px 10px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .4);
+		margin-bottom: 20px;
+	}
+	.text-pic {
+		border-radius: 50%;
+	    width: 50px;
+	    height: 50px;
+	    margin-right: 10px;
+	}
+	.text-input {
+		white-space: nowrap;
+	    border-radius: 20px;
+	    background-color: #32373d;
+	    line-height: 22px;
+	    padding: 9px 16px;
+	    cursor: text;
+	    font-size: 15px;
+	    color: #b2bdce;
+	    width: 100%;
+	}
+>>>>>>> branch 'master' of https://github.com/pr0ve98/javaclassS4
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;
@@ -665,7 +753,6 @@
 	@media screen and (max-width: 991px) {
 		main {
 			padding: 20px 0;
-			min-height: 1000px;
 			background-color: #32373d;
 		}
 		#pc-menu {
@@ -769,5 +856,19 @@
 			top: 67px;
 		    right: 20px;
 		}
+<<<<<<< HEAD
+=======
+		.cm-menu {display: none;}
+		.cm-box img {
+			width: 40px;
+			height: 40px;
+		}
+		.c-button {
+			display: flex;
+	    	flex-wrap: nowrap;
+	    	margin-bottom: 5px;
+	    }
+	    .text-input {font-size: 14px;}
+>>>>>>> branch 'master' of https://github.com/pr0ve98/javaclassS4
 	}
 </style>

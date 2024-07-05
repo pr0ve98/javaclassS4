@@ -5,15 +5,11 @@
 	<div id="hambuger-menu">
 		<div class="w3-sidebar w3-bar-block w3-card w3-animate-left darkmode" style="display:none;z-index:5" id="mySidebar">
 			<button class="w3-bar-item w3-button w3-xxlarge" onclick="w3_close()">&times;</button>
-			<button class="w3-button w3-block w3-left-align" onclick="myAccFunc(1)">Accordion1</button>
+			<button class="w3-button w3-block w3-left-align" onclick="location.href='${ctp}/'">홈으로</button>
+			<button class="w3-button w3-block w3-left-align" onclick="myAccFunc(1)">커뮤니티</button>
 			<div id="demoAcc1" class="w3-bar-block w3-hide w3-card-4 litiledark">
-				<a href="#" class="w3-bar-item w3-button">Link</a>
-				<a href="#" class="w3-bar-item w3-button">Link</a>
-			</div>
-			<button class="w3-button w3-block w3-left-align" onclick="myAccFunc(2)">Accordion2</button>
-			<div id="demoAcc2" class="w3-bar-block w3-hide w3-card-4 litiledark">
-				<a href="#" class="w3-bar-item w3-button">Link</a>
-				<a href="#" class="w3-bar-item w3-button">Link</a>
+				<a href="${ctp}/community/recent" class="w3-bar-item w3-button">피드</a>
+				<a href="#" class="w3-bar-item w3-button">뉴스</a>
 			</div>
 			<button class="w3-button w3-block w3-left-align" onclick="myAccFunc(3)">Accordion3</button>
 			<div id="demoAcc3" class="w3-bar-block w3-hide w3-card-4 litiledark">
@@ -30,7 +26,7 @@
 			<button class="w3-button w3-xxlarge" onclick="w3_open()">&#9776;</button>
 			<img src="${ctp}/resources/images/logo.png" alt="로고" height="70px" class="p-2 ml-4">
 			<div class="right-menu">
-				<c:if test="${sMid != null}">
+								<c:if test="${sMid != null}">
 					<i class="fa-solid fa-bell fa"></i>
 					<span class="profile-menu" style="position: relative;">
 						<img src="${ctp}/images/profile.jpg" alt="프로필" width="40px" onclick="mtoggleProfileMenu()">
@@ -64,10 +60,10 @@
 		<div class="container p-menu">
 			<div>
 				<img src="${ctp}/resources/images/logo.png" alt="로고" height="80px" class="p-2 ml-2">
-				<span class="menu-item"><a href="#" class="selected">홈</a></span>
-				<span class="menu-item"><a href="#">커뮤니티</a></span>
-				<span class="menu-item"><a href="#">평가</a></span>
-				<span class="menu-item"><a href="#">스토어</a></span>
+				<span class="menu-item"><a href="${ctp}/main" ${flag == 'main' ? 'class="selected"' : ''}>홈</a></span>
+				<span class="menu-item"><a href="${ctp}/community/recent" ${flag == 'community' ? 'class="selected"' : ''}>커뮤니티</a></span>
+				<span class="menu-item"><a href="#" ${flag == 'review' ? 'class="selected"' : ''}>평가</a></span>
+				<span class="menu-item"><a href="#" ${flag == 'store' ? 'class="selected"' : ''}>스토어</a></span>
 			</div>
 			<div class="right-menu">
 				<div class="search-container">

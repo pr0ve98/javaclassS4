@@ -20,4 +20,8 @@ public interface MemberService {
 	public int setmemberPhotoChangePost(String mid, MultipartFile fName, HttpServletRequest request,
 			HttpSession session);
 
+	public int setmemberEdit(String nickname, String memInfo, String mid);
+
+	public void setMemberBasicGameList(String mid);
+
 }

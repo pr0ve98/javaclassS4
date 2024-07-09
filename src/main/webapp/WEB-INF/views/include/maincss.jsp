@@ -25,6 +25,7 @@
 		font-family: 'SUITE-Regular';
 		cursor: default;
 	}
+	p {margin-bottom: 0}
 	main {
 		padding: 20px;
 		background-color: #32373d;
@@ -85,6 +86,10 @@
 	    color: #fff;
 	    font-size: 14px;
 	    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+	}
+	.gamesearch-bar {
+		width: 100%;
+		background-color: #161d25;
 	}
 	.search-bar::placeholder {
 	    color: #aaa;
@@ -240,6 +245,7 @@
 	    cursor: pointer;
 	    text-align: left;
 	    font-size: 1em;
+	    border-radius: 8px;
 	}
 	.dropdown-btn:focus {
 	    outline: none;
@@ -461,7 +467,7 @@
 		font-weight: bold;
 		margin-bottom: 50px;
 	}
-	#popup-join, #popup-login {
+	#popup-join, #popup-login, #popup-write, #popup-gamesearch {
 	  display: flex;
 	  justify-content: center;
 	  align-items: center;
@@ -475,11 +481,11 @@
 	  overflow: hidden;
 	}
 	
-	#popup-join.hide, #popup-login.hide {
+	#popup-join.hide, #popup-login.hide, #popup-write.hide, #popup-gamesearch.hide {
 	  display: none;
 	}
 	
-	#popup-join .popup-join-content, #popup-login .popup-login-content {
+	#popup-join .popup-join-content, #popup-login .popup-login-content, #popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content {
 	  padding: 20px;
 	  background: #32373d;
 	  border-radius: 5px;
@@ -488,6 +494,7 @@
    	  max-height: 80vh;
 	  min-width: 330px;
 	}
+	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content {min-width: 700px;}
 	
 	.popup-open {
 		overflow: hidden;
@@ -772,6 +779,7 @@
 	}
 	.setting-right {
 		flex-grow: 2;
+		min-width: 719px;
 	}
 	.setting-right h2 {
 		font-family: DNFBitBitv2;
@@ -781,6 +789,128 @@
 		font-weight: bold;
 		font-size: 16px;
 		margin-bottom: 20px;
+	}
+	.category-selection {
+	    display: flex;
+	    justify-content: space-between;
+	    margin: 20px 0;
+	}
+	
+	.community-category {
+	    flex-grow: 1;
+	    padding: 10px;
+	    background-color: #161d25;
+	    border: none;
+	    cursor: pointer;
+	    margin: 0 5px;
+	    border-radius: 5px;
+	    color: #b2bdce;
+	}
+	
+	.community-category.active {
+		font-weight: bold;
+	    background-color: #00c722;
+	    color: #fff;
+	}
+	
+	.game-selection {
+	    display: flex;
+	    overflow-x: auto;
+	    margin-bottom: 20px;
+	    justify-content: space-around;
+	}
+	
+	.game-button, .gamesearch-button {
+	    background: none;
+	    border: none;
+	    margin-right: 10px;
+	    padding: 0;
+	    cursor: pointer;
+	    width: 55px;
+	}
+	
+	.game-button img, .gamesearch-button img {
+	    width: 50px;
+	    height: 50px;
+	    border-radius: 5px;
+	    object-fit: cover;
+	}
+	
+	.game-button.active img {
+	    border: 3px solid #00c722;
+	}
+	
+	.game-name {
+		white-space: nowrap;
+	    overflow: hidden;
+	    text-overflow: ellipsis;
+	    color: #fff;
+	    margin-top: 2px;
+	}
+	
+	.journal-entry {
+	    width: 100%;
+	    height: 100px;
+	    border: 1px solid #ccc;
+	    border-radius: 5px;
+	    padding: 10px;
+	    box-sizing: border-box;
+	    margin-bottom: 20px;
+	}
+	
+	.footer {
+	    display: flex;
+	    justify-content: space-between;
+	    align-items: center;
+	    margin-top: 10px;
+	}
+	
+	.visibility {
+	    padding: 5px;
+	    border-radius: 5px;
+	}
+	
+	.post-button {
+	    background-color: #00c722;
+	    color: #fff;
+	    border: none;
+	    padding: 10px 20px;
+	    border-radius: 5px;
+	    cursor: pointer;
+	}
+	.note-modal-backdrop {position: static;}
+	.popup-write-header, .popup-gamesearch-header {
+		display: flex;
+		justify-content: space-between;
+	}
+	.header-text, .gs-header-text {
+		font-size: 20px;
+    	margin: 0 5px;
+	}
+	.results-container {
+		display: none;
+	    background-color: #23272a;
+	    border-radius: 5px;
+	    max-height: 300px;
+	    overflow-y: auto;
+	}
+	.result-item {
+	    display: flex;
+	    align-items: center;
+	    padding: 10px;
+	    cursor: pointer;
+	}
+	.result-item img {
+	    width: 40px;
+	    height: 40px;
+	    border-radius: 5px;
+	    margin-right: 10px;
+	}
+	.result-item span {
+	    flex: 1;
+	}
+	.result-item:hover, .result-item.selected {
+	    background-color: #7289da;
 	}
 	@media screen and (min-width: 1200px) {
 		.game-item {
@@ -922,6 +1052,12 @@
 	    .profile-menu img {
 			width: 40px;
 			height: 40px;
+		}
+		.setting-right {
+			min-width: 0px;
+		}
+		#popup-write .popup-write-content {
+		    min-width: 300px;
 		}
 	}
 	@media screen and (max-width: 359px) {

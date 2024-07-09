@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaclassS4.dao.CommunityDAO">
+	<select id="getGameIdx" resultType="com.spring.javaclassS4.vo.GameVO">
+		select * from itGame where gameIdx=#{gameIdx};
+	</select>
+	<select id="gameSearch" resultType="com.spring.javaclassS4.vo.GameVO">
+		select * from itGame where gameTitle like concat('%',#{game},'%') or gameSubTitle like concat('%',#{game},'%');
+	</select>
+	
+	<update id="setMemGameListEdit">
+		update itGamelist set gamelist=#{gamelist} where glMid=#{mid};
+	</update>
+</mapper>

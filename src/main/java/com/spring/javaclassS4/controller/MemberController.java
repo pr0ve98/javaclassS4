@@ -50,8 +50,10 @@ public class MemberController {
 			vo.setNickname(nickname);
 			vo.setEmail(email);
 			vo.setPwd("kakaoMember");
+			vo.setMemImg("noimage.jpg");
 			
 			memberService.setMemberInput(vo);
+			memberService.setMemberBasicGameList(mid);
 			
 		}
 		
@@ -125,6 +127,7 @@ public class MemberController {
 		vo.setPwd(passwordEncoder.encode(pwd));
 		
 		int res = memberService.setMemberInput(vo);
+		memberService.setMemberBasicGameList(mid);
 		if(res != 0) return "redirect:/message/memberJoinOk";
 		else return "redirect:/message/memberJoinNo";
 	}
@@ -155,6 +158,18 @@ public class MemberController {
 		int res = memberService.setmemberPhotoChangePost(mid, fName, request, session);
 		
 		if(res != 0) return "1";
+		else return "0";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/memberEdit", method = RequestMethod.POST)
+	public String memberEditPost(String nickname, String memInfo, HttpSession session) {
+		String mid = (String) session.getAttribute("sMid");
+		int res = memberService.setmemberEdit(nickname, memInfo, mid);
+		if(res != 0) {
+			session.setAttribute("sNickname", nickname);
+			return "1";
+		}
 		else return "0";
 	}
 	

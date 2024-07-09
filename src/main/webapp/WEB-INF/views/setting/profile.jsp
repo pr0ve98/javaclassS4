@@ -37,11 +37,11 @@
  	        const midReg = /^[a-zA-Z0-9_-]{4,20}$/;
  	        if (!midReg.test(mid.value)) {
  	        	midError.textContent = '잘못된 형식입니다';
- 	        	midError.style.display = 'inline';
+ 	        	midError.style.display = 'block';
  	        	mid.classList.add('error-form');
  	        } else {
  	        	midError.textContent = '중복 확인을 위해 검색중입니다';
- 	        	midError.style.display = 'inline';
+ 	        	midError.style.display = 'block';
  	        	midError.classList.add('loding-msg');
  	        	
  	        	$.ajax({
@@ -51,7 +51,7 @@
  	        		success : function(res) {
 						if(res != "0") {
 			 	        	midError.textContent = '사용할 수 있는 아이디입니다';
-			 	        	midError.style.display = 'inline';
+			 	        	midError.style.display = 'block';
 			 	        	midError.classList.add('success-msg');
 			 	        	mid.classList.remove('error-form');
 			 	        	submitOK = true;
@@ -135,6 +135,28 @@
 			});
 		}
 	}
+	
+	function memberEdit() {
+		let memInfo = myform.memInfo.value;
+		let nickname = myform.nickname.value.trim();
+		
+		$.ajax({
+			url : "${ctp}/member/memberEdit",
+			type : "post",
+			data : {nickname : nickname, memInfo : memInfo},
+			success : function(res) {
+				if(res != "0") {
+					location.reload();
+				}
+				else {
+					alert("변경에 실패했어요...");
+				}
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
@@ -175,12 +197,12 @@
 				<div class="mb-4">
 					준비중
 				</div>
-				<form name="myform" method="post">
+				<form name="myform">
 					<div class="setting-title">닉네임</div>
 					<input type="text" name="nickname" id="nickname" value="${sNickname}" placeholder="닉네임을 입력하세요" class="form-control forminput mb-4" style="width: 100%;" />
 					<div class="setting-title">자기소개</div>
-					<textarea rows="4" class="form-control textarea mb-4" placeholder="소개글을 입력하세요"></textarea>
-					<div class="text-right"><button class="joinBtn">변경사항 저장</button></div>
+					<textarea rows="4" name="memInfo" id="memInfo" class="form-control textarea mb-4" placeholder="소개글을 입력하세요">${memInfo}</textarea>
+					<div class="text-right"><button class="joinBtn" onclick="memberEdit()">변경사항 저장</button></div>
 				</form>
 			</div>
 		</div>

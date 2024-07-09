@@ -7,9 +7,15 @@
 	<select id="getMemberIdCheck" resultType="com.spring.javaclassS4.vo.MemberVO">
 		select * from itMember where mid=#{mid};
 	</select>
+	<select id="getMemberGamelist" resultType="String">
+		select gamelist from itGamelist where glMid=#{mid};
+	</select>
 	
 	<insert id="setMemberInput">
 		insert into itMember values(default,#{vo.mid},#{vo.nickname},#{vo.email},#{vo.pwd},default,default,default,default,default);
+	</insert>
+	<insert id="setMemberBasicGameList">
+		insert into itGamelist values(default,#{mid},default);
 	</insert>
 	
 	<update id="setMemberIdChange">
@@ -17,5 +23,8 @@
 	</update>
 	<update id="setmemberPhotoChangePost">
 		update itMember set memImg=#{sFileName} where mid=#{mid};
+	</update>
+	<update id="setmemberEdit">
+		update itMember set nickname=#{nickname}, memInfo=#{memInfo} where mid=#{mid};
 	</update>
 </mapper>

@@ -68,4 +68,14 @@ public class MemberServiceImpl implements MemberService {
 		}
 		return memberDAO.setmemberPhotoChangePost(mid, sFileName);
 	}
+
+	@Override
+	public int setmemberEdit(String nickname, String memInfo, String mid) {
+		return memberDAO.setmemberEdit(nickname, memInfo, mid);
+	}
+
+	@Override
+	public void setMemberBasicGameList(String mid) {
+		memberDAO.setMemberBasicGameList(mid);
+	}
 }

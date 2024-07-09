@@ -28,6 +28,7 @@ public class SettingController {
 		MemberVO vo = memberService.getMemberIdCheck(mid);
 		
 		if(vo.getIdChange().equals("OK")) model.addAttribute("idChange", "OK");
+		model.addAttribute("memInfo", vo.getMemInfo());
 		
 		return "setting/profile";
 	}

@@ -19,4 +19,6 @@ public interface CommunityDAO {
 
 	public ArrayList<CommunityVO> getCommunityList();
 
+	public CommunityVO showAllContent(@Param("cmIdx") int cmIdx);
+
 }

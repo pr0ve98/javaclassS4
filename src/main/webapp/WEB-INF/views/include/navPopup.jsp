@@ -36,7 +36,7 @@
 <div id="popup-login" class="hide">
   <div class="popup-login-content scrollbar">
 		<div class="popup-login-header">
-    		<a href="" onclick="closePopup()"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+    		<a href="" onclick="closePopup('join')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
 		</div>
 		<div class="popup-login-main">
 			<h2><b>로그인</b></h2>

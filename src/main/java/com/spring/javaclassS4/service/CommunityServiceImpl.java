@@ -110,18 +110,29 @@ public class CommunityServiceImpl implements CommunityService {
 				for (Element e : ptag) {
 					reContent.append(e.outerHtml());
 					if(e.equals(firstImg.parent())) {
+						vos.get(i).setLongContent(1);
 						break;
 					}
 				}
-				//reContent.append(firstImg.outerHtml());
 			}
 			else {
-				ptag.stream().limit(7).forEach(p -> reContent.append(p.outerHtml()));
+				if(ptag.size() < 7) {
+					ptag.forEach(p -> reContent.append(p.outerHtml()));
+					vos.get(i).setLongContent(0);
+				}
+				else {
+					ptag.stream().limit(7).forEach(p -> reContent.append(p.outerHtml()));
+					vos.get(i).setLongContent(1);
+				}
 			}
 			vos.get(i).setCmContent(reContent.toString());
-			vos.get(i).setLongContent(1);
 		}
 		return vos;
+	}
+
+	@Override
+	public CommunityVO showAllContent(int cmIdx) {
+		return communityDAO.showAllContent(cmIdx);
 	}
 
 }

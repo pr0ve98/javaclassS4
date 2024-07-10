@@ -751,10 +751,29 @@
 	}
 	.cm-box p img {
 		width: 100%;
+		height: 100%;
 	}
 	.community-content {
 		margin: 20px;
 	}
+	.cm-content {
+		max-height: 500px; /* 초기에 보여질 최대 높이 */
+        overflow: hidden;
+        position: relative;
+        transition: max-height 0.5s ease-out;
+	}
+	.moreGra::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: linear-gradient(to bottom, rgba(22, 29, 37, 0), #161d25 75%);
+    }
+	.expanded {
+        max-height: 3000px; /* 충분히 큰 값으로 설정하여 전체 내용이 보이도록 */
+    }
 	.community-footer {
 		display: flex;
 		justify-content: space-around;
@@ -1075,9 +1094,13 @@
 		    min-width: 300px;
 		}
 	}
+	@media screen and (max-width: 567px) {
+		.game-selection {justify-content: start;}
+	}
 	@media screen and (max-width: 359px) {
 		.c-button {
 	    	font-size: 12px;
 	    }
+	    .community-category {padding: 0}
 	}
 </style>

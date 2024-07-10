@@ -29,7 +29,6 @@ public class CommunityController {
 	@RequestMapping(value = "/recent", method = RequestMethod.GET)
 	public String kakaoLoginGet(Model model, HttpSession session) {
 		String mid = (String) session.getAttribute("sMid");
-		if(mid == null) return "redirect:/";
 		
 		if(mid != null) {
 			String[] gamelist = communityService.getMemberGamelist(mid).split("/");
@@ -113,6 +112,13 @@ public class CommunityController {
 		String hostIp = request.getRemoteAddr();
 		vo.setCmHostIp(hostIp);
 		return communityService.communityInput(vo)+"";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/showAllContent", method = RequestMethod.POST, produces = "application/text; charset=utf8")
+	public String showAllContentPost(int cmIdx) {
+		CommunityVO vo = communityService.showAllContent(cmIdx);
+		return vo.getCmContent();
 	}
 		
 	

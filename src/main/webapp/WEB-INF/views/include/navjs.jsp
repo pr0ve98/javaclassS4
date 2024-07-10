@@ -41,11 +41,14 @@
         html.classList.add('popup-open');
     }
     
-    function closePopup() {
-    	const popup = document.querySelector('#popup-join');
+    function closePopup(flag) {
+    	let popup = '';
+    	if(flag == 'join') popup = document.querySelector('#popup-join');
+    	else if(flag == 'login') popup = document.querySelector('#popup-login');
+    	else if(flag == 'search') popup = document.querySelector('#popup-gamesearch');
+    	else if(flag == 'write') popup = document.querySelector('#popup-write');
     	const html = document.querySelector('html');
-        popupJoin.classList.add('hide');
-        popupLogin.classList.add('hide');
+    	popup.classList.add('hide');
         html.classList.remove('popup-open');
     }
 

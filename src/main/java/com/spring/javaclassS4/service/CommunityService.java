@@ -27,4 +27,6 @@ public interface CommunityService {
 
 	public ArrayList<CommunityVO> getCommunityList();
 
+	public CommunityVO showAllContent(int cmIdx);
+
 }

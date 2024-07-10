@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
 <title>최신피드 | 인겜토리</title>
 <link rel="icon" type="image/x-icon" href="${ctp}/images/ingametory.ico">
 <jsp:include page="/WEB-INF/views/include/bs4.jsp" />
@@ -189,6 +189,23 @@
             }
 		});
 	}
+	
+	function showAllContent(cmIdx) {
+		$.ajax({
+			url : "${ctp}/community/showAllContent",
+			type : "post",
+			data : {cmIdx : cmIdx},
+			success : function(res) {
+				$("#cmContent"+cmIdx).html(res);
+				$("#cmContent"+cmIdx).removeClass("moreGra");
+				$("#cmContent"+cmIdx).addClass("expanded");
+				$("#moreBtn"+cmIdx).hide();
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
@@ -251,8 +268,9 @@
 							</div>
 						</div>
 						<div class="community-content">
-							${cmVO.cmContent}
-							<div style="color:#b2bdce; font-size:12px;" class="mt-4">
+							<div class="cm-content ${cmVO.longContent == 1 ? 'moreGra' : ''}" id="cmContent${cmVO.cmIdx}">${cmVO.cmContent}</div>
+							<c:if test="${cmVO.longContent == 1}"><div onclick="showAllContent(${cmVO.cmIdx})" id="moreBtn${cmVO.cmIdx}" style="cursor:pointer; color:#00c722; font-weight:bold;">더 보기</div></c:if>
+							<div style="color:#b2bdce; font-size:12px;" class="mt-2">
 								<c:if test="${cmVO.hour_diff < 1}">${cmVO.min_diff}분 전</c:if>
 								<c:if test="${cmVO.hour_diff < 24 && cmVO.hour_diff >= 1}">${cmVO.hour_diff}시간 전</c:if>
 								<c:if test="${cmVO.hour_diff >= 24}">${fn:substring(cmVO.cmDate, 0, 10)}</c:if>
@@ -278,7 +296,7 @@
   <div class="popup-write-content scrollbar">
   		<div class="popup-write-header">
             <span class="header-text"></span>
-    		<a href="" onclick="closePopup()"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+    		<a href="" onclick="closePopup('write')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
 		</div>
         <div class="category-selection">
             <button class="community-category active" data-category="일지">일지</button>
@@ -286,7 +304,7 @@
             <button class="community-category" data-category="자유">자유 주제</button>
             <button class="community-category" data-category="세일">세일 글</button>
         </div>
-        <div class="game-selection" id="game-selection">
+        <div class="game-selection scrollbar" id="game-selection">
             <button class="gamesearch-button" onclick="showPopupGameSearch()">
             	<img src="${ctp}/images/plus.jpg" alt="">
             	<div class="game-name">게임 선택</div>
@@ -439,7 +457,7 @@
   <div class="popup-gamesearch-content scrollbar">
   		<div class="popup-gamesearch-header mb-4">
             <span class="gs-header-text">게임 검색</span>
-    		<a href="" onclick="closePopup()"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+    		<a href="" onclick="closePopup('search')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
 		</div>
 		<div class="search-container">
 	 		<input type="text" id="gamesearch" name="gamesearch" class="search-bar gamesearch-bar" placeholder="Search...">

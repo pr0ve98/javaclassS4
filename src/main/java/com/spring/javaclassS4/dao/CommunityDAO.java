@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 
 public interface CommunityDAO {
@@ -13,5 +14,9 @@ public interface CommunityDAO {
 	public ArrayList<GameVO> gameSearch(@Param("game") String game);
 
 	public int setMemGameListEdit(@Param("gamelist") String gamelist, @Param("mid") String mid);
+
+	public int communityInput(@Param("vo") CommunityVO vo);
+
+	public ArrayList<CommunityVO> getCommunityList();
 
 }

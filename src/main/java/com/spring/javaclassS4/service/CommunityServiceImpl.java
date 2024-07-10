@@ -7,6 +7,10 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.spring.javaclassS4.common.JavaclassProvide;
 import com.spring.javaclassS4.dao.CommunityDAO;
 import com.spring.javaclassS4.dao.MemberDAO;
+import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 
 @Service
@@ -82,6 +87,41 @@ public class CommunityServiceImpl implements CommunityService {
 	@Override
 	public int setMemGameListEdit(String gamelist, String mid) {
 		return communityDAO.setMemGameListEdit(gamelist, mid);
+	}
+
+	@Override
+	public int communityInput(CommunityVO vo) {
+		return communityDAO.communityInput(vo);
+	}
+
+	@Override
+	public ArrayList<CommunityVO> getCommunityList() {
+		ArrayList<CommunityVO> vos = communityDAO.getCommunityList();
+		// 글 내용이 길다면 조금만 보여주기
+		for(int i=0; i<vos.size(); i++) {
+			Document doc = Jsoup.parse(vos.get(i).getCmContent());
+			Elements ptag = doc.select("p");
+			Elements img = doc.select("img");
+			
+			StringBuilder reContent = new StringBuilder();
+			
+			if(!img.isEmpty()) {
+				Element firstImg = img.first();
+				for (Element e : ptag) {
+					reContent.append(e.outerHtml());
+					if(e.equals(firstImg.parent())) {
+						break;
+					}
+				}
+				//reContent.append(firstImg.outerHtml());
+			}
+			else {
+				ptag.stream().limit(7).forEach(p -> reContent.append(p.outerHtml()));
+			}
+			vos.get(i).setCmContent(reContent.toString());
+			vos.get(i).setLongContent(1);
+		}
+		return vos;
 	}
 
 }

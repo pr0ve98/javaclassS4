@@ -144,6 +144,9 @@ public class MemberController {
 	@RequestMapping(value = "/memberIdChange", method = RequestMethod.POST)
 	public String memberIdChangePost(String mid, HttpSession session) {
 		String sMid = (String) session.getAttribute("sMid");
+		
+		if(sMid == null) return "redirect:/";
+		
 		int res = memberService.setMemberIdChange(mid, sMid);
 		if(res != 0) {
 			session.setAttribute("sMid", mid);
@@ -165,6 +168,9 @@ public class MemberController {
 	@RequestMapping(value = "/memberEdit", method = RequestMethod.POST)
 	public String memberEditPost(String nickname, String memInfo, HttpSession session) {
 		String mid = (String) session.getAttribute("sMid");
+		
+		if(mid == null) return "redirect:/";
+		
 		int res = memberService.setmemberEdit(nickname, memInfo, mid);
 		if(res != 0) {
 			session.setAttribute("sNickname", nickname);

@@ -25,6 +25,9 @@ public class SettingController {
 	@RequestMapping(value = "/profile", method = RequestMethod.GET)
 	public String settingGet(HttpSession session, Model model) {
 		String mid = (String) session.getAttribute("sMid");
+		
+		if(mid == null) return "redirect:/";
+		
 		MemberVO vo = memberService.getMemberIdCheck(mid);
 		
 		if(vo.getIdChange().equals("OK")) model.addAttribute("idChange", "OK");

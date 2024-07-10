@@ -220,6 +220,13 @@
 		    <version>1.5</version>
 		</dependency>
 		
+		<!-- 크롤링을 위한 라이브러리(jsoup) -->
+		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+		<dependency>
+		    <groupId>org.jsoup</groupId>
+		    <artifactId>jsoup</artifactId>
+		    <version>1.17.2</version>
+		</dependency>
 		
 		
 	</dependencies>

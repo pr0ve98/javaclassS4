@@ -494,7 +494,7 @@
    	  max-height: 80vh;
 	  min-width: 330px;
 	}
-	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content {min-width: 700px;}
+	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content {width: 700px;}
 	
 	.popup-open {
 		overflow: hidden;
@@ -606,16 +606,16 @@
 	}
 	
 	/* 스크롤바의 폭 너비 */
-	.scrollbar::-webkit-scrollbar {
+	.scrollbar::-webkit-scrollbar, .note-editable::-webkit-scrollbar {
 	    width: 3px;  
 	}
 	
-	.scrollbar::-webkit-scrollbar-thumb {
+	.scrollbar::-webkit-scrollbar-thumb, .note-editable::-webkit-scrollbar-thumb {
 	    background: #b2bdce38; /* 스크롤바 색상 */
 	    border-radius: 10px; /* 스크롤바 둥근 테두리 */
 	}
 	
-	.scrollbar::-webkit-scrollbar-track {
+	.scrollbar::-webkit-scrollbar-track, .note-editable::-webkit-scrollbar-track {
 	    background: #32373d;  /*스크롤바 뒷 배경 색상*/
 	}
 	.pwdReset {
@@ -749,6 +749,17 @@
 		box-shadow: 0 4px 5px rgba(0, 0, 0, .06), 0 1px 10px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .4);
 		margin-bottom: 20px;
 	}
+	.cm-box p img {
+		width: 100%;
+	}
+	.community-content {
+		margin: 20px;
+	}
+	.community-footer {
+		display: flex;
+		justify-content: space-around;
+		color:#b2bdce;
+	}
 	.text-pic {
 		border-radius: 50%;
 	    width: 50px;
@@ -879,6 +890,10 @@
 	    cursor: pointer;
 	}
 	.note-modal-backdrop {position: static;}
+    .note-editable img {
+       width: 100%;
+       height: auto;
+    }
 	.popup-write-header, .popup-gamesearch-header {
 		display: flex;
 		justify-content: space-between;

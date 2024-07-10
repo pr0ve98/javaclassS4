@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS4.service.CommunityService;
+import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 
 @Controller
@@ -28,6 +29,8 @@ public class CommunityController {
 	@RequestMapping(value = "/recent", method = RequestMethod.GET)
 	public String kakaoLoginGet(Model model, HttpSession session) {
 		String mid = (String) session.getAttribute("sMid");
+		if(mid == null) return "redirect:/";
+		
 		if(mid != null) {
 			String[] gamelist = communityService.getMemberGamelist(mid).split("/");
 			
@@ -40,18 +43,22 @@ public class CommunityController {
 			
 			model.addAttribute("vos", vos);
 		}
+		
+		ArrayList<CommunityVO> cmVOS = communityService.getCommunityList();
+		
+		model.addAttribute("cmVOS", cmVOS);
 		model.addAttribute("flag", "community");
 		return "community/recent";
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/imageUpload", method = RequestMethod.POST)
+	@RequestMapping(value = "/imageUpload", method = RequestMethod.POST, produces = "application/text; charset=utf8")
 	public String imageUploadPost(MultipartFile file, HttpServletRequest request) {
 		return communityService.imageUpload(file, request);
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/deleteImage", method = RequestMethod.POST)
+	@RequestMapping(value = "/deleteImage", method = RequestMethod.POST, produces = "application/text; charset=utf8")
 	public void deleteImagePost(String src, HttpServletRequest request) {
 		communityService.deleteImage(src, request);
 	}
@@ -66,6 +73,9 @@ public class CommunityController {
 	@RequestMapping(value = "/memGameListEdit", method = RequestMethod.POST, produces = "application/text; charset=utf8")
 	public String memGameListEditPost(int gameIdx, HttpSession session) {
 		String mid = (String) session.getAttribute("sMid");
+		
+		if(mid == null) return "redirect:/";
+		
 		String gamelist = communityService.getMemberGamelist(mid);
 		
 		List<String> gameListArray = new ArrayList<>(Arrays.asList(gamelist.split("/")));
@@ -95,6 +105,14 @@ public class CommunityController {
 	                + "<div class=\"game-name\">" + vo.getGameTitle() + "</div></button>";
 	    }
 	    return str;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/communityInput", method = RequestMethod.POST)
+	public String communityInputPost(CommunityVO vo, HttpServletRequest request) {
+		String hostIp = request.getRemoteAddr();
+		vo.setCmHostIp(hostIp);
+		return communityService.communityInput(vo)+"";
 	}
 		
 	

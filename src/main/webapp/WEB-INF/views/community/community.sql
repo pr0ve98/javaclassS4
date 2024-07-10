@@ -7,8 +7,11 @@ create table itCommunity (
 	part varchar(20) not null,	/* 카테고리 구분 */
 	cmGameIdx int,	/* 주제 게임 idx */
 	cmContent longtext,			/* 내용 */
-	cmDate datetime,			/* 작성시간 */
+	cmDate datetime default now(),			/* 작성시간 */
 	cmHostIp varchar(30),		/* 작성아이피 */
+	publicType char(3),
 	foreign key(mid) references itMember(mid) on update cascade on delete cascade,
 	foreign key(cmGameIdx) references itGame(gameIdx) on delete cascade
 );
+
+drop table itCommunity;

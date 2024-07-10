@@ -1,9 +1,12 @@
 package com.spring.javaclassS4.service;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 
 public interface CommunityService {
@@ -19,5 +22,9 @@ public interface CommunityService {
 	public String gameSearch(String game);
 
 	public int setMemGameListEdit(String gamelist, String mid);
+
+	public int communityInput(CommunityVO vo);
+
+	public ArrayList<CommunityVO> getCommunityList();
 
 }

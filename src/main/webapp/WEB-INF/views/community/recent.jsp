@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <c:set var="ctp" value="${pageContext.request.contextPath}"/>
 <!DOCTYPE html>
 <html>
@@ -15,6 +16,8 @@
 	'use strict';
 	
 	window.Kakao.init("f1fade264b3d07d67f8e358b3d68803e");
+	
+	let isWriteButtonClicked = false;
 	
 	$(document).ready(function() {
 		// 처음 창 뜰 때 첫번째 게임 선택
@@ -100,33 +103,44 @@
         $('.post-button').click(function(event) {
             event.preventDefault();
 
-            const selectedCategory = $('.community-category.active').data('category');
-            const selectedGame = $('.game-button.active').data('game');
-            const content = $('#summernote').val();
-            const visibility = $('.dropdown-btn').val();
+	        let mid = '${sMid}';
+	        let content = $('#summernote').summernote('code').trim();
+	        let category = $('.community-category.active').data('category');
+	        let gameIdx = $('.game-button.active').data('idx');
+	        let publicType = $('select[name="publicType"]').val();
 
-            const postData = {
-                category: selectedCategory,
-                game: selectedGame,
-                content: content,
-                visibility: visibility
-            };
+	        if (content == '' || content == '<p><br></p>') {
+	            alert("글 내용을 입력하세요!");
+	            $('#summernote').focus();
+	            return false;
+	        }
 
-            $.ajax({
-                url: '/api/posts',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(postData),
-                success: function(response) {
-                    // 성공 시 처리 로직
-                    alert('게시물이 성공적으로 게시되었습니다.');
-                    // 팝업 닫기 또는 초기화 등 필요한 작업 수행
-                },
-                error: function(error) {
-                    // 실패 시 처리 로직
-                    alert('게시물 게시에 실패했습니다. 다시 시도해주세요.');
-                }
-            });
+	        let query = {
+	            mid: mid,
+	            cmContent: content,
+	            section: '피드',
+	            part: category,
+	            cmGameIdx: gameIdx,
+	            publicType: publicType
+	        };
+
+	        $.ajax({
+	            url: "${ctp}/community/communityInput",
+	            type: "post",
+	            data: query,
+	            success: function(res) {
+	                if (res != "0") {
+	                	isWriteButtonClicked = true;
+	                    location.reload();
+	                }
+	                else {
+						alert("작성 실패...");
+	                }
+	            },
+	            error: function() {
+	               alert("전송오류!");
+	            }
+	        });
         });
     });
 	
@@ -216,36 +230,43 @@
 						</div>
 					</div>
 				</c:if>
-				<div class="cm-box">
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-					<p>safsdfsdf</p>
-				</div>
+				<c:forEach var="cmVO" items="${cmVOS}">
+					<div class="cm-box">
+						<div style="display:flex; align-items: center;">
+							<img src="${ctp}/member/${cmVO.memImg}" alt="프로필" class="text-pic">
+							<div>
+								<div style="font-size:12px;">${cmVO.title}</div>
+								<div style="font-weight:bold;">${cmVO.nickname}</div>
+								<div>
+									<c:if test="${cmVO.part == '소식/정보'}"><span class="badge badge-secondary">소식/정보</span>&nbsp;</c:if>
+									<c:if test="${cmVO.part == '자유'}"><span class="badge badge-secondary">자유글</span>&nbsp;</c:if>
+									<c:if test="${cmVO.part == '세일'}"><span class="badge badge-secondary">세일정보</span>&nbsp;</c:if>
+									<c:if test="${cmVO.part != '자유'}">
+									<span style="color:#b2bdce; font-size:12px;">
+										<i class="fa-solid fa-gamepad fa-xs" style="color: #b2bdce;"></i>&nbsp;
+										${cmVO.gameTitle}
+									</span>
+									</c:if>
+								</div>
+							</div>
+						</div>
+						<div class="community-content">
+							${cmVO.cmContent}
+							<div style="color:#b2bdce; font-size:12px;" class="mt-4">
+								<c:if test="${cmVO.hour_diff < 1}">${cmVO.min_diff}분 전</c:if>
+								<c:if test="${cmVO.hour_diff < 24 && cmVO.hour_diff >= 1}">${cmVO.hour_diff}시간 전</c:if>
+								<c:if test="${cmVO.hour_diff >= 24}">${fn:substring(cmVO.cmDate, 0, 10)}</c:if>
+							</div>
+							<div style="color:#b2bdce; font-size:14px;" class="mt-2">이 글을 nn명이 좋아합니다.</div>
+						</div>
+						<hr/>
+						<div class="community-footer">
+							<span><i class="fa-solid fa-heart"></i>&nbsp;&nbsp;좋아요</span>
+							<span><i class="fa-solid fa-comment-dots"></i>&nbsp;&nbsp;댓글</span>
+						</div>
+						<hr/>
+					</div>
+				</c:forEach>
 			</div>
 		</div>
 	</div>
@@ -279,10 +300,10 @@
         </div>
         <textarea id="summernote" name="content"></textarea>
         <div class="footer">
-            <select class="dropdown-btn">
-                <option value="public">전체 공개</option>
-                <option value="friends">친구만 공개</option>
-                <option value="private">비공개</option>
+            <select class="dropdown-btn" id="publicType" name="publicType">
+                <option value="전체">전체 공개</option>
+                <option value="친구">친구만 공개</option>
+                <option value="비공개">비공개</option>
             </select>
             <button class="post-button">게시하기</button>
         </div>
@@ -293,7 +314,6 @@
 	    <script>
 		let initialImages = [];
 		let currentImages = [];
-		let isWriteButtonClicked = false;
 		
 		// 썸머노트 기본설정
 		$(document).ready(function() {
@@ -315,7 +335,8 @@
 		                initialContent = $('#summernote').summernote('code');
 		                $('.note-editable').css({
 		                	'font-family':'SUITE-Regular',
-		                	'color':'#b2bdce'
+		                	'color':'#b2bdce',
+		                	'cursor':'text'
 		                });
 		            },
 		            onImageUpload: function(files) {
@@ -398,47 +419,6 @@
 		        });
 		    }
 		    
-		 // 글 작성
-		    function writeContent() {
-		        let mid = $('#mid').val();
-		        let content = $('#summernote').summernote('code').trim();
-		        let category = $('#category').val();
-		        let publicSetting = $('input[name="publicSetting"]:checked').val();
-
-		        if (content == '' || content == '<p><br></p>') {
-		            $("#myModal #modalTitle").text("글 내용");
-		            $("#myModal #modalText").text("글 내용을 입력하세요!");
-		            $('#myModal').modal('show');
-		            $('#myModal').on('hide.bs.modal', function() {
-		                $('#summernote').focus();
-		            });
-		            return false;
-		        }
-
-		        let query = {
-		            mid: mid,
-		            content: content,
-		            category: category,
-		            publicSetting: publicSetting
-		        };
-
-		        $.ajax({
-		            url: "${ctp}/ContentInputOk",
-		            type: "post",
-		            data: query,
-		            success: function(res) {
-		                if (res != "0") {
-		                    location.reload();
-		                }
-		                else {
-							alert("작성 실패...");
-		                }
-		            },
-		            error: function() {
-		               alert("전송오류!");
-		            }
-		        });
-		    }
 		    
 	 	    // 페이지 떠날 때 작성하지 않은 파일들 삭제
 			window.onbeforeunload = function() {

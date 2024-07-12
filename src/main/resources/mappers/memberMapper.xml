@@ -12,7 +12,7 @@
 	</select>
 	
 	<insert id="setMemberInput">
-		insert into itMember values(default,#{vo.mid},#{vo.nickname},#{vo.email},#{vo.pwd},default,default,default,default,default);
+		insert into itMember values(default,#{vo.mid},#{vo.nickname},#{vo.email},#{vo.pwd},default,default,default,default,default,default);
 	</insert>
 	<insert id="setMemberBasicGameList">
 		insert into itGamelist values(default,#{mid},default);

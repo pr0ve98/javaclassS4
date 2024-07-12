@@ -14,6 +14,21 @@
 	'use strict';
 	
  	window.Kakao.init("f1fade264b3d07d67f8e358b3d68803e");
+ 	
+ 	$(document).ready(function() {
+		// 페이지가 로딩될 때 로딩페이지 보여주기
+		const mask = document.querySelector('.mask');
+		const html = document.querySelector('html');
+		html.style.overflow = 'hidden';
+ 	});
+ 	
+	window.addEventListener('load', function() {
+		const mask = document.querySelector('.mask');
+        const html = document.querySelector('html');
+        
+		mask.style.display = 'none';
+		html.style.overflow = 'auto';
+	});
 
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
@@ -22,6 +37,9 @@
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
 <main>
+	<div class="mask">
+	  <img class="loadingImg" src='${ctp}/images/loding.gif'>
+	</div>
 	<div class="container">
 		<div class="banner"><img alt="배너" src="${ctp}/resources/images/banner1.jpg" width="100%"></div>
 		<div class="content1">

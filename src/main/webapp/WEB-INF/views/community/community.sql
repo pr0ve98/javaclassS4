@@ -15,3 +15,11 @@ create table itCommunity (
 );
 
 drop table itCommunity;
+
+create table itLike (
+	likeIdx int not null auto_increment primary key,
+	likeCmIdx int not null,
+	likeMid varchar(30) not null,
+	foreign key(likeCmIdx) references itCommunity(cmIdx) on delete cascade,
+	foreign key(likeMid) references itMember(mid) on delete cascade
+);

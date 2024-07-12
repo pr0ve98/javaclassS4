@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,6 +30,7 @@ public class MemberController {
 	@Autowired
 	BCryptPasswordEncoder passwordEncoder;
 	
+	@Transactional
 	@RequestMapping(value = "/kakaoLogin", method = RequestMethod.GET)
 	public String kakaoLoginGet(String accessToken, String nickname, String email, String flag,
 			HttpServletRequest request, HttpSession session) throws MessagingException {
@@ -52,8 +54,12 @@ public class MemberController {
 			vo.setPwd("kakaoMember");
 			vo.setMemImg("noimage.jpg");
 			
-			memberService.setMemberInput(vo);
-			memberService.setMemberBasicGameList(mid);
+			try {
+				memberService.setMemberInput(vo);
+				memberService.setMemberBasicGameList(mid);
+			} catch (Exception e) {
+				return "redirect:/message/memberJoinNo";
+			}
 			
 		}
 		
@@ -108,6 +114,7 @@ public class MemberController {
 		return "redirect:/";
 	}
 	
+	@Transactional
 	@RequestMapping(value = "/memberJoin", method = RequestMethod.POST)
 	public String memberJoinPost(String email, String pwd) {
 		if(memberService.getMemberEmailCheck(email) != null) return "redirect:/message/emailNo";
@@ -126,8 +133,14 @@ public class MemberController {
 		vo.setEmail(email);
 		vo.setPwd(passwordEncoder.encode(pwd));
 		
-		int res = memberService.setMemberInput(vo);
-		memberService.setMemberBasicGameList(mid);
+		int res = 0;
+		try {
+			res = memberService.setMemberInput(vo);
+			memberService.setMemberBasicGameList(mid);
+		} catch (Exception e) {
+			res = 0;
+		}
+		
 		if(res != 0) return "redirect:/message/memberJoinOk";
 		else return "redirect:/message/memberJoinNo";
 	}
@@ -170,6 +183,8 @@ public class MemberController {
 		String mid = (String) session.getAttribute("sMid");
 		
 		if(mid == null) return "redirect:/";
+		
+		if(nickname.toLowerCase().indexOf("gm") != -1) return "2"; 
 		
 		int res = memberService.setmemberEdit(nickname, memInfo, mid);
 		if(res != 0) {

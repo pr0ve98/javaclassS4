@@ -16,7 +16,7 @@
 	<!-- 데이터베이스 연동을 위한 환경설정(JDBC설정) -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/javaclass4" />
+		<property name="url" value="jdbc:mysql://localhost:3306/javaclass4?useUnicode=true&amp;character_set_server=utf8mb4&amp;connectionCollation=utf8mb4_unicode_ci" />
 		<property name="username" value="root" />
 		<property name="password" value="1234" />
 	</bean>

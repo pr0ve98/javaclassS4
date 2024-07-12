@@ -3,6 +3,7 @@ package com.spring.javaclassS4.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -95,8 +96,8 @@ public class CommunityServiceImpl implements CommunityService {
 	}
 
 	@Override
-	public ArrayList<CommunityVO> getCommunityList() {
-		ArrayList<CommunityVO> vos = communityDAO.getCommunityList();
+	public ArrayList<CommunityVO> getCommunityList(String mid, int startIndexNo, int pageSize) {
+		ArrayList<CommunityVO> vos = communityDAO.getCommunityList(startIndexNo, pageSize);
 		// 글 내용이 길다면 조금만 보여주기
 		for(int i=0; i<vos.size(); i++) {
 			Document doc = Jsoup.parse(vos.get(i).getCmContent());
@@ -126,6 +127,60 @@ public class CommunityServiceImpl implements CommunityService {
 				}
 			}
 			vos.get(i).setCmContent(reContent.toString());
+			List<String> likeMember = communityDAO.getLikeMember(vos.get(i).getCmIdx());
+			if(mid != null && likeMember.size() > 0) {
+				for(int j=0; j<likeMember.size(); j++) {
+					if(mid.equals(likeMember.get(j))) vos.get(i).setLikeSW(1);
+					else vos.get(i).setLikeSW(0);
+				}
+			}
+			vos.get(i).setLikeMember(likeMember);
+			vos.get(i).setLikeCnt(likeMember.size());
+		}
+		return vos;
+	}
+	
+	@Override
+	public ArrayList<CommunityVO> getCommunityPartList(String mid, int startIndexNo, int pageSize, String part) {
+		ArrayList<CommunityVO> vos = communityDAO.getCommunityPartList(mid, startIndexNo, pageSize, part);
+		// 글 내용이 길다면 조금만 보여주기
+		for(int i=0; i<vos.size(); i++) {
+			Document doc = Jsoup.parse(vos.get(i).getCmContent());
+			Elements ptag = doc.select("p");
+			Elements img = doc.select("img");
+			
+			StringBuilder reContent = new StringBuilder();
+			
+			if(!img.isEmpty()) {
+				Element firstImg = img.first();
+				for (Element e : ptag) {
+					reContent.append(e.outerHtml());
+					if(e.equals(firstImg.parent())) {
+						vos.get(i).setLongContent(1);
+						break;
+					}
+				}
+			}
+			else {
+				if(ptag.size() < 7) {
+					ptag.forEach(p -> reContent.append(p.outerHtml()));
+					vos.get(i).setLongContent(0);
+				}
+				else {
+					ptag.stream().limit(7).forEach(p -> reContent.append(p.outerHtml()));
+					vos.get(i).setLongContent(1);
+				}
+			}
+			vos.get(i).setCmContent(reContent.toString());
+			List<String> likeMember = communityDAO.getLikeMember(vos.get(i).getCmIdx());
+			if(mid != null && likeMember.size() > 0) {
+				for(int j=0; j<likeMember.size(); j++) {
+					if(mid.equals(likeMember.get(j))) vos.get(i).setLikeSW(1);
+					else vos.get(i).setLikeSW(0);
+				}
+			}
+			vos.get(i).setLikeMember(likeMember);
+			vos.get(i).setLikeCnt(likeMember.size());
 		}
 		return vos;
 	}
@@ -133,6 +188,35 @@ public class CommunityServiceImpl implements CommunityService {
 	@Override
 	public CommunityVO showAllContent(int cmIdx) {
 		return communityDAO.showAllContent(cmIdx);
+	}
+
+	@Override
+	public void setLikeAdd(String mid, int cmIdx) {
+		communityDAO.setLikeAdd(mid, cmIdx);
+	}
+	
+	@Override
+	public void setlikeDelete(String mid, int cmIdx) {
+		communityDAO.setlikeDelete(mid, cmIdx);
+	}
+
+	@Override
+	public CommunityVO getCommunityIdx(int cmIdx) {
+		List<String> likeMember = communityDAO.getLikeMember(cmIdx);
+		CommunityVO vo = communityDAO.getCommunityIdx(cmIdx);
+		vo.setLikeMember(likeMember);
+		vo.setLikeCnt(likeMember.size());
+		return vo;
+	}
+
+	@Override
+	public int getTotRecCnt(String part) {
+		return communityDAO.getTotRecCnt(part);
+	}
+	
+	@Override
+	public int getMyTotRecCnt(String mid) {
+		return communityDAO.getMyTotRecCnt(mid);
 	}
 
 }

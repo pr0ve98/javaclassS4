@@ -228,6 +228,22 @@
 		    <version>1.17.2</version>
 		</dependency>
 		
+		<!-- 백엔드 체크를 위한 라이브러리(validator) -->
+		<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+		<dependency>
+		    <groupId>org.hibernate.validator</groupId>
+		    <artifactId>hibernate-validator</artifactId>
+		    <version>6.2.0.Final</version>
+		</dependency>
+		
+		<!-- 백엔드 체크를 위한 라이브러리(transaction) -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-tx -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-tx</artifactId>
+		    <version>${org.springframework-version}</version>
+		</dependency>
+		
 		
 	</dependencies>
     <build>

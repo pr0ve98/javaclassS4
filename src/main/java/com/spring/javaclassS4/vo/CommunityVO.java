@@ -1,5 +1,7 @@
 package com.spring.javaclassS4.vo;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -27,4 +29,9 @@ public class CommunityVO {
 	// 게임 정보
 	private int gameIdx;
 	private String gameTitle;
+	
+	// 좋아요
+	private int likeCnt;
+	private List<String> likeMember;
+	private int likeSW;
 }

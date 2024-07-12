@@ -8,10 +8,35 @@
 		select * from itGame where gameTitle like concat('%',#{game},'%') or gameSubTitle like concat('%',#{game},'%');
 	</select>
 	<select id="getCommunityList" resultType="com.spring.javaclassS4.vo.CommunityVO">
-		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx ORDER BY c.cmIdx desc;
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
+	</select>
+	<select id="getCommunityPartList" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		<if test="part == 'info'">
+			SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.part='소식/정보' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
+		</if>
+		<if test="part == 'sale'">
+			SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.part='세일' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
+		</if>
+		<if test="part == 'my'">
+			SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid=#{mid} ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
+		</if>
 	</select>
 	<select id="showAllContent" resultType="com.spring.javaclassS4.vo.CommunityVO">
 		select * from itCommunity where cmIdx=#{cmIdx};
+	</select>
+	<select id="getLikeMember" resultType="String">
+		select likeMid from itLike where likeCmIdx=#{cmIdx};
+	</select>
+	<select id="getCommunityIdx" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.cmIdx=#{cmIdx} ORDER BY c.cmIdx desc;
+	</select>
+	<select id="getTotRecCnt" resultType="int">
+		<if test="part == 'recent'">SELECT count(*) as totRecCnt from itCommunity;</if>
+		<if test="part == 'info'">SELECT count(*) as totRecCnt from itCommunity where part='소식/정보';</if>
+		<if test="part == 'sale'">SELECT count(*) as totRecCnt from itCommunity where part='세일';</if>
+	</select>
+	<select id="getMyTotRecCnt" resultType="int">
+		SELECT count(*) as totRecCnt from itCommunity where mid=#{mid};
 	</select>
 	
 	<update id="setMemGameListEdit">
@@ -21,4 +46,11 @@
 	<insert id="communityInput">
 		insert into itCommunity values(default,#{vo.mid},#{vo.section},#{vo.part},<if test="vo.part == '자유'">default,</if><if test="vo.part != '자유'">#{vo.cmGameIdx},</if>#{vo.cmContent},default,#{vo.cmHostIp},#{vo.publicType});
 	</insert>
+	<insert id="setLikeAdd">
+		insert into itLike values(default, #{cmIdx}, #{mid});
+	</insert>
+	
+	<delete id="setlikeDelete">
+		delete from itLike where likeCmIdx=#{cmIdx} and likeMid=#{mid};
+	</delete>
 </mapper>

@@ -25,8 +25,20 @@ public interface CommunityService {
 
 	public int communityInput(CommunityVO vo);
 
-	public ArrayList<CommunityVO> getCommunityList();
+	public ArrayList<CommunityVO> getCommunityList(String mid, int startIndexNo, int pageSize);
 
 	public CommunityVO showAllContent(int cmIdx);
+
+	public void setLikeAdd(String mid, int cmIdx);
+
+	public void setlikeDelete(String mid, int cmIdx);
+
+	public CommunityVO getCommunityIdx(int cmIdx);
+
+	public int getTotRecCnt(String part);
+
+	public ArrayList<CommunityVO> getCommunityPartList(String mid, int startIndexNo, int pageSize, String part);
+
+	public int getMyTotRecCnt(String mid);
 
 }

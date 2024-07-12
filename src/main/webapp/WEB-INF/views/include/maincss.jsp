@@ -467,7 +467,7 @@
 		font-weight: bold;
 		margin-bottom: 50px;
 	}
-	#popup-join, #popup-login, #popup-write, #popup-gamesearch {
+	[id^="popup-"] {
 	  display: flex;
 	  justify-content: center;
 	  align-items: center;
@@ -481,11 +481,12 @@
 	  overflow: hidden;
 	}
 	
-	#popup-join.hide, #popup-login.hide, #popup-write.hide, #popup-gamesearch.hide {
+	[id^="popup-"].hide {
 	  display: none;
 	}
 	
-	#popup-join .popup-join-content, #popup-login .popup-login-content, #popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content {
+	#popup-join .popup-join-content, #popup-login .popup-login-content, #popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
+	 #popup-edit .popup-edit-content{
 	  padding: 20px;
 	  background: #32373d;
 	  border-radius: 5px;
@@ -494,7 +495,8 @@
    	  max-height: 80vh;
 	  min-width: 330px;
 	}
-	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content {width: 700px;}
+	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
+	#popup-edit .popup-edit-content {width: 700px;}
 	
 	.popup-open {
 		overflow: hidden;
@@ -508,6 +510,10 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-bottom: 30px;
+	}
+	.popup-write-header, .popup-gamesearch-header, .popup-edit-header {
+		display: flex;
+		justify-content: space-between;
 	}
 	.popup-join-main, .popup-login-main {
 		text-align: center;
@@ -779,6 +785,7 @@
 		justify-content: space-around;
 		color:#b2bdce;
 	}
+	.community-footer span {cursor:pointer;}
 	.text-pic {
 		border-radius: 50%;
 	    width: 50px;
@@ -913,10 +920,6 @@
        width: 100%;
        height: auto;
     }
-	.popup-write-header, .popup-gamesearch-header {
-		display: flex;
-		justify-content: space-between;
-	}
 	.header-text, .gs-header-text {
 		font-size: 20px;
     	margin: 0 5px;
@@ -946,6 +949,37 @@
 	.result-item:hover, .result-item.selected {
 	    background-color: #7289da;
 	}
+	.mask {
+      position: fixed;
+      top: 90px;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #32373d;
+      z-index: 9999;
+      opacity: 1;
+      transition: 0.5s ease;
+    }
+    .loadingImg {
+      position: absolute;
+      display: block;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .content-menu {
+    	display: none;
+	    position: absolute;
+	    right: -2px;
+	    top: 25px;
+	    background-color: #32373d;
+	    color: #b2bdce;
+	    z-index: 1;
+	    border-radius: 5px;
+	    padding: 10px;
+	    font-family: 'SUITE-Regular';
+	    width: 100px;
+    }
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;

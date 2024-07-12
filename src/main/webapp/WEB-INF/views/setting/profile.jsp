@@ -23,6 +23,10 @@
 
  	    const midError = document.getElementById('mid-error');
  	    
+		// 페이지가 로딩될 때 로딩페이지 보여주기
+		const mask = document.querySelector('.mask');
+		const html = document.querySelector('html');
+		html.style.overflow = 'hidden';
 
         // 파일 입력 요소에 change 이벤트 리스너 추가
         document.getElementById('inputImgs').addEventListener('change', function() {
@@ -71,6 +75,14 @@
  	    }
  	    mid.addEventListener('input', validateForm);
  	});
+	
+	window.addEventListener('load', function() {
+		const mask = document.querySelector('.mask');
+        const html = document.querySelector('html');
+        
+		mask.style.display = 'none';
+		html.style.overflow = 'auto';
+	});
 	
 	function idChange() {
 		let mid = document.getElementById('mid').value;
@@ -145,8 +157,11 @@
 			type : "post",
 			data : {nickname : nickname, memInfo : memInfo},
 			success : function(res) {
-				if(res != "0") {
+				if(res == "1") {
 					location.reload();
+				}
+				else if(res == "2") {
+					alert("닉네임에 'GM'이 들어갈 수 없어요!");
 				}
 				else {
 					alert("변경에 실패했어요...");
@@ -164,6 +179,9 @@
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
 <main>
+	<div class="mask">
+	  <img class="loadingImg" src='${ctp}/images/loding.gif'>
+	</div>
 	<div class="container">
 		<div class="setting-main">
 			<div class="setting-left">

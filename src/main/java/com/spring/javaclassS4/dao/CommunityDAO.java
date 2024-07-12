@@ -1,6 +1,7 @@
 package com.spring.javaclassS4.dao;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -17,8 +18,22 @@ public interface CommunityDAO {
 
 	public int communityInput(@Param("vo") CommunityVO vo);
 
-	public ArrayList<CommunityVO> getCommunityList();
+	public ArrayList<CommunityVO> getCommunityList(@Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize);
 
 	public CommunityVO showAllContent(@Param("cmIdx") int cmIdx);
+
+	public List<String> getLikeMember(@Param("cmIdx") int cmIdx);
+
+	public void setLikeAdd(@Param("mid") String mid, @Param("cmIdx") int cmIdx);
+
+	public CommunityVO getCommunityIdx(@Param("cmIdx") int cmIdx);
+
+	public void setlikeDelete(@Param("mid") String mid, @Param("cmIdx") int cmIdx);
+
+	public int getTotRecCnt(@Param("part") String part);
+
+	public ArrayList<CommunityVO> getCommunityPartList(@Param("mid") String mid, @Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize, @Param("part") String part);
+
+	public int getMyTotRecCnt(@Param("mid") String mid);
 
 }

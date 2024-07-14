@@ -21,7 +21,11 @@
 	
 	let isFetching = false;
 	let totPage = 1;
+	let editContent = '';
+	let editCmIdx;
 	
+	let editInitialImages = [];
+	let editCurrentImages = [];
 	
 	$(document).ready(function() {
 		// 페이지가 로딩될 때 로딩페이지 보여주기
@@ -221,8 +225,8 @@
             }
         });
         
-        let editContent = vo.cmContent;
-	    $("#summernote2").html(editContent.replace("'", "\\'"));
+       	editContent = vo.cmContent.replace("'", "\\'");
+       	editCmIdx = vo.cmIdx;
         
     }
 	
@@ -409,7 +413,7 @@
 					</div>
 				</c:if>
 				<c:forEach var="cmVO" items="${cmVOS}">
-					<div class="cm-box">
+					<div class="cm-box" id="cmbox${cmVO.cmIdx}">
 						<div style="display:flex;justify-content: space-between;">
 							<div style="display:flex; align-items:center;">
 								<img src="${ctp}/member/${cmVO.memImg}" alt="프로필" class="text-pic">
@@ -678,18 +682,23 @@
                 <option value="친구">친구만 공개</option>
                 <option value="비공개">비공개</option>
             </select>
-            <button class="post-button">게시하기</button>
+            <button class="edit-button" onclick="editCommunity()">수정하기</button>
         </div>
         <!-- Summernote JS -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>
 	    
 	    <script>
-		let editInitialImages = [];
-		let editCurrentImages = [];
-		
+
 		// 썸머노트 기본설정
 		$(document).ready(function() {
+			$("#summernote2").html(editContent);
+		    $('#summernote2').next('.note-editor').find('.note-editable img').each(function() {
+		        let src = $(this).attr('src');
+		        if (!src.indexOf('http') == -1) {
+		            editInitialImages.push(src);
+		        }
+		    });
 		    let fontList = ['SUITE-Regular'];
 		    $('#summernote2').summernote({
 		        lang: 'ko-KR',
@@ -715,21 +724,16 @@
 		            onImageUpload: function(files) {
 		                if (files.length > 0) {
 		                    for (let i = 0; i < files.length; i++) {
-		                        uploadImage(files[i]);
+		                        uploadImage2(files[i]);
 		                    }
 		                }
-		            },
-		            onChange: function(contents, $editable) {
-		                currentImages = getCurrentImages();
-		                detectDeletedImages(initialImages, currentImages);
-		                initialImages = currentImages;
 		            }
 		        }
 		    });
 		});
 	
 			// 이미지 업로드
-		    function uploadImage(file) {
+		    function uploadImage2(file) {
 				let fileSize = file.size;
 				let maxSize = 1024 * 1024 * 15;
 				
@@ -753,9 +757,9 @@
 		            processData: false,
 		            data: data,
 		            type: "POST",
-		            success: function(response) {
-	                    $('#summernote').summernote('insertImage', response, function($image) {
-	                        initialImages.push(response);
+		            success: function(res) {
+	                    $('#summernote').summernote('insertImage', res, function($image) {
+	                    	editInitialImages.push(res);
 	                    });
 		            },
 		            error: function() {
@@ -765,46 +769,65 @@
 		    }
 	
 		    // 현재 창에 있는 이미지 가져오기
-		    function getCurrentImages() {
-		        return $('#summernote').next('.note-editor').find('.note-editable img').map(function() {
+		    function getCurrentImages2() {
+		        return $('#summernote2').next('.note-editor').find('.note-editable img').map(function() {
 		            return $(this).attr('src');
 		        }).get();
 		    }
 	
 		    // 이미지 삭제 실행함수
-		    function detectDeletedImages(initialImages, currentImages) {
-		        initialImages.forEach(function(src) {
-		            if (!currentImages.includes(src)) {
+		    function detectDeletedImages2(editInitialImages, editCurrentImages) {
+		    	editInitialImages.forEach(function(src) {
+		            if (!editCurrentImages.includes(src)) {
 		                deleteImage(src);
 		            }
 		        });
 		    }
-	
-		    // 이미지 삭제 ajax
-		    function deleteImage(src) {
+		    
+		 	// 수정하기 버튼 클릭
+	        function editCommunity {
+		        let mid = '${sMid}';
+		        let content = $('#summernote').summernote('code').trim();
+		        let category = $('.community-category.active').data('category');
+		        let gameIdx = $('.game-button.active').data('idx');
+		        let publicType = $('select[name="publicType"]').val();
+
+		        if (content == '' || content == '<p><br></p>') {
+		            alert("글 내용을 입력하세요!");
+		            $('#summernote').focus();
+		            return false;
+		        }
+
+		        let query = {
+		            mid: mid,
+		            cmContent: content,
+		            section: '피드',
+		            part: category,
+		            cmGameIdx: gameIdx,
+		            publicType: publicType,
+		            cmIdx : editCmIdx
+		        };
+
 		        $.ajax({
-		            url: '${ctp}/community/deleteImage',
-		            type: 'POST',
-		            data: { src: src },
+		            url: "${ctp}/community/communityEdit",
+		            type: "post",
+		            data: query,
+		            success: function(res) {
+		                if (res != "0") {
+		                    editCurrentImages = getCurrentImages2();
+		                    detectDeletedImages2(editInitialImages, editCurrentImages);
+		                    editInitialImages = [...editCurrentImages];
+		                }
+		                else {
+							alert("작성 실패...");
+		                }
+		            },
 		            error: function() {
-		                console.log('이미지 삭제 실패');
+		               alert("전송오류!");
 		            }
 		        });
-		    }
-		    
-		    
-	 	    // 페이지 떠날 때 작성하지 않은 파일들 삭제
-			window.onbeforeunload = function() {
-	 	    	if(isWriteButtonClicked == false) {
-				    if (initialImages.length > 0) {
-				        initialImages.forEach(function(src) {
-				            deleteImage(src);
-				        });
-				    }
-	 	    	}
-			};
-
-
+	        });
+	    });
 		</script>
     </div>
 </div>

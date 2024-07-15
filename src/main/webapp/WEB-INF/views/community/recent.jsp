@@ -507,11 +507,36 @@
  	function replyPreview(cmIdx) {
 		document.getElementById("replyPreview"+cmIdx).style.display = "none";
 		document.getElementById("replyWrite"+cmIdx).style.display = "block";
+		document.getElementById("replyContent"+cmIdx).focus();
 	}
  	
  	function replyCancel(cmIdx) {
 		document.getElementById("replyPreview"+cmIdx).style.display = "flex";
 		document.getElementById("replyWrite"+cmIdx).style.display = "none";
+	}
+ 	
+ 	function replyInput(cmIdx) {
+ 		let replyContent = $("#replyContent"+cmIdx).val().trim();
+ 		
+ 		if(replyContent == "") {
+ 			alert("댓글을 입력해주세요");
+ 			return false;
+ 		}
+ 		
+		$.ajax({
+			url : "${ctp}/community/replyInput",
+			type : "post",
+			data : {replyCmIdx : cmIdx, replyContent : replyContent},
+			success : function(response) {
+				let res = response.split("|");
+				if(res[0] != "0") {
+					$("#replyList"+cmIdx).html(res[1]);
+				}
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
 	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
@@ -578,15 +603,23 @@
 									</div>
 								</div>
 							</div>
-							<div style="position:relative;">
-								<i class="fa-solid fa-bars fa-xl" onclick="toggleContentMenu(${cmVO.cmIdx})" style="color: #D5D5D5;cursor:pointer;"></i>
-					 			<div id="contentMenu${cmVO.cmIdx}" class="content-menu">
-							        <c:if test="${sMid == cmVO.mid}"><div onclick="showPopupEdit('${fn:replace(cmVO, '\"', '&quot;')}')">수정</div></c:if>
-								    <c:if test="${sMid == cmVO.mid || sLevel == 0}"><div onclick="contentDelete(${cmVO.cmIdx})"><font color="red">삭제</font></div></c:if>
-							        <c:if test="${sLevel == 0}"><div>사용자 제재</div></c:if>
-							        <c:if test="${sMid != cmVO.mid && sLevel != 0}"><div>신고</div></c:if>
-						    	</div>
-				 			</div>
+							<c:if test="${sMid != null}">
+								<div style="display: flex; align-items: center;">
+									<c:if test="${sMid != cmVO.mid}"><div class="replyok-button mr-4" onclick="followAdd('${cmVO.mid}')"><i class="fa-solid fa-plus fa-sm"></i>&nbsp;팔로우</div></c:if>
+									<div style="position:relative;">
+										<i class="fa-solid fa-bars fa-xl" onclick="toggleContentMenu(${cmVO.cmIdx})" style="color: #D5D5D5;cursor:pointer;"></i>
+							 			<div id="contentMenu${cmVO.cmIdx}" class="content-menu">
+									        <c:if test="${sMid == cmVO.mid}"><div onclick="showPopupEdit('${fn:replace(cmVO, '\"', '&quot;')}')">수정</div></c:if>
+										    <c:if test="${sMid == cmVO.mid || sLevel == 0}"><div onclick="contentDelete(${cmVO.cmIdx})"><font color="red">삭제</font></div></c:if>
+									        <c:if test="${sLevel == 0}"><div>사용자 제재</div></c:if>
+									        <c:if test="${sMid != cmVO.mid && sLevel != 0}">
+									        	<div>팔로우</div>
+									        	<div>신고</div>
+									        </c:if>
+								    	</div>
+						 			</div>
+						 		</div>
+					 		</c:if>
 						</div>
 						<div class="community-content">
 							<div class="cm-content ${cmVO.longContent == 1 ? 'moreGra' : ''}" id="cmContent${cmVO.cmIdx}">${cmVO.cmContent}</div>
@@ -605,9 +638,29 @@
 									<c:if test="${cmVO.likeSW == 0}"><span onclick="likeAdd(${cmVO.cmIdx})"><i class="fa-solid fa-heart"></i>&nbsp;&nbsp;좋아요</span></c:if>
 									<c:if test="${cmVO.likeSW == 1}"><span style="color:#00c722;" onclick="likeDelete(${cmVO.cmIdx})"><i class="fa-solid fa-heart"></i>&nbsp;&nbsp;좋아요</span></c:if>
 								</span>
-								<span><i class="fa-solid fa-comment-dots"></i>&nbsp;&nbsp;댓글</span>
+								<span onclick="replyPreview(${cmVO.cmIdx})"><i class="fa-solid fa-comment-dots"></i>&nbsp;&nbsp;댓글</span>
 							</div>
 							<hr/>
+						</c:if>
+						<div id="replyList${cmVO.cmIdx}" class="replyList">
+							<c:if test="${cmVO.replyCount > 2}">${cmVO.replyCount}개의 댓글 모두 보기</c:if>
+							<c:forEach var="parantReply" items="${cmVO.parantsReply}">
+								<div style="display:flex; align-items:flex-start;" class="mb-4">
+									<img src="${ctp}/member/${parantReply.memImg}" alt="프로필" class="reply-pic">
+									<div>
+										<div style="font-size:12px;">${parantReply.title}</div>
+										<div style="font-weight:bold;">${parantReply.nickname}</div>
+										<div>${parantReply.replyContent}</div>
+										<div style="color:#b2bdce; font-size:12px;" class="mt-2">
+											<c:if test="${parantReply.hour_diff < 1}">${parantReply.min_diff}분 전</c:if>
+											<c:if test="${parantReply.hour_diff < 24 && parantReply.hour_diff >= 1}">${parantReply.hour_diff}시간 전</c:if>
+											<c:if test="${parantReply.hour_diff >= 24}">${fn:substring(parantReply.replyDate, 0, 10)}</c:if>
+										</div>
+									</div>
+								</div>
+							</c:forEach>
+						</div>
+						<c:if test="${sMid != null}">
 							<div id="replyPreview${cmVO.cmIdx}" style="display:flex; align-items: center; justify-content: center;">
 								<img src="${ctp}/member/${sMemImg}" alt="프로필" class="text-pic">
 								<div class="text-input" onclick="replyPreview(${cmVO.cmIdx})">댓글을 작성해 보세요.</div>
@@ -615,11 +668,11 @@
 							<div id="replyWrite${cmVO.cmIdx}" style="display:none; justify-content: center;">
 								<div style="display:flex;">
 									<img src="${ctp}/member/${sMemImg}" alt="프로필" class="text-pic">
-									<textarea rows="2" placeholder="댓글을 작성해 보세요." class="form-control textarea" style="background-color:#32373d;"></textarea>
+									<textarea id="replyContent${cmVO.cmIdx}" name="replyContent" rows="2" placeholder="댓글을 작성해 보세요." class="form-control textarea" style="background-color:#32373d;"></textarea>
 								</div>
 								<div style="display:flex; justify-content: flex-end; margin-top: 5px;">
 									<div class="replyno-button mr-2" onclick="replyCancel(${cmVO.cmIdx})">취소</div>
-									<div class="replyok-button">작성</div>
+									<div class="replyok-button" onclick="replyInput(${cmVO.cmIdx})">작성</div>
 								</div>
 							</div>
 						</c:if>

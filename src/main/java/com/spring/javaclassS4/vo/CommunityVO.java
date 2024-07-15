@@ -1,5 +1,6 @@
 package com.spring.javaclassS4.vo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -34,4 +35,9 @@ public class CommunityVO {
 	private int likeCnt;
 	private List<String> likeMember;
 	private int likeSW;
+	
+	// 댓글
+	private ArrayList<ReplyVO> parantsReply;
+	private ArrayList<ReplyVO> childReply;
+	private int replyCount;
 }

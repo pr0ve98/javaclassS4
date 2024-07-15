@@ -21,6 +21,7 @@ import com.spring.javaclassS4.dao.CommunityDAO;
 import com.spring.javaclassS4.dao.MemberDAO;
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
+import com.spring.javaclassS4.vo.ReplyVO;
 
 @Service
 public class CommunityServiceImpl implements CommunityService {
@@ -136,6 +137,12 @@ public class CommunityServiceImpl implements CommunityService {
 			}
 			vos.get(i).setLikeMember(likeMember);
 			vos.get(i).setLikeCnt(likeMember.size());
+			
+			ArrayList<ReplyVO> parantsReply = communityDAO.getCommunityReply(vos.get(i).getCmIdx(), 0);
+			ArrayList<ReplyVO> childsReply = communityDAO.getCommunityReply(vos.get(i).getCmIdx(), 1);
+			vos.get(i).setParantsReply(parantsReply);
+			vos.get(i).setChildReply(childsReply);
+			vos.get(i).setReplyCount(parantsReply.size() + childsReply.size());
 		}
 		return vos;
 	}
@@ -181,6 +188,12 @@ public class CommunityServiceImpl implements CommunityService {
 			}
 			vos.get(i).setLikeMember(likeMember);
 			vos.get(i).setLikeCnt(likeMember.size());
+			
+			ArrayList<ReplyVO> parantsReply = communityDAO.getCommunityReply(vos.get(i).getCmIdx(), 0);
+			ArrayList<ReplyVO> childsReply = communityDAO.getCommunityReply(vos.get(i).getCmIdx(), 1);
+			vos.get(i).setParantsReply(parantsReply);
+			vos.get(i).setChildReply(childsReply);
+			vos.get(i).setReplyCount(parantsReply.size() + childsReply.size());
 		}
 		return vos;
 	}
@@ -227,6 +240,14 @@ public class CommunityServiceImpl implements CommunityService {
 	@Override
 	public int setCommunityDelete(int cmIdx) {
 		return communityDAO.setCommunityDelete(cmIdx);
+	}
+
+	@Override
+	public String replyInput(ReplyVO vo) {
+		int res = communityDAO.replyInput(vo);
+		ArrayList<ReplyVO> parent = communityDAO.getCommunityReply(vo.getReplyCmIdx(), 0);
+		String str = "";
+		return res + "|" + str;
 	}
 
 }

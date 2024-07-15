@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
+import com.spring.javaclassS4.vo.ReplyVO;
 
 public interface CommunityDAO {
 
@@ -39,5 +40,9 @@ public interface CommunityDAO {
 	public int communityEdit(@Param("vo") CommunityVO vo, @Param("sw") int sw);
 
 	public int setCommunityDelete(@Param("cmIdx") int cmIdx);
+
+	public ArrayList<ReplyVO> getCommunityReply(@Param("cmIdx") int cmIdx, @Param("sw") int sw);
+
+	public int replyInput(@Param("vo") ReplyVO vo);
 
 }

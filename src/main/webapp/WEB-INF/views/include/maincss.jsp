@@ -987,7 +987,7 @@
     	display: none;
 	    position: absolute;
 	    right: -2px;
-	    top: 25px;
+	    top: 40px;
 	    background-color: #32373d;
 	    color: #b2bdce;
 	    z-index: 1;
@@ -997,6 +997,15 @@
 	    width: 100px;
     }
     .content-menu > div {cursor: pointer; margin-bottom: 3px;}
+    .replyList {
+    	margin: 20px; 
+    }
+    .reply-pic {
+		border-radius: 50%;
+	    width: 35px;
+	    height: 35px;
+	    margin-right: 10px;
+	}
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;

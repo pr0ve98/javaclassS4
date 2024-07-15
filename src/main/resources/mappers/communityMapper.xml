@@ -28,7 +28,7 @@
 		select likeMid from itLike where likeCmIdx=#{cmIdx};
 	</select>
 	<select id="getCommunityIdx" resultType="com.spring.javaclassS4.vo.CommunityVO">
-		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.cmIdx=#{cmIdx} ORDER BY c.cmIdx desc;
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.cmIdx=#{cmIdx} ORDER BY c.cmIdx desc;
 	</select>
 	<select id="getTotRecCnt" resultType="int">
 		<if test="part == 'recent'">SELECT count(*) as totRecCnt from itCommunity;</if>
@@ -37,6 +37,14 @@
 	</select>
 	<select id="getMyTotRecCnt" resultType="int">
 		SELECT count(*) as totRecCnt from itCommunity where mid=#{mid};
+	</select>
+	<select id="getCommunityReply" resultType="com.spring.javaclassS4.vo.ReplyVO">
+		<if test="sw == 0">
+			SELECT r.*,timestampdiff(hour, r.replyDate, now()) as hour_diff, timestampdiff(minute, r.replyDate, now()) as min_diff,m.nickname,m.memImg,m.title from itReply r join itmember m on r.replyMid=m.mid where replyCmIdx=#{cmIdx} and replyParantIdx is NULL order by replyIdx limit 2;
+		</if>
+		<if test="sw == 1">
+			SELECT r.*,timestampdiff(hour, r.replyDate, now()) as hour_diff, timestampdiff(minute, r.replyDate, now()) as min_diff,m.nickname,m.memImg,m.title from itReply r join itmember m on r.replyMid=m.mid where replyCmIdx=#{cmIdx} and replyParantIdx is NOT NULL order by replyIdx limit 2;
+		</if>
 	</select>
 	
 	<update id="setMemGameListEdit">
@@ -56,6 +64,9 @@
 	</insert>
 	<insert id="setLikeAdd">
 		insert into itLike values(default, #{cmIdx}, #{mid});
+	</insert>
+	<insert id="replyInput">
+		insert into itReply values(default, #{vo.replyCmIdx}, #{vo.replyMid}, null, #{vo.replyContent}, #{vo.replyHostIp}, default);
 	</insert>
 	
 	<delete id="setlikeDelete">

@@ -23,3 +23,16 @@ create table itLike (
 	foreign key(likeCmIdx) references itCommunity(cmIdx) on delete cascade,
 	foreign key(likeMid) references itMember(mid) on delete cascade
 );
+
+create table itReply (
+	replyIdx int not null auto_increment primary key,
+	replyCmIdx int not null,
+	replyMid varchar(30) not null,
+	replyParantIdx int,
+	replyContent varchar(400) not null,
+	replyHostIp varchar(30) not null,
+	replyDate datetime default now(),
+	foreign key(replyParantIdx) references itReply(replyIdx) on delete cascade
+);
+
+ALTER TABLE itReply CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

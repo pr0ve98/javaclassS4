@@ -177,7 +177,7 @@ public class CommunityController {
 	    	communityService.setMemGameListEdit(gamelist, mid);
 	    }
 		
-		String str = "";
+		String str = "", str2 = "";
 		String[] gamelist2 = communityService.getMemberGamelist(mid).split("/");
 		
 	    GameVO vo = null;
@@ -194,8 +194,11 @@ public class CommunityController {
 	        str += "<button class=\"game-button " + activeClass + "\" data-game=\"" + vo.getGameTitle() + "\" data-idx=\"" + vo.getGameIdx() + "\">"
 	                + "<img src=\"" + vo.getGameImg() + "\" alt=\"" + vo.getGameIdx() + "\">"
 	                + "<div class=\"game-name\">" + vo.getGameTitle() + "</div></button>";
+	        str2 += "<button class=\"gameedit-button " + activeClass + "\" data-game=\"" + vo.getGameTitle() + "\" data-editidx=\"" + vo.getGameIdx() + "\">"
+	        		+ "<img src=\"" + vo.getGameImg() + "\" alt=\"" + vo.getGameIdx() + "\">"
+	        		+ "<div class=\"game-name\">" + vo.getGameTitle() + "</div></button>";
 	    }
-	    return str;
+	    return str + "|" + str2;
 	}
 	
 	@ResponseBody
@@ -205,6 +208,17 @@ public class CommunityController {
 		vo.setCmHostIp(hostIp);
 		return communityService.communityInput(vo)+"";
 	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/communityEdit", method = RequestMethod.POST)
+	public String communityEditPost(CommunityVO vo, HttpServletRequest request) {
+		String hostIp = request.getRemoteAddr();
+		vo.setCmHostIp(hostIp);
+		int sw = 0;
+		if(vo.getPart().equals("자유")) sw = 1;
+		return communityService.communityEdit(vo, sw)+"";
+	}
+	
 	
 	@ResponseBody
 	@RequestMapping(value = "/showAllContent", method = RequestMethod.POST, produces = "application/text; charset=utf8")
@@ -245,6 +259,7 @@ public class CommunityController {
 			@RequestParam(name="page", defaultValue = "1", required = false) int page,
 			@RequestParam(name="pageSize", defaultValue = "10", required = false) int pageSize) {
 		String mid = (String) session.getAttribute("sMid");
+		int level = (int) session.getAttribute("sLevel");
 		int startIndexNo = (page - 1) * pageSize;
 		ArrayList<CommunityVO> cmVOS = null;
 		if(part.equals("recent")) cmVOS = communityService.getCommunityList(mid, startIndexNo, pageSize);
@@ -253,50 +268,77 @@ public class CommunityController {
 		else if(part.equals("my")) cmVOS = communityService.getCommunityPartList(mid, startIndexNo, pageSize, part);
 		
 		String str = "";
-		for(CommunityVO vo : cmVOS) {
-			str += "<div class=\"cm-box\"><div style=\"display:flex; align-items: center;\">";
-			str += "<img src=\""+request.getContextPath()+"/member/"+vo.getMemImg()+"\" alt=\"프로필\" class=\"text-pic\"><div>"
-					+"<div style=\"font-size:12px;\">"+vo.getTitle()+"</div>"
-					+"<div style=\"font-weight:bold;\">"+vo.getNickname()+"</div><div>";
-			// 카테고리 분류
-			if(vo.getPart().equals("소식/정보")) str += "<span class=\"badge badge-secondary\">소식/정보</span>&nbsp;";
-			else if(vo.getPart().equals("자유")) str += "<span class=\"badge badge-secondary\">자유글</span>&nbsp;";
-			else if(vo.getPart().equals("세일")) str += "<span class=\"badge badge-secondary\">세일정보</span>&nbsp;";
-			else str += "<span style=\"color:#b2bdce; font-size:12px;\"><i class=\"fa-solid fa-gamepad fa-xs\" style=\"color: #b2bdce;\"></i>&nbsp;"+vo.getGameTitle()+"</span>";
-			
-			str += "</div></div></div>"
-				+"<div class=\"community-content\">";
-			
-			// 긴 글인지 아닌지 유무
-			if(vo.getLongContent() == 1) {
-				str += "<div class=\"cm-content moreGra\" id=\"cmContent"+vo.getCmIdx()+"\">"+vo.getCmContent()+"</div>"
-					+"<div onclick=\"showAllContent("+vo.getCmIdx()+")\" id=\"moreBtn"+vo.getCmIdx()+"\" style=\"cursor:pointer; color:#00c722; font-weight:bold;\">더 보기</div>";
-			}
-			else str += "<div class=\"cm-content\" id=\"cmContent"+vo.getCmIdx()+"\">"+vo.getCmContent()+"</div>";
-			
-			str += "<div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\">";
-			
-			// 시간 표시
-			if(vo.getHour_diff() < 1) str += vo.getMin_diff()+"분 전";
-			else if(vo.getHour_diff() < 24 && vo.getHour_diff() >= 1) str += vo.getHour_diff()+"시간 전";
-			else str += vo.getCmDate().substring(0,10);
-			
-			str += "</div><div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\"><span id=\"cm-likeCnt"+vo.getCmIdx()+"\">이 글을 "+vo.getLikeCnt()+"명이 좋아합니다.</span></div></div>";
-			
-			// 비로그인 유저 기능 사용 불가
-			if(mid != null) {
-				str += "<hr/><div class=\"community-footer\"><span id=\"cm-like"+vo.getCmIdx()+"\">";
-				if(vo.getLikeSW() == 0) str += "<span onclick=\"likeAdd("+vo.getCmIdx()+")\"><i class=\"fa-solid fa-heart\"></i>&nbsp;&nbsp;좋아요</span>";
-				else str += "<span style=\"color:#00c722;\" onclick=\"likeDelete("+vo.getCmIdx()+")\"><i class=\"fa-solid fa-heart\"></i>&nbsp;&nbsp;좋아요</span>";
-				str += "</span><span><i class=\"fa-solid fa-comment-dots\"></i>&nbsp;&nbsp;댓글</span></div><hr/>"
-					+"<div style=\"display:flex; align-items: center; justify-content: center;\">"
-					+"<img src=\""+request.getContextPath()+"/member/"+vo.getMemImg()+"\" alt=\"프로필\" class=\"text-pic\">"
-					+"<div class=\"text-input\">댓글을 작성해 보세요.</div></div>";
-			}
-			str += "</div>";
+		for (CommunityVO vo : cmVOS) {
+		    str += "<div class=\"cm-box\" id=\"cmbox" + vo.getCmIdx() + "\"><div style=\"display:flex; justify-content:space-between;\">"
+		        + "<div style=\"display:flex; align-items:center;\">";
+		    str += "<img src=\"" + request.getContextPath() + "/member/" + vo.getMemImg() + "\" alt=\"프로필\" class=\"text-pic\"><div>"
+		        + "<div style=\"font-size:12px;\">" + vo.getTitle() + "</div>"
+		        + "<div style=\"font-weight:bold;\">" + vo.getNickname() + "</div><div>";
+		    
+		    if (vo.getPart().equals("소식/정보")) str += "<span class=\"badge badge-secondary\">소식/정보</span>&nbsp;";
+		    else if (vo.getPart().equals("자유")) str += "<span class=\"badge badge-secondary\">자유글</span>&nbsp;";
+		    else if (vo.getPart().equals("세일")) str += "<span class=\"badge badge-secondary\">세일정보</span>&nbsp;";
+		    else str += "<span style=\"color:#b2bdce; font-size:12px;\"><i class=\"fa-solid fa-gamepad fa-xs\" style=\"color: #b2bdce;\"></i>&nbsp;" + vo.getGameTitle() + "</span>";
+		    
+		    str += "</div></div></div>"
+		        + "<div style=\"position:relative;\">"
+		        + "<i class=\"fa-solid fa-bars fa-xl\" onclick=\"toggleContentMenu(" + vo.getCmIdx() + ")\" style=\"color: #D5D5D5;cursor:pointer;\"></i>"
+		        + "<div id=\"contentMenu" + vo.getCmIdx() + "\" class=\"content-menu\">";
+		    
+		    if (mid.equals(vo.getMid())) {
+		    	str += "<div onclick=\"showPopupEdit('" + vo.toString().replace("\"", "quot;") + "')\">수정</div>";
+		    	str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
+		    }
+		    else if (level == 0) {
+		        str += "<div><font color=\"red\">삭제</font></div>";
+		        str += "<div>사용자 제재</div>";
+		    }
+		    else str += "<div>신고</div>";
+		    
+		    str += "</div></div></div>";
+		    
+		    str += "<div class=\"community-content\">";
+		    
+		    if (vo.getLongContent() == 1) {
+		        str += "<div class=\"cm-content moreGra\" id=\"cmContent" + vo.getCmIdx() + "\">" + vo.getCmContent() + "</div>"
+		            + "<div onclick=\"showAllContent(" + vo.getCmIdx() + ")\" id=\"moreBtn" + vo.getCmIdx() + "\" style=\"cursor:pointer; color:#00c722; font-weight:bold;\">더 보기</div>";
+		    } else str += "<div class=\"cm-content\" id=\"cmContent" + vo.getCmIdx() + "\">" + vo.getCmContent() + "</div>";
+		    
+		    str += "<div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\">";
+		    
+		    if (vo.getHour_diff() < 1) str += vo.getMin_diff() + "분 전";
+		    else if (vo.getHour_diff() < 24 && vo.getHour_diff() >= 1) str += vo.getHour_diff() + "시간 전";
+		    else str += vo.getCmDate().substring(0, 10);
+		    
+		    str += "</div><div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\"><span id=\"cm-likeCnt" + vo.getCmIdx() + "\">이 글을 " + vo.getLikeCnt() + "명이 좋아합니다.</span></div></div>";
+		    
+		    if (mid != null) {
+		        str += "<hr/><div class=\"community-footer\"><span id=\"cm-like" + vo.getCmIdx() + "\">";
+		        if (vo.getLikeSW() == 0) str += "<span onclick=\"likeAdd(" + vo.getCmIdx() + ")\"><i class=\"fa-solid fa-heart\"></i>&nbsp;&nbsp;좋아요</span>";
+		        else str += "<span style=\"color:#00c722;\" onclick=\"likeDelete(" + vo.getCmIdx() + ")\"><i class=\"fa-solid fa-heart\"></i>&nbsp;&nbsp;좋아요</span>";
+		        str += "</span><span><i class=\"fa-solid fa-comment-dots\"></i>&nbsp;&nbsp;댓글</span></div><hr/>"
+		            + "<div style=\"display:flex; align-items: center; justify-content: center;\">"
+		            + "<img src=\"" + request.getContextPath() + "/member/" + vo.getMemImg() + "\" alt=\"프로필\" class=\"text-pic\">"
+		            + "<div class=\"text-input\">댓글을 작성해 보세요.</div></div>";
+		    }
+		    str += "</div>";
 		}
-		
+
 		return str;
+
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/getCmContent", method = RequestMethod.POST, produces = "application/text; charset=utf8")
+	public String getCmContentPost(int cmIdx) {
+		CommunityVO vo = communityService.getCommunityIdx(cmIdx);
+		return vo.getCmContent();
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/communityDelete", method = RequestMethod.POST)
+	public String setCommunityDeletePost(int cmIdx) {
+		return communityService.setCommunityDelete(cmIdx)+"";
 	}
 		
 	

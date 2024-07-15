@@ -42,6 +42,14 @@
 	<update id="setMemGameListEdit">
 		update itGamelist set gamelist=#{gamelist} where glMid=#{mid};
 	</update>
+	<update id="communityEdit">
+		<if test="sw == 0">
+		update itCommunity set cmContent=#{vo.cmContent}, part=#{vo.part}, cmGameIdx=#{vo.cmGameIdx}, publicType=#{vo.publicType}, cmHostIp=#{vo.cmHostIp} where cmIdx=#{vo.cmIdx};
+		</if>
+		<if test="sw == 1">
+		update itCommunity set cmContent=#{vo.cmContent}, part=#{vo.part}, publicType=#{vo.publicType}, cmHostIp=#{vo.cmHostIp} where cmIdx=#{vo.cmIdx};
+		</if>
+	</update>
 	
 	<insert id="communityInput">
 		insert into itCommunity values(default,#{vo.mid},#{vo.section},#{vo.part},<if test="vo.part == '자유'">default,</if><if test="vo.part != '자유'">#{vo.cmGameIdx},</if>#{vo.cmContent},default,#{vo.cmHostIp},#{vo.publicType});
@@ -52,5 +60,8 @@
 	
 	<delete id="setlikeDelete">
 		delete from itLike where likeCmIdx=#{cmIdx} and likeMid=#{mid};
+	</delete>
+	<delete id="setCommunityDelete">
+		delete from itCommunity where cmIdx=#{cmIdx};
 	</delete>
 </mapper>

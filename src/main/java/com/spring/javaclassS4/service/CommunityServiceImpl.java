@@ -219,4 +219,14 @@ public class CommunityServiceImpl implements CommunityService {
 		return communityDAO.getMyTotRecCnt(mid);
 	}
 
+	@Override
+	public int communityEdit(CommunityVO vo, int sw) {
+		return communityDAO.communityEdit(vo, sw);
+	}
+
+	@Override
+	public int setCommunityDelete(int cmIdx) {
+		return communityDAO.setCommunityDelete(cmIdx);
+	}
+
 }

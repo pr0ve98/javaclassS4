@@ -41,4 +41,8 @@ public interface CommunityService {
 
 	public int getMyTotRecCnt(String mid);
 
+	public int communityEdit(CommunityVO vo, int sw);
+
+	public int setCommunityDelete(int cmIdx);
+
 }

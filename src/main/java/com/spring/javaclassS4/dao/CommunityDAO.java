@@ -36,4 +36,8 @@ public interface CommunityDAO {
 
 	public int getMyTotRecCnt(@Param("mid") String mid);
 
+	public int communityEdit(@Param("vo") CommunityVO vo, @Param("sw") int sw);
+
+	public int setCommunityDelete(@Param("cmIdx") int cmIdx);
+
 }

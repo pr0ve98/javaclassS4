@@ -833,7 +833,7 @@
 	    margin: 20px 0;
 	}
 	
-	.community-category {
+	.community-category, .community-editcategory {
 	    flex-grow: 1;
 	    padding: 10px;
 	    background-color: #161d25;
@@ -844,7 +844,7 @@
 	    color: #b2bdce;
 	}
 	
-	.community-category.active {
+	.community-category.active, .community-editcategory.active {
 		font-weight: bold;
 	    background-color: #00c722;
 	    color: #fff;
@@ -857,7 +857,7 @@
 	    justify-content: space-around;
 	}
 	
-	.game-button, .gamesearch-button {
+	.game-button, .gamesearch-button, .gameedit-button {
 	    background: none;
 	    border: none;
 	    margin-right: 10px;
@@ -866,14 +866,14 @@
 	    width: 55px;
 	}
 	
-	.game-button img, .gamesearch-button img {
+	.game-button img, .gamesearch-button img, .gameedit-button img {
 	    width: 50px;
 	    height: 50px;
 	    border-radius: 5px;
 	    object-fit: cover;
 	}
 	
-	.game-button.active img {
+	.game-button.active img, .gameedit-button.active img {
 	    border: 3px solid #00c722;
 	}
 	
@@ -907,11 +907,27 @@
 	    border-radius: 5px;
 	}
 	
-	.post-button {
+	.post-button, .edit-button {
 	    background-color: #00c722;
 	    color: #fff;
 	    border: none;
 	    padding: 10px 20px;
+	    border-radius: 5px;
+	    cursor: pointer;
+	}
+	.replyok-button {
+	    background-color: #00c722;
+	    color: #fff;
+	    border: none;
+	    padding: 5px 10px;
+	    border-radius: 5px;
+	    cursor: pointer;
+	}
+	.replyno-button {
+	    background-color: #161d25;
+	    color: #b2bdce;
+	    border: none;
+	    padding: 5px 10px;
 	    border-radius: 5px;
 	    cursor: pointer;
 	}
@@ -920,7 +936,7 @@
        width: 100%;
        height: auto;
     }
-	.header-text, .gs-header-text {
+	.header-text, .header-edittext, .gs-header-text {
 		font-size: 20px;
     	margin: 0 5px;
 	}
@@ -980,6 +996,7 @@
 	    font-family: 'SUITE-Regular';
 	    width: 100px;
     }
+    .content-menu > div {cursor: pointer; margin-bottom: 3px;}
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;

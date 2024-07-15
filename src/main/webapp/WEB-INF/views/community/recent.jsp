@@ -23,6 +23,8 @@
 	let totPage = 1;
 	let editContent = '';
 	let editCmIdx;
+	let editCmGameIdx;
+	let editGameTitle = '';
 	
 	let editInitialImages = [];
 	let editCurrentImages = [];
@@ -75,6 +77,19 @@
             else html = '<font color="#00c722"><b>' + game + '</b></font>에 대한 세일 정보';
             $(".header-text").html(html);
         });
+        // 수정 이벤트 델리게이션을 사용하여 동적으로 추가된 요소에 이벤트 핸들러 설정
+        $(document).on('click', '.gameedit-button', function() {
+            $('.gameedit-button').removeClass('active');
+            $(this).addClass('active');
+
+            let html = '';
+            const game = $(this).data('game');
+            const category = $('.community-editcategory.active').data('category');
+            if (category == '일지') html = '<font color="#00c722"><b>' + game + '</b></font>에 대한 일지';
+            else if (category == '소식/정보') html = '<font color="#00c722"><b>' + game + '</b></font>에 대한 소식/정보';
+            else html = '<font color="#00c722"><b>' + game + '</b></font>에 대한 세일 정보';
+            $(".header-edittext").html(html);
+        });
         
         // 카테고리 버튼 클릭 이벤트
         $('.community-category').click(function() {
@@ -98,6 +113,30 @@
             }
             
         });
+        
+        // 수정 카테고리 버튼 클릭 이벤트
+        $('.community-editcategory').click(function() {
+            $('.community-editcategory').removeClass('active');
+            $(this).addClass('active');
+            
+            let html = '';
+            const category = $(this).data('category');
+            if(category == '자유'){
+            	$(".game-selection2").hide();
+            	html = '<font color="#00c722"><b>자유 주제</b></font>';
+	            $(".header-edittext").html(html);
+            }
+            else {
+            	$(".game-selection2").show();
+	            let game = $('.gameedit-button.active').data('game');
+	            if(game === undefined) game = editGameTitle;
+	            if(category == '일지') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 일지';
+	            else if(category == '소식/정보') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 소식/정보';
+	            else html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 세일 정보';
+	            $(".header-edittext").html(html);
+            }
+            
+        });
 
         // 게임 버튼 클릭 이벤트
         $('.game-button').click(function() {
@@ -111,6 +150,20 @@
             else if(category == '소식/정보') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 소식/정보';
             else html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 세일 정보';
             $(".header-text").html(html);
+        });
+        
+        // 수정 게임 버튼 클릭 이벤트
+        $('.gameedit-button').click(function() {
+            $('.gameedit-button').removeClass('active');
+            $(this).addClass('active');
+            
+            let html = '';
+            const game = $(this).data('game');
+            const category = $('.community-editcategory.active').data('category');
+            if(category == '일지') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 일지';
+            else if(category == '소식/정보') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 소식/정보';
+            else html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 세일 정보';
+            $(".header-edittext").html(html);
         });
 
         // 게시하기 버튼 클릭 이벤트
@@ -202,7 +255,8 @@
         html.classList.add('popup-open');
     }
 	
-	function showPopupEdit(voString) {
+	async function showPopupEdit(voString) {
+		isWriteButtonClicked = false;
     	const popup = document.querySelector('#popup-edit');
     	const html = document.querySelector('html');
     	
@@ -212,23 +266,70 @@
         html.classList.add('popup-open');
         
         let headertext = '';
+        $('.community-editcategory').removeClass('active');
+        $('.community-editcategory').each(function() {
+            if ($(this).data('category') === vo.part) {
+                $(this).addClass('active');
+            }
+        });
+        
         if(vo.part == '일지') headertext = '<font color="#00c722"><b>'+ vo.gameTitle + '</font></b>에 대한 일지';
         else if(vo.part == '소식/정보') headertext = '<font color="#00c722"><b>'+ vo.gameTitle + '</font></b>에 대한 소식/정보';
         else if(vo.part == '세일') headertext = '<font color="#00c722"><b>'+ vo.gameTitle + '</font></b>에 대한 세일 정보';
-        else headertext = '<font color="#00c722"><b>자유 주제</font></b>';
-        document.querySelector('.popup-edit-header .header-text').innerHTML = headertext;
+        else {
+        	headertext = '<font color="#00c722"><b>자유 주제</font></b>';
+        	$("#game-selection2").hide();
+        }
+        document.querySelector('.popup-edit-header .header-edittext').innerHTML = headertext;
         
         // 게임 선택
-        $('.game-button').each(function() {
+        $('.gameedit-button').each(function() {
             if ($(this).data('editidx') === vo.gameIdx) {
                 $(this).addClass('active');
             }
         });
         
-       	editContent = vo.cmContent.replace("'", "\\'");
        	editCmIdx = vo.cmIdx;
+       	editCmGameIdx = vo.cmGameIdx;
+       	editGameTitle = vo.gameTitle;
+       	
+        const buttons = document.querySelectorAll('.gameedit-button');
+        buttons.forEach(button => {
+            const editIdx = button.getAttribute('data-editidx');
+            
+            if (editIdx == editCmGameIdx) button.classList.add('active');
+       	});
         
+        $('select[name="publicType2"]').val(vo.publicType);
+        
+        try {
+            const res = await new Promise((resolve, reject) => { // await로 요청이 완료될 때까지 대기
+                $.ajax({
+                    url: "${ctp}/community/getCmContent",
+                    type: "post",
+                    data: { cmIdx: vo.cmIdx },
+                    success: function(res) {
+                        resolve(res);
+                    },
+                    error: function() {
+                        reject("전송오류!");
+                    }
+                });
+            });
+            editContent = res;
+            $('#summernote2').summernote('code', editContent);
+            $('#summernote2').next('.note-editor').find('.note-editable img').each(function() {
+                let src = $(this).attr('src');
+                if (src.indexOf('http') === -1) {
+                    editInitialImages.push(src);
+                }
+            });
+
+        } catch (error) {
+            alert(error);
+        }
     }
+	
 	
 	// CommunityVO 형식의 문자열을 파싱하여 객체로 변환하는 함수
     function parseCommunityVO(voString) {
@@ -280,23 +381,35 @@
             type: 'POST',
             data: {gameIdx : gameIdx},
             success: function(res) {
-            	if(res != "0") {
-            		let str = '<button class="gamesearch-button" onclick="showPopupGameSearch()">'
-                    		+ '<img src="${ctp}/images/plus.jpg" alt="">'
-                			+ '<div class="game-name">게임 선택</div></button>';
-                	str = str + res + '</div>';
-            		$("#game-selection").html(str);
-            		
-            		let html = '';
-    	            const game = $('.game-button.active').data('game');
-    	            const category = $('.community-category.active').data('category');
-    	            if(category == '일지') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 일지';
-    	            else if(category == '소식/정보') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 소식/정보';
-    	            else html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 세일 정보';
-    	            $(".header-text").html(html);
-    	            
-            		document.querySelector('#popup-gamesearch').classList.add('hide');
-            	}
+            	let r = res.split("|");
+           		let str = '<button class="gamesearch-button" onclick="showPopupGameSearch()">'
+                   		+ '<img src="${ctp}/images/plus.jpg" alt="">'
+               			+ '<div class="game-name">게임 선택</div></button>';
+               	str = str + r[0] + '</div>';
+           		let str2 = '<button class="gamesearch-button" onclick="showPopupGameSearch()">'
+                   		+ '<img src="${ctp}/images/plus.jpg" alt="">'
+               			+ '<div class="game-name">게임 선택</div></button>';
+               	str2 = str2 + r[1] + '</div>';
+           		$("#game-selection").html(str);
+           		$("#game-selection2").html(str2);
+           		
+           		let html = '';
+   	            const game = $('.game-button.active').data('game');
+   	            const category = $('.community-category.active').data('category');
+   	            if(category == '일지') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 일지';
+   	            else if(category == '소식/정보') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 소식/정보';
+   	            else html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 세일 정보';
+   	            $(".header-text").html(html);
+   	            
+           		let html2 = '';
+   	            const game2 = $('.gameedit-button.active').data('game');
+   	            const category2 = $('.community-editcategory.active').data('category');
+   	            if(category2 == '일지') html2 = '<font color="#00c722"><b>'+game2+'</b></font>에 대한 일지';
+   	            else if(category2 == '소식/정보') html2 = '<font color="#00c722"><b>'+game2+'</b></font>에 대한 소식/정보';
+   	            else html2 = '<font color="#00c722"><b>'+game2+'</b></font>에 대한 세일 정보';
+   	            $(".header-edittext").html(html2);
+   	            
+           		document.querySelector('#popup-gamesearch').classList.add('hide');
             },
             error: function(error) {
                 alert("전송오류!");
@@ -338,19 +451,23 @@
 	}
 	
 	function likeDelete(cmIdx) {
-		$.ajax({
-			url : "${ctp}/community/likeDelete",
-			type : "post",
-			data : {cmIdx : cmIdx},
-			success : function(res) {
-				let r = res.split("%");
-				$("#cm-likeCnt"+cmIdx).html(r[0]);
-				$("#cm-like"+cmIdx).html(r[1]);
-			},
-			error : function() {
-				alert("전송오류!");
-			}
-		});
+		let ans = confirm("좋아요를 취소하시겠어요?");
+		
+		if(ans) {
+			$.ajax({
+				url : "${ctp}/community/likeDelete",
+				type : "post",
+				data : {cmIdx : cmIdx},
+				success : function(res) {
+					let r = res.split("%");
+					$("#cm-likeCnt"+cmIdx).html(r[0]);
+					$("#cm-like"+cmIdx).html(r[1]);
+				},
+				error : function() {
+					alert("전송오류!");
+				}
+			});
+		}
 	}
 	
  	function toggleContentMenu(cmIdx) {
@@ -368,6 +485,34 @@
  	        dropdown.style.display = "block";
  	    }
  	}
+ 	
+ 	function contentDelete(cmIdx) {
+		let ans = confirm("정말로 삭제하시겠습니까?");
+		if(ans) {
+			$.ajax({
+				url : "${ctp}/community/communityDelete",
+				type : "post",
+				data : {cmIdx:cmIdx},
+				success : function(res) {
+					if(res != "0") location.reload();
+					else alert("삭제실패!");
+				},
+				error : function() {
+					alert("전송오류!");
+				}
+			});
+		}
+	}
+ 	
+ 	function replyPreview(cmIdx) {
+		document.getElementById("replyPreview"+cmIdx).style.display = "none";
+		document.getElementById("replyWrite"+cmIdx).style.display = "block";
+	}
+ 	
+ 	function replyCancel(cmIdx) {
+		document.getElementById("replyPreview"+cmIdx).style.display = "flex";
+		document.getElementById("replyWrite"+cmIdx).style.display = "none";
+	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
@@ -436,8 +581,8 @@
 							<div style="position:relative;">
 								<i class="fa-solid fa-bars fa-xl" onclick="toggleContentMenu(${cmVO.cmIdx})" style="color: #D5D5D5;cursor:pointer;"></i>
 					 			<div id="contentMenu${cmVO.cmIdx}" class="content-menu">
-							        <c:if test="${sMid == cmVO.mid}"><div onclick="showPopupEdit('${cmVO}')">수정</div></c:if>
-								    <c:if test="${sMid == cmVO.mid || sLevel == 0}"><div>삭제</div></c:if>
+							        <c:if test="${sMid == cmVO.mid}"><div onclick="showPopupEdit('${fn:replace(cmVO, '\"', '&quot;')}')">수정</div></c:if>
+								    <c:if test="${sMid == cmVO.mid || sLevel == 0}"><div onclick="contentDelete(${cmVO.cmIdx})"><font color="red">삭제</font></div></c:if>
 							        <c:if test="${sLevel == 0}"><div>사용자 제재</div></c:if>
 							        <c:if test="${sMid != cmVO.mid && sLevel != 0}"><div>신고</div></c:if>
 						    	</div>
@@ -463,9 +608,19 @@
 								<span><i class="fa-solid fa-comment-dots"></i>&nbsp;&nbsp;댓글</span>
 							</div>
 							<hr/>
-							<div style="display:flex; align-items: center; justify-content: center;">
+							<div id="replyPreview${cmVO.cmIdx}" style="display:flex; align-items: center; justify-content: center;">
 								<img src="${ctp}/member/${sMemImg}" alt="프로필" class="text-pic">
-								<div class="text-input">댓글을 작성해 보세요.</div>
+								<div class="text-input" onclick="replyPreview(${cmVO.cmIdx})">댓글을 작성해 보세요.</div>
+							</div>
+							<div id="replyWrite${cmVO.cmIdx}" style="display:none; justify-content: center;">
+								<div style="display:flex;">
+									<img src="${ctp}/member/${sMemImg}" alt="프로필" class="text-pic">
+									<textarea rows="2" placeholder="댓글을 작성해 보세요." class="form-control textarea" style="background-color:#32373d;"></textarea>
+								</div>
+								<div style="display:flex; justify-content: flex-end; margin-top: 5px;">
+									<div class="replyno-button mr-2" onclick="replyCancel(${cmVO.cmIdx})">취소</div>
+									<div class="replyok-button">작성</div>
+								</div>
 							</div>
 						</c:if>
 					</div>
@@ -651,25 +806,25 @@
         <div class="results-container scrollbar mt-4" id="results-container"></div>
     </div>
 </div>
-<div id="popup-edit" class="hide">
+<div id="popup-edit" style="z-index:999;" class="hide">
   <div class="popup-edit-content scrollbar">
   		<div class="popup-edit-header">
-            <span class="header-text"></span>
+            <span class="header-edittext"></span>
     		<a href="" onclick="closePopup('edit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
 		</div>
         <div class="category-selection">
-            <button class="community-category active" data-category="일지">일지</button>
-            <button class="community-category" data-category="소식/정보">소식/정보</button>
-            <button class="community-category" data-category="자유">자유 주제</button>
-            <button class="community-category" data-category="세일">세일 글</button>
+            <button class="community-editcategory active" data-category="일지">일지</button>
+            <button class="community-editcategory" data-category="소식/정보">소식/정보</button>
+            <button class="community-editcategory" data-category="자유">자유 주제</button>
+            <button class="community-editcategory" data-category="세일">세일 글</button>
         </div>
-        <div class="game-selection scrollbar" id="game-selection">
+        <div class="game-selection scrollbar" id="game-selection2">
             <button class="gamesearch-button" onclick="showPopupGameSearch()">
             	<img src="${ctp}/images/plus.jpg" alt="">
             	<div class="game-name">게임 선택</div>
             </button>
             <c:forEach var="vo" items="${vos}">
-                <button class="game-button" data-game="${vo.gameTitle}" data-editidx="${vo.gameIdx}">
+                <button class="gameedit-button" data-game="${vo.gameTitle}" data-editidx="${vo.gameIdx}">
 	            	<img src="${vo.gameImg}" alt="${vo.gameTitle}">
 	            	<div class="game-name">${vo.gameTitle}</div>
 	            </button>
@@ -677,7 +832,7 @@
         </div>
         <textarea id="summernote2" name="content"></textarea>
         <div class="footer">
-            <select class="dropdown-btn" id="publicType" name="publicType">
+            <select class="dropdown-btn" id="publicType2" name="publicType2">
                 <option value="전체">전체 공개</option>
                 <option value="친구">친구만 공개</option>
                 <option value="비공개">비공개</option>
@@ -692,13 +847,7 @@
 
 		// 썸머노트 기본설정
 		$(document).ready(function() {
-			$("#summernote2").html(editContent);
-		    $('#summernote2').next('.note-editor').find('.note-editable img').each(function() {
-		        let src = $(this).attr('src');
-		        if (!src.indexOf('http') == -1) {
-		            editInitialImages.push(src);
-		        }
-		    });
+			
 		    let fontList = ['SUITE-Regular'];
 		    $('#summernote2').summernote({
 		        lang: 'ko-KR',
@@ -758,9 +907,7 @@
 		            data: data,
 		            type: "POST",
 		            success: function(res) {
-	                    $('#summernote').summernote('insertImage', res, function($image) {
-	                    	editInitialImages.push(res);
-	                    });
+	                    $('#summernote2').summernote('insertImage', res, function($image) {});
 		            },
 		            error: function() {
 		                alert("전송오류!");
@@ -785,23 +932,24 @@
 		    }
 		    
 		 	// 수정하기 버튼 클릭
-	        function editCommunity {
-		        let mid = '${sMid}';
-		        let content = $('#summernote').summernote('code').trim();
-		        let category = $('.community-category.active').data('category');
-		        let gameIdx = $('.game-button.active').data('idx');
-		        let publicType = $('select[name="publicType"]').val();
+	        function editCommunity() {
+		        let content = $('#summernote2').summernote('code').trim();
+		        let category = $('.community-editcategory.active').data('category');
+		        let gameIdx = $('.gameedit-button.active').data('editidx');
+		        let publicType = $('select[name="publicType2"]').val();
+		        
+		        if(gameIdx === undefined) {
+		        	gameIdx = editCmGameIdx;
+		        }
 
 		        if (content == '' || content == '<p><br></p>') {
 		            alert("글 내용을 입력하세요!");
-		            $('#summernote').focus();
+		            $('#summernote2').focus();
 		            return false;
 		        }
 
 		        let query = {
-		            mid: mid,
 		            cmContent: content,
-		            section: '피드',
 		            part: category,
 		            cmGameIdx: gameIdx,
 		            publicType: publicType,
@@ -814,9 +962,11 @@
 		            data: query,
 		            success: function(res) {
 		                if (res != "0") {
+		                	isWriteButtonClicked = true;
 		                    editCurrentImages = getCurrentImages2();
 		                    detectDeletedImages2(editInitialImages, editCurrentImages);
 		                    editInitialImages = [...editCurrentImages];
+		                    location.reload();
 		                }
 		                else {
 							alert("작성 실패...");
@@ -826,8 +976,13 @@
 		               alert("전송오류!");
 		            }
 		        });
-	        });
-	    });
+		 	}
+		 	
+	 	    // 페이지 떠날 때 작성하지 않은 파일들 삭제
+			window.onbeforeunload = function() {
+ 	    		editCurrentImages = getCurrentImages2();
+ 	    		detectDeletedImages2(editCurrentImages, editInitialImages);
+			};
 		</script>
     </div>
 </div>

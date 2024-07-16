@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <c:set var="ctp" value="${pageContext.request.contextPath}"/>
+<% pageContext.setAttribute("newLine", "\n"); %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,6 +35,61 @@
 		const mask = document.querySelector('.mask');
 		const html = document.querySelector('html');
 		html.style.overflow = 'hidden';
+		
+		// 무한스크롤
+		function rootData() {
+			isFetching = true;
+			
+			$.ajax({
+				url : "${ctp}/community/rootData",
+				type : "post",
+				data : {page : ${page}+totPage, part : 'recent'},
+				success : function(res) {
+					if(res) {
+						isFetching = false;
+						$("#root").append(res);
+					}
+					else {
+						isFetching = true;
+					}
+				},
+				error : function() {
+					alert("전송오류!");
+					isFetching = false;
+				}
+			});
+		}
+		
+		// 스크롤 이벤트
+		const handleScroll = debounce(function() {
+		    if (isFetching || totPage >= ${totPage}) {
+		        return false;
+		    }
+
+		    const scrollPercentage = (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight;
+	        if (scrollPercentage > 0.9) { // 90% 지점에서 데이터를 불러오기
+	            rootData();
+	            totPage++;
+	        }
+		}, 50);
+		
+		$(window).on('scroll', handleScroll);
+		
+		
+	    // 디바운스 함수
+	    function debounce(func, wait) {
+	        let timeout;
+	        return function(...args) {
+	            clearTimeout(timeout);
+	            timeout = setTimeout(() => func.apply(this, args), wait);
+	        };
+	    }
+	    
+	    // 페이지 로드 로딩페이지 제거
+	    $(window).on('load', function() {
+	        $('.mask').hide();
+	        $('html').css('overflow', 'auto');
+	    });
 		
 		// 처음 창 뜰 때 첫번째 게임 선택
         const firstGameButton = $('.game-button').first();
@@ -211,42 +267,6 @@
         });
     });
 	
-	window.addEventListener('load', function() {
-		const mask = document.querySelector('.mask');
-        const html = document.querySelector('html');
-        
-		mask.style.display = 'none';
-		html.style.overflow = 'auto';
-	});
-	
-	window.addEventListener('scroll', () => {
-	    if (isFetching || totPage >= ${totPage}) {
-	        return false;
-	    }
-
-	    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-	    	rootData();
-			totPage++;
-	    }
-	});
-	
-	// 무한스크롤
-	function rootData() {
-		isFetching = true;
-		
-		$.ajax({
-			url : "${ctp}/community/rootData",
-			type : "post",
-			data : {page : ${page}+totPage, part : 'recent'},
-			success : function(res) {
-				isFetching = false;
-				$("#root").append(res);
-			},
-			error : function() {
-				alert("전송오류!");
-			}
-		});
-	}
 	
 	function showPopupWrite() {
     	const popup = document.querySelector('#popup-write');
@@ -473,7 +493,7 @@
  	function toggleContentMenu(cmIdx) {
  	   	const elements = document.querySelectorAll('[id^="contentMenu"]');
  	   	const otherElements = Array.from(elements).filter(element => element.id !== "contentMenu" + cmIdx); // 필터 적용해 조건부로 가져오기
- 	    var dropdown = document.getElementById("contentMenu"+cmIdx);
+ 	    let dropdown = document.getElementById("contentMenu"+cmIdx);
  	    
  	   otherElements.forEach(element => {
  	   		element.style.display = "none";
@@ -530,8 +550,80 @@
 			success : function(response) {
 				let res = response.split("|");
 				if(res[0] != "0") {
+					replyCancel(cmIdx);
 					$("#replyList"+cmIdx).html(res[1]);
+					$("#replyContent"+cmIdx).val("");
 				}
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
+ 	
+ 	function parentReplyMore(cmIdx) {
+		$.ajax({
+			url : "${ctp}/community/parentReplyMore",
+			type : "post",
+			data : {replyCmIdx : cmIdx},
+			success : function(res) {
+				$("#replyList"+cmIdx).html(res);
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
+ 	
+ 	function rreplyPreview(replyIdx) {
+ 	   	const elements = document.querySelectorAll('[id^="rreplyWrite"]');
+ 	   	const otherElements = Array.from(elements).filter(element => element.id !== "rreplyWrite" + replyIdx); // 필터 적용해 조건부로 가져오기
+ 	    let toggle = document.getElementById("rreplyWrite"+replyIdx);
+ 	    
+ 	   otherElements.forEach(element => {
+ 	   		element.style.display = "none";
+ 		});
+ 	    
+ 	    if (toggle.style.display === "block") {
+ 	    	toggle.style.display = "none";
+ 	    } else {
+ 	    	toggle.style.display = "block";
+ 	    }
+	}
+ 	
+ 	function rreplyInput(replyIdx, cmIdx) {
+ 		let rreplyContent = $("#rreplyContent"+replyIdx).val().trim();
+ 		
+ 		if(rreplyContent == "") {
+ 			alert("답글을 입력해주세요");
+ 			return false;
+ 		}
+ 		
+		$.ajax({
+			url : "${ctp}/community/rreplyInput",
+			type : "post",
+			data : {replyCmIdx : cmIdx, replyParentIdx : replyIdx, replyContent : rreplyContent},
+			success : function(response) {
+				let res = response.split("|");
+				if(res[0] != "0") {
+					rreplyPreview(replyIdx);
+					$("#rreplyList"+replyIdx).html(res[1]);
+					$("#rreplyContent"+replyIdx).val("");
+				}
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
+ 	
+ 	function childReplyMore(replyIdx, cmIdx) {
+		$.ajax({
+			url : "${ctp}/community/childReplyMore",
+			type : "post",
+			data : {replyCmIdx : cmIdx, replyParentIdx : replyIdx},
+			success : function(res) {
+				$("#rreplyList"+replyIdx).html(res);
 			},
 			error : function() {
 				alert("전송오류!");
@@ -588,17 +680,17 @@
 							<div style="display:flex; align-items:center;">
 								<img src="${ctp}/member/${cmVO.memImg}" alt="프로필" class="text-pic">
 								<div>
-									<div style="font-size:12px;">${cmVO.title}</div>
+									<c:if test="${cmVO.title != '없음'}"><div style="font-size:12px;">${cmVO.title}</div></c:if>
 									<div style="font-weight:bold;">${cmVO.nickname}</div>
 									<div>
 										<c:if test="${cmVO.part == '소식/정보'}"><span class="badge badge-secondary">소식/정보</span>&nbsp;</c:if>
 										<c:if test="${cmVO.part == '자유'}"><span class="badge badge-secondary">자유글</span>&nbsp;</c:if>
 										<c:if test="${cmVO.part == '세일'}"><span class="badge badge-secondary">세일정보</span>&nbsp;</c:if>
 										<c:if test="${cmVO.part != '자유'}">
-										<span style="color:#b2bdce; font-size:12px;">
+										<div style="color:#b2bdce; font-size:12px;">
 											<i class="fa-solid fa-gamepad fa-xs" style="color: #b2bdce;"></i>&nbsp;
 											${cmVO.gameTitle}
-										</span>
+										</div>
 										</c:if>
 									</div>
 								</div>
@@ -643,31 +735,63 @@
 							<hr/>
 						</c:if>
 						<div id="replyList${cmVO.cmIdx}" class="replyList">
-							<c:if test="${cmVO.replyCount > 2}">${cmVO.replyCount}개의 댓글 모두 보기</c:if>
-							<c:forEach var="parantReply" items="${cmVO.parantsReply}">
+							<c:if test="${cmVO.replyCount > 2}"><div id="moreReply${cmVO.cmIdx}" onclick="parentReplyMore(${cmVO.cmIdx})" class="moreReply">${cmVO.replyCount}개의 댓글 모두 보기</div></c:if>
+							<c:forEach var="parentReply" items="${cmVO.parentsReply}">
 								<div style="display:flex; align-items:flex-start;" class="mb-4">
-									<img src="${ctp}/member/${parantReply.memImg}" alt="프로필" class="reply-pic">
+									<img src="${ctp}/member/${parentReply.memImg}" alt="프로필" class="reply-pic">
 									<div>
-										<div style="font-size:12px;">${parantReply.title}</div>
-										<div style="font-weight:bold;">${parantReply.nickname}</div>
-										<div>${parantReply.replyContent}</div>
+										<c:if test="${parentReply.title != '없음'}"><div style="font-size:12px;">${parentReply.title}</div></c:if>
+										<div style="font-weight:bold;">${parentReply.nickname}</div>
+										<div>${fn:replace(parentReply.replyContent, newLine, "<br/>")}</div>
 										<div style="color:#b2bdce; font-size:12px;" class="mt-2">
-											<c:if test="${parantReply.hour_diff < 1}">${parantReply.min_diff}분 전</c:if>
-											<c:if test="${parantReply.hour_diff < 24 && parantReply.hour_diff >= 1}">${parantReply.hour_diff}시간 전</c:if>
-											<c:if test="${parantReply.hour_diff >= 24}">${fn:substring(parantReply.replyDate, 0, 10)}</c:if>
+											<c:if test="${parentReply.hour_diff < 1}">${parentReply.min_diff}분 전</c:if>
+											<c:if test="${parentReply.hour_diff < 24 && parentReply.hour_diff >= 1}">${parentReply.hour_diff}시간 전</c:if>
+											<c:if test="${parentReply.hour_diff >= 24}">${fn:substring(parentReply.replyDate, 0, 10)}</c:if>
+											<c:if test="${sMid != null}"><div onclick="rreplyPreview(${parentReply.replyIdx})">답글</div></c:if>
 										</div>
+									</div>
+								</div>
+								<div id="rreplyList${parentReply.replyIdx}" class="rreplyList">
+									<c:if test="${parentReply.childReplyCount > 1}"><div id="moreRReply${parentReply.replyIdx}" onclick="childReplyMore(${parentReply.replyIdx},${cmVO.cmIdx})" class="moreReply"> ──&nbsp;&nbsp;${parentReply.childReplyCount}개의 답글 모두 보기</div></c:if>
+									<c:forEach var="childReply" items="${cmVO.childReply}">
+										<c:if test="${childReply.replyParentIdx == parentReply.replyIdx}">
+											<div style="display:flex; align-items:flex-start;" class="mb-4">
+												<img src="${ctp}/member/${childReply.memImg}" alt="프로필" class="reply-pic">
+												<div>
+													<c:if test="${childReply.title != '없음'}"><div style="font-size:12px;">${childReply.title}</div></c:if>
+													<div style="font-weight:bold;">${childReply.nickname}</div>
+													<div>${fn:replace(childReply.replyContent, newLine, "<br/>")}</div>
+													<div style="color:#b2bdce; font-size:12px;" class="mt-2">
+														<c:if test="${childReply.hour_diff < 1}">${childReply.min_diff}분 전</c:if>
+														<c:if test="${childReply.hour_diff < 24 && childReply.hour_diff >= 1}">${childReply.hour_diff}시간 전</c:if>
+														<c:if test="${childReply.hour_diff >= 24}">${fn:substring(childReply.replyDate, 0, 10)}</c:if>
+														<c:if test="${sMid != null}"><div onclick="rreplyPreview(${parentReply.replyIdx})">답글</div></c:if>
+													</div>
+												</div>
+											</div>
+										</c:if>
+									</c:forEach>
+								</div>
+								<div id="rreplyWrite${parentReply.replyIdx}" style="display:none; justify-content: center;">
+									<div style="display:flex;">
+										<img src="${ctp}/member/${sMemImg}" alt="프로필" class="reply-pic">
+										<textarea id="rreplyContent${parentReply.replyIdx}" name="rreplyContent" rows="2" placeholder="답글을 작성해 보세요." class="form-control textarea" style="background-color:#32373d;"></textarea>
+									</div>
+									<div style="display:flex; justify-content: flex-end; margin-top: 5px;">
+										<div class="replyno-button mr-2" onclick="rreplyPreview(${parentReply.replyIdx})">취소</div>
+										<div class="replyok-button" onclick="rreplyInput(${parentReply.replyIdx}, ${cmVO.cmIdx})">작성</div>
 									</div>
 								</div>
 							</c:forEach>
 						</div>
 						<c:if test="${sMid != null}">
 							<div id="replyPreview${cmVO.cmIdx}" style="display:flex; align-items: center; justify-content: center;">
-								<img src="${ctp}/member/${sMemImg}" alt="프로필" class="text-pic">
+								<img src="${ctp}/member/${sMemImg}" alt="프로필" class="reply-pic">
 								<div class="text-input" onclick="replyPreview(${cmVO.cmIdx})">댓글을 작성해 보세요.</div>
 							</div>
 							<div id="replyWrite${cmVO.cmIdx}" style="display:none; justify-content: center;">
 								<div style="display:flex;">
-									<img src="${ctp}/member/${sMemImg}" alt="프로필" class="text-pic">
+									<img src="${ctp}/member/${sMemImg}" alt="프로필" class="reply-pic">
 									<textarea id="replyContent${cmVO.cmIdx}" name="replyContent" rows="2" placeholder="댓글을 작성해 보세요." class="form-control textarea" style="background-color:#32373d;"></textarea>
 								</div>
 								<div style="display:flex; justify-content: flex-end; margin-top: 5px;">

@@ -791,6 +791,7 @@
 	    width: 50px;
 	    height: 50px;
 	    margin-right: 10px;
+	    object-fit:cover;
 	}
 	.text-input {
 		white-space: nowrap;
@@ -801,7 +802,7 @@
 	    cursor: text;
 	    font-size: 15px;
 	    color: #b2bdce;
-	    width: 100%;
+	    width: 92%;
 	}
 	.mobile {display: none;}
 	.setting-main {
@@ -914,6 +915,7 @@
 	    padding: 10px 20px;
 	    border-radius: 5px;
 	    cursor: pointer;
+	    text-wrap: nowrap;
 	}
 	.replyok-button {
 	    background-color: #00c722;
@@ -922,6 +924,7 @@
 	    padding: 5px 10px;
 	    border-radius: 5px;
 	    cursor: pointer;
+	    text-wrap: nowrap;
 	}
 	.replyno-button {
 	    background-color: #161d25;
@@ -930,6 +933,7 @@
 	    padding: 5px 10px;
 	    border-radius: 5px;
 	    cursor: pointer;
+	    text-wrap: nowrap;
 	}
 	.note-modal-backdrop {position: static;}
     .note-editable img {
@@ -1005,6 +1009,16 @@
 	    width: 35px;
 	    height: 35px;
 	    margin-right: 10px;
+	    object-fit:cover;
+	}
+	.moreReply {
+		margin-bottom: 15px;
+		font-weight: bold;
+		color: #00c722;
+		cursor: pointer;
+	}
+	[id^="rreplyWrite"], .rreplyList {
+		margin-left: 60px;
 	}
 	@media screen and (min-width: 1200px) {
 		.game-item {
@@ -1133,7 +1147,7 @@
 		    right: 20px;
 		}
 		.cm-menu {display: none;}
-		.cm-box img {
+		.text-pic {
 			width: 40px;
 			height: 40px;
 		}

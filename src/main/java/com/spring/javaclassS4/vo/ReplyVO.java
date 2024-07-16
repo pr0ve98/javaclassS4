@@ -7,13 +7,14 @@ public class ReplyVO {
 	private int replyIdx;
 	private int replyCmIdx;
 	private String replyMid;
-	private int replyParantIdx;
+	private int replyParentIdx;
 	private String replyContent;
 	private String replyHostIp;
 	private String replyDate;
 	
 	private int hour_diff;
 	private int min_diff;
+	private int childReplyCount;
 	
 	// 멤버
 	private String nickname;

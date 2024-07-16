@@ -3,7 +3,7 @@
 <c:set var="ctp" value="${pageContext.request.contextPath}"/>
 <nav>
 	<div id="hambuger-menu">
-		<div class="w3-sidebar w3-bar-block w3-card w3-animate-left darkmode" style="display:none;z-index:5" id="mySidebar">
+		<div class="w3-sidebar w3-bar-block w3-card w3-animate-left darkmode" style="display:none;z-index:5;top:0;" id="mySidebar">
 			<button class="w3-bar-item w3-button w3-xxlarge" onclick="w3_close()">&times;</button>
 			<button class="w3-button w3-block w3-left-align" onclick="location.href='${ctp}/'">홈으로</button>
 			<button class="w3-button w3-block w3-left-align" onclick="myAccFunc(1)">커뮤니티</button>

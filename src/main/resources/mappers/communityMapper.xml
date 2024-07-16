@@ -39,12 +39,27 @@
 		SELECT count(*) as totRecCnt from itCommunity where mid=#{mid};
 	</select>
 	<select id="getCommunityReply" resultType="com.spring.javaclassS4.vo.ReplyVO">
+		SELECT sub.* from (select r.*,timestampdiff(hour, r.replyDate, now()) as hour_diff, timestampdiff(minute, r.replyDate, now()) as min_diff,m.nickname,m.memImg,m.title from itReply r join itmember m on r.replyMid=m.mid where replyCmIdx=#{cmIdx} and replyParentIdx is NULL order by replyIdx desc limit 2) as sub order by sub.replyIdx;
+	</select>
+	<select id="getCommunityChildReply" resultType="com.spring.javaclassS4.vo.ReplyVO">
+		SELECT sub.* from (select r.*,timestampdiff(hour, r.replyDate, now()) as hour_diff, timestampdiff(minute, r.replyDate, now()) as min_diff,m.nickname,m.memImg,m.title from itReply r join itmember m on r.replyMid=m.mid where replyCmIdx=#{replyCmIdx} and replyParentIdx=#{replyIdx} order by replyIdx desc limit 1) as sub order by sub.replyIdx;
+	</select>
+	<select id="getCommunityChildAllReply" resultType="com.spring.javaclassS4.vo.ReplyVO">
+		select r.*,timestampdiff(hour, r.replyDate, now()) as hour_diff, timestampdiff(minute, r.replyDate, now()) as min_diff,m.nickname,m.memImg,m.title from itReply r join itmember m on r.replyMid=m.mid where replyCmIdx=#{replyCmIdx} and replyParentIdx=#{replyIdx} order by replyIdx;
+	</select>
+	<select id="getCommunityAllReply" resultType="com.spring.javaclassS4.vo.ReplyVO">
 		<if test="sw == 0">
-			SELECT r.*,timestampdiff(hour, r.replyDate, now()) as hour_diff, timestampdiff(minute, r.replyDate, now()) as min_diff,m.nickname,m.memImg,m.title from itReply r join itmember m on r.replyMid=m.mid where replyCmIdx=#{cmIdx} and replyParantIdx is NULL order by replyIdx limit 2;
+			select r.*,timestampdiff(hour, r.replyDate, now()) as hour_diff, timestampdiff(minute, r.replyDate, now()) as min_diff,m.nickname,m.memImg,m.title from itReply r join itmember m on r.replyMid=m.mid where replyCmIdx=#{replyCmIdx} and replyParentIdx is NULL order by replyIdx;
 		</if>
 		<if test="sw == 1">
-			SELECT r.*,timestampdiff(hour, r.replyDate, now()) as hour_diff, timestampdiff(minute, r.replyDate, now()) as min_diff,m.nickname,m.memImg,m.title from itReply r join itmember m on r.replyMid=m.mid where replyCmIdx=#{cmIdx} and replyParantIdx is NOT NULL order by replyIdx limit 2;
+			select r.*,timestampdiff(hour, r.replyDate, now()) as hour_diff, timestampdiff(minute, r.replyDate, now()) as min_diff,m.nickname,m.memImg,m.title from itReply r join itmember m on r.replyMid=m.mid where replyCmIdx=#{replyCmIdx} and replyParentIdx is NOT NULL order by replyIdx;
 		</if>
+	</select>
+	<select id="getReplyCount" resultType="int">
+		SELECT count(*) as replyCount from itReply where replyCmIdx=#{cmIdx};
+	</select>
+	<select id="getChildReplyCount" resultType="int">
+		SELECT count(*) as childReplyCount from itReply where replyParentIdx=#{replyIdx};
 	</select>
 	
 	<update id="setMemGameListEdit">
@@ -66,7 +81,10 @@
 		insert into itLike values(default, #{cmIdx}, #{mid});
 	</insert>
 	<insert id="replyInput">
-		insert into itReply values(default, #{vo.replyCmIdx}, #{vo.replyMid}, null, #{vo.replyContent}, #{vo.replyHostIp}, default);
+		insert into itReply values(default, #{vo.replyCmIdx}, #{vo.replyMid}, null, #{vo.replyContent}, #{vo.replyHostIp}, default, default);
+	</insert>
+	<insert id="rreplyInput">
+		insert into itReply values(default, #{vo.replyCmIdx}, #{vo.replyMid}, #{vo.replyParentIdx}, #{vo.replyContent}, #{vo.replyHostIp}, default, default);
 	</insert>
 	
 	<delete id="setlikeDelete">

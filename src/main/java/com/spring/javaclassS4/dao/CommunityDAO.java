@@ -41,8 +41,20 @@ public interface CommunityDAO {
 
 	public int setCommunityDelete(@Param("cmIdx") int cmIdx);
 
-	public ArrayList<ReplyVO> getCommunityReply(@Param("cmIdx") int cmIdx, @Param("sw") int sw);
+	public ArrayList<ReplyVO> getCommunityReply(@Param("cmIdx") int cmIdx);
 
 	public int replyInput(@Param("vo") ReplyVO vo);
+
+	public int getReplyCount(@Param("cmIdx") int cmIdx);
+
+	public int getChildReplyCount(@Param("replyIdx") int replyIdx);
+
+	public int rreplyInput(@Param("vo") ReplyVO vo);
+
+	public ArrayList<ReplyVO> getCommunityAllReply(@Param("replyCmIdx") int replyCmIdx, @Param("sw") int sw);
+
+	public ArrayList<ReplyVO> getCommunityChildReply(@Param("replyCmIdx") int replyCmIdx, @Param("replyIdx") int replyIdx);
+
+	public ArrayList<ReplyVO> getCommunityChildAllReply(@Param("replyCmIdx") int replyCmIdx, @Param("replyIdx") int replyIdx);
 
 }

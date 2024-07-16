@@ -3,6 +3,7 @@ package com.spring.javaclassS4.service;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,6 +47,16 @@ public interface CommunityService {
 
 	public int setCommunityDelete(int cmIdx);
 
-	public String replyInput(ReplyVO vo);
+	public String replyInput(ReplyVO vo, HttpServletRequest request, HttpSession session);
+
+	public String rreplyInput(ReplyVO vo, HttpServletRequest request, HttpSession session);
+
+	public String parentReplyMore(int replyCmIdx, HttpServletRequest request, HttpSession session);
+
+	public String childReplyMore(int replyCmIdx, int replyParentIdx, HttpServletRequest request, HttpSession session);
+
+	public int getChildReplyCount(int replyIdx);
+
+	public ArrayList<ReplyVO> getCommunityChildReply(int cmIdx, int replyIdx);
 
 }

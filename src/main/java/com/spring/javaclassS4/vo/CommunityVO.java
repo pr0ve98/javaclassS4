@@ -37,7 +37,7 @@ public class CommunityVO {
 	private int likeSW;
 	
 	// 댓글
-	private ArrayList<ReplyVO> parantsReply;
+	private ArrayList<ReplyVO> parentsReply;
 	private ArrayList<ReplyVO> childReply;
 	private int replyCount;
 }

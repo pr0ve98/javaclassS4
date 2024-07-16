@@ -111,6 +111,11 @@
 		let fName = document.getElementById("inputImgs").value;
 		let ext = fName.substring(fName.lastIndexOf(".")+1).toLowerCase();
 		let maxSize = 1024 * 1024 * 20 // 기본단위는 Byte, 1024 * 1024 * 10 = 20MB 허용
+		const mask = document.querySelector('.mask');
+        const html = document.querySelector('html');
+        
+		mask.style.display = 'block';
+		html.style.overflow = 'hidden';
 		
 		if(fName.trim() == ""){
 			alert("업로드할 파일을 선택하세요");

@@ -264,23 +264,29 @@ public class CommunityController {
 		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 		int startIndexNo = (page - 1) * pageSize;
 		ArrayList<CommunityVO> cmVOS = null;
+		
 		if(part.equals("recent")) cmVOS = communityService.getCommunityList(mid, startIndexNo, pageSize);
 		else if(part.equals("info")) cmVOS = communityService.getCommunityPartList(mid, startIndexNo, pageSize, part);
 		else if(part.equals("sale")) cmVOS = communityService.getCommunityPartList(mid, startIndexNo, pageSize, part);
 		else if(part.equals("my")) cmVOS = communityService.getCommunityPartList(mid, startIndexNo, pageSize, part);
 		
+		
 		String str = "";
 		for (CommunityVO vo : cmVOS) {
+			ArrayList<ReplyVO> parent = vo.getParentsReply();
+			ArrayList<ReplyVO> child = vo.getChildReply();
+			int replyCount = vo.getReplyCount();
+			
 		    str += "<div class=\"cm-box\" id=\"cmbox" + vo.getCmIdx() + "\"><div style=\"display:flex; justify-content:space-between;\">"
 		        + "<div style=\"display:flex; align-items:center;\">";
-		    str += "<img src=\"" + request.getContextPath() + "/member/" + vo.getMemImg() + "\" alt=\"프로필\" class=\"text-pic\"><div>"
-		        + "<div style=\"font-size:12px;\">" + vo.getTitle() + "</div>"
-		        + "<div style=\"font-weight:bold;\">" + vo.getNickname() + "</div><div>";
+		    str += "<img src=\"" + request.getContextPath() + "/member/" + vo.getMemImg() + "\" alt=\"프로필\" class=\"text-pic\"><div>";
+		    if(!vo.getTitle().equals("없음")) str += "<div style=\"font-size:12px;\">" + vo.getTitle() + "</div>";
+		    str += "<div style=\"font-weight:bold;\">" + vo.getNickname() + "</div><div>";
 		    
 		    if (vo.getPart().equals("소식/정보")) str += "<span class=\"badge badge-secondary\">소식/정보</span>&nbsp;";
 		    else if (vo.getPart().equals("자유")) str += "<span class=\"badge badge-secondary\">자유글</span>&nbsp;";
 		    else if (vo.getPart().equals("세일")) str += "<span class=\"badge badge-secondary\">세일정보</span>&nbsp;";
-		    else str += "<span style=\"color:#b2bdce; font-size:12px;\"><i class=\"fa-solid fa-gamepad fa-xs\" style=\"color: #b2bdce;\"></i>&nbsp;" + vo.getGameTitle() + "</span>";
+		    else str += "<div style=\"color:#b2bdce; font-size:12px;\"><i class=\"fa-solid fa-gamepad fa-xs\" style=\"color: #b2bdce;\"></i>&nbsp;" + vo.getGameTitle() + "</div>";
 		    
 		    str += "</div></div></div>";
 		    
@@ -326,47 +332,64 @@ public class CommunityController {
 		        else str += "<span style=\"color:#00c722;\" onclick=\"likeDelete(" + vo.getCmIdx() + ")\"><i class=\"fa-solid fa-heart\"></i>&nbsp;&nbsp;좋아요</span>";
 		        str += "</span><span onclick=\"replyPreview("+vo.getCmIdx()+")\"><i class=\"fa-solid fa-comment-dots\"></i>&nbsp;&nbsp;댓글</span></div><hr/>";
 		    }
+		    str += "<div id=\"replyList" + vo.getCmIdx() + "\" class=\"replyList\">";
 		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    str += "<div id=\"replyList" + vo.getCmIdx() + "\" class=\"replyList\">sfdsfdfsdafsadfsdasfadsfadsfad</div>";
-
-		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    
-		    
+		    if(replyCount > 2) str += "<div id=\"moreReply"+vo.getCmIdx()+"\" onclick=\"parentReplyMore("+vo.getCmIdx()+")\" class=\"moreReply\">"+replyCount+"개의 댓글 모두 보기</div>";
+			for(ReplyVO p : parent) {
+				p.setChildReplyCount(communityService.getChildReplyCount(p.getReplyIdx()));
+				str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
+					+"<img src=\""+request.getContextPath()+"/member/"+p.getMemImg()+"\" alt=\"프로필\" class=\"reply-pic\"><div>";
+				if(!p.getTitle().equals("없음")) str += "<div style=\"font-size:12px;\">"+p.getTitle()+"</div>";
+				str += "<div style=\"font-weight:bold;\">"+p.getNickname()+"</div>"
+					+ "<div>"+p.getReplyContent().replace("\n", "<br/>")+"</div>"
+					+ "<div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\">";
+				if(p.getHour_diff() < 1) str += p.getMin_diff()+"분 전";
+				else if(p.getHour_diff() < 24 && p.getHour_diff() >= 1) str += p.getHour_diff()+"시간 전";
+				else str += p.getReplyDate().substring(0,10);
+				if(!mid.equals("")) str += "<div onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</div>";
+				str += "</div></div></div>"
+					+ "<div id=\"rreplyList"+p.getReplyIdx()+"\" class=\"rreplyList\">";
+				if(p.getChildReplyCount() > 1) str += "<div id=\"moreRReply"+p.getReplyIdx()+"\" onclick=\"childReplyMore("+p.getReplyIdx()+","+vo.getCmIdx()+")\" class=\"moreReply\"> ──&nbsp;&nbsp;"+p.getChildReplyCount()+"개의 답글 모두 보기</div>";
+				for(ReplyVO c : child) {
+					if(c.getReplyParentIdx() == p.getReplyIdx()) {
+						str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
+							+ "<img src=\""+request.getContextPath()+"/member/"+c.getMemImg()+"\" alt=\"프로필\" class=\"reply-pic\"><div>";
+						if(!c.getTitle().equals("없음")) str += "<div style=\"font-size:12px;\">"+c.getTitle()+"</div>";
+						str += "<div style=\"font-weight:bold;\">"+c.getNickname()+"</div>"
+							+ "<div>"+c.getReplyContent().replace("\n", "<br/>")+"</div>"
+							+ "<div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\">";
+						if(c.getHour_diff() < 1) str += c.getMin_diff()+"분 전";
+						else if(c.getHour_diff() < 24 && c.getHour_diff() >= 1) str += c.getHour_diff()+"시간 전";
+						else str += c.getReplyDate().substring(0,10);
+						if(!mid.equals("")) str += "<div onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</div>";
+						str += "</div></div></div>";
+					}
+				}
+				str += "</div>"
+					+ "<div id=\"rreplyWrite"+p.getReplyIdx()+"\" style=\"display:none; justify-content: center;\">"
+					+ "<div style=\"display:flex;\">"
+					+ "<img src=\""+request.getContextPath()+"/member/"+memImg+"\" alt=\"프로필\" class=\"reply-pic\">"
+					+ "<textarea id=\"rreplyContent"+p.getReplyIdx()+"\" name=\"rreplyContent\" rows=\"2\" placeholder=\"답글을 작성해 보세요.\" class=\"form-control textarea\" style=\"background-color:#32373d;\"></textarea></div>"
+					+ "<div style=\"display:flex; justify-content: flex-end; margin-top: 5px;\">"
+					+ "<div class=\"replyno-button mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">취소</div>"
+					+ "<div class=\"replyok-button\" onclick=\"rreplyInput("+p.getReplyIdx()+", "+vo.getCmIdx()+")\">작성</div>"
+					+ "</div></div>";
+			}
+			str += "</div>";
 		    if(!mid.equals("")) {
 					str += "<div id=\"replyPreview"+vo.getCmIdx()+"\" style=\"display:flex; align-items: center; justify-content: center;\">"
-					+"<img src=\""+request.getContextPath()+"/member/"+memImg+"\" alt=\"프로필\" class=\"text-pic\">"	
+					+"<img src=\""+request.getContextPath()+"/member/"+memImg+"\" alt=\"프로필\" class=\"reply-pic\">"	
 					+"<div class=\"text-input\" onclick=\"replyPreview("+vo.getCmIdx()+")\">댓글을 작성해 보세요.</div></div>"		
 			        + "<div id=\"replyWrite"+vo.getCmIdx()+"\" style=\"display:none; justify-content: center;\">"
 			        +"<div style=\"display:flex;\">"
-			        +"<img src=\""+request.getContextPath()+"/member/"+memImg+"\" alt=\"프로필\" class=\"text-pic\">"
+			        +"<img src=\""+request.getContextPath()+"/member/"+memImg+"\" alt=\"프로필\" class=\"reply-pic\">"
 			        +"<textarea id=\"replyContent"+vo.getCmIdx()+"\" name=\"replyContent\" rows=\"2\" placeholder=\"댓글을 작성해 보세요.\" class=\"form-control textarea\" style=\"background-color:#32373d;\"></textarea></div>"
 			        +"<div style=\"display:flex; justify-content: flex-end; margin-top: 5px;\">"
 			        +"<div class=\"replyno-button mr-2\" onclick=\"replyCancel("+vo.getCmIdx()+")\">취소</div>"
 			        +"<div class=\"replyok-button\" onclick=\"replyInput("+vo.getCmIdx()+")\">작성</div>"
 			        +"</div></div>";
 		    }
-		    str += "</div>";
+		    str += "</div></div>";
 		}
 		return str;
 
@@ -394,7 +417,25 @@ public class CommunityController {
 		vo.setReplyMid((String)session.getAttribute("sMid"));
 		vo.setReplyHostIp(request.getRemoteAddr());
 		
-		return communityService.replyInput(vo);
+		return communityService.replyInput(vo, request, session);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/parentReplyMore", method = RequestMethod.POST, produces = "application/text; charset=utf8")
+	public String parentReplyMorePost(int replyCmIdx, HttpSession session, HttpServletRequest request) {
+		return communityService.parentReplyMore(replyCmIdx, request, session);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/rreplyInput", method = RequestMethod.POST, produces = "application/text; charset=utf8")
+	public String setRReplyInputPost(ReplyVO vo, HttpSession session, HttpServletRequest request) {
+		return communityService.rreplyInput(vo, request, session);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/childReplyMore", method = RequestMethod.POST, produces = "application/text; charset=utf8")
+	public String childReplyMorePost(int replyCmIdx, int replyParentIdx, HttpSession session, HttpServletRequest request) {
+		return communityService.childReplyMore(replyCmIdx, replyParentIdx, request, session);
 	}
 		
 	

@@ -7,4 +7,12 @@
 	<select id="getGameList" resultType="com.spring.javaclassS4.vo.GameVO">
 		select * from itGame order by gameIdx desc limit #{startIndexNo},#{pageSize};
 	</select>
+	<select id="gameTitleSearch" resultType="com.spring.javaclassS4.vo.GameVO">
+		select * from itGame where gameTitle=#{gameTitle};
+	</select>
+	
+	
+	<insert id="gameInput">
+		insert into itGame values(default, #{vo.gameTitle}, #{vo.gameSubTitle}, #{vo.jangre}, #{vo.platform}, <if test="vo.showDate == ''">default</if><if test="vo.showDate != ''">#{vo.showDate}</if>, #{vo.price}, default, #{vo.metascore}, #{vo.steamscore}, #{vo.steamPage}, #{vo.developer}, #{vo.gameImg}, #{vo.gameInfo});
+	</insert>
 </mapper>

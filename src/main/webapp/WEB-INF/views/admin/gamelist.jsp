@@ -56,14 +56,14 @@
 	}
 	
 	function gameAdd() {
-		let fName = document.getElementById("inputImgs").value.trim();
-		let ext = fName.substring(fName.lastIndexOf(".")+1).toLowerCase();
-		let maxSize = 1024 * 1024 * 20 // 기본단위는 Byte, 1024 * 1024 * 10 = 20MB 허용
+		let fileName = document.getElementById("inputImgs").value.trim();
+		let ext = fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase();
+		let maxSize = 1024 * 1024 * 20 // 기본단위는 Byte, 1024 * 1024 * 20 = 20MB 허용
 		
 		let gameTitle = document.getElementById("gameTitle").value.trim();
 		let gameSubTitle = document.getElementById("gameSubTitle").value.trim();
 		let jangre = document.getElementById("jangre").value.trim();
-		let showDate = document.forms["gameaddform"]["showDate"].valueAsDate;
+		let showDate = document.forms["gameaddform"]["showDate"].value;
 		let price = document.getElementById("price").value.trim();
 		let metascore = document.getElementById("metascore").value.trim();
 		let steamscore = document.getElementById("steamscore").value.trim();
@@ -71,6 +71,16 @@
 		let developer = document.getElementById("developer").value.trim();
 		let gameImg = document.getElementById("gameImg").value.trim();
 		let gameInfo = document.getElementById("gameInfo").value.trim();
+		
+		const platformActive = document.querySelectorAll('.g-button-active');
+
+		let platform = '';
+
+		platformActive.forEach((button) => {
+			platform += button.getAttribute('data-platform') + ', ';
+		});
+		
+		platform = platform.substring(0, platform.length-2);
 		
 		const mask = document.querySelector('.mask');
         const html = document.querySelector('html');
@@ -80,45 +90,53 @@
 		
 		if(gameTitle == "") {
 			alert("게임의 이름을 입력하세요");
+	        $('.mask').hide();
+	        $('html').css('overflow', 'auto');
 			return false;
 		}
 		
-		if(fName == "" && gameImg == ""){
+		if(fileName == "" && gameImg == ""){
 			alert("업로드할 파일을 선택하세요");
+	        $('.mask').hide();
+	        $('html').css('overflow', 'auto');
 			return false;
 		}
 		
-		if(fName != "") {
+ 		if(fileName != "") {
 			let fileSize = document.getElementById("inputImgs").files[0].size;
 			if(fileSize > maxSize){
 				alert("업로드할 파일의 최대크기는 20MB입니다");
+		        $('.mask').hide();
+		        $('html').css('overflow', 'auto');
 			}
 			else if(ext != 'jpg' && ext != 'png' &&ext != 'gif' &&ext != 'jpeg'){
 				alert("이미지 파일만 업로드해주세요");
+		        $('.mask').hide();
+		        $('html').css('overflow', 'auto');
 			}
 			else {
-				let formData = new FormData();
-				formData.append("fName", document.getElementById("inputImgs").files[0]);
-				formData.append("gameTitle", gameTitle);
-				formData.append("gameSubTitle", gameSubTitle);
-				formData.append("jangre", jangre);
-				formData.append("showDate", showDate);
-				formData.append("price", price);
-				formData.append("metascore", metascore);
-				formData.append("steamscore", steamscore);
-				formData.append("steamPage", steamPage);
-				formData.append("developer", developer);
-				formData.append("gameImg", gameImg);
-				formData.append("gameInfo", gameInfo);
+				let vo = new FormData();
+				vo.append("fileName", document.getElementById("inputImgs").files[0]);
+				vo.append("gameTitle", gameTitle);
+				vo.append("gameSubTitle", gameSubTitle);
+				vo.append("jangre", jangre);
+				vo.append("platform", platform);
+				vo.append("showDate", showDate);
+				vo.append("price", price);
+				vo.append("metascore", metascore);
+				vo.append("steamscore", steamscore);
+				vo.append("steamPage", steamPage);
+				vo.append("developer", developer);
+				vo.append("gameInfo", gameInfo);
 				
 				$.ajax({
-					url : "${ctp}/admin/gameAdd",
+					url : "${ctp}/admin/gameInput",
 					type : "post",
-					data : formData,
+					data : vo,
 					processData: false,
 					contentType: false,
 					success : function(res) {
-						if(res != "0"){
+						if(res == "1"){
 							mask.style.display = 'none';
 							html.style.overflow = 'auto';
 							location.reload();
@@ -126,44 +144,56 @@
 					},
 					error : function() {
 						alert("오류!!");
+				        $('.mask').hide();
+				        $('html').css('overflow', 'auto');
 					}
 				});
 			}
-			else if(fName == "" && gameImg != ""){
-				
-				let query = {
-						gameTitle : gameTitle,
-						gameSubTitle : gameSubTitle,
-						jangre:jangre,
-						showDate:showDate,
-						price:price,
-						metascore:metascore,
-						steamscore:steamscore,
-						steamPage:steamPage,
-						developer:developer,
-						gameImg:gameImg,
-						gameInfo:gameInfo,
-				}
-				
-				$.ajax({
-					url : "${ctp}/admin/gameAdd",
-					type : "post",
-					data : query,
-					success : function(res) {
-						if(res != "0"){
-							mask.style.display = 'none';
-							html.style.overflow = 'auto';
-							location.reload();
-						}
-					},
-					error : function() {
-						alert("오류!!");
-					}
-				});
+		}
+		else if(fileName == "" && gameImg != ""){
+			let query = {
+					gameTitle : gameTitle,
+					gameSubTitle : gameSubTitle,
+					jangre:jangre,
+					platform:platform,
+					showDate:showDate,
+					price:price,
+					metascore:metascore,
+					steamscore:steamscore,
+					steamPage:steamPage,
+					developer:developer,
+					gameImg:gameImg,
+					gameInfo:gameInfo
 			}
-		
-
 			
+			// query라는 객체를 넘기기 때문에 formData나 json형식으로 넘겨야
+			// @RequestBody(json)와 @ModelAttribute(formData)로 받을 수 있음
+			// 기존 ajax 타입인 application/x-www-form-urlencoded로 받으려면 @RequestBody MultiValueMap<String, String>
+			// 이런 식으로 맵으로 받아 변경해주어야 함
+			$.ajax({
+				url : "${ctp}/admin/gameInput2",
+				type : "post",
+	            data: JSON.stringify(query),
+	            contentType: "application/json",
+				success : function(res) {
+					if(res == "1"){
+						mask.style.display = 'none';
+						html.style.overflow = 'auto';
+						location.reload();
+					}
+					else if(res == "2") {
+						alert("이미 해당 게임이 존재합니다!");
+				        $('.mask').hide();
+				        $('html').css('overflow', 'auto');
+						return false;
+					}
+				},
+				error : function() {
+					alert("오류!!");
+			        $('.mask').hide();
+			        $('html').css('overflow', 'auto');
+				}
+			});
 		}
 	}
 </script>
@@ -263,7 +293,7 @@
     		<a href="" onclick="closePopup('add')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
 		</div>
 		<div class="popup-add-main">
-			<form name="gameaddform" method="post" action="${ctp}/admin/gameadd">
+			<form name="gameaddform" method="post">
 				<table class="table table-borderless" style="color:#fff">
 					<tr>
 						<th><font color="#ff5e5e">*</font> 이름</th>
@@ -322,7 +352,7 @@
 						<td>
 							<div class="g-buttons" style="margin: 0 auto;">
 			                    <span class="i-button" onclick="imageUpload()">직접 등록</span>
-			                    <span style="display:none"><input type="file" name="fName" id="inputImgs" accept=".jpg,.gif,.png,.jpeg" /></span>
+			                    <span style="display:none"><input type="file" name="file" id="inputImgs" accept=".jpg,.gif,.png,.jpeg" /></span>
 			                    <span class="i-button" onclick="gameImgFormOpen()">주소로 등록</span>
 							</div>
 							<div id="gameImgForm" style="display:none"><input type="text" name="gameImg" id="gameImg" placeholder="이미지 주소를 입력하세요" class="forminput" /></div>

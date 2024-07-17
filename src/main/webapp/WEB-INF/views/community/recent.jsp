@@ -100,6 +100,8 @@
 		// 처음 창 뜰 때 첫번째 게임 선택
         const firstGameButton = $('.game-button').first();
         firstGameButton.addClass('active');
+        const firstGameButton2 = $('.gameedit-button').first();
+        firstGameButton2.addClass('active');
         
         const initialGame = firstGameButton.data('game');
         let initialHtml = '<font color="#00c722"><b>' + initialGame + '</b></font>에 대한 일지';
@@ -184,12 +186,12 @@
             let html = '';
             const category = $(this).data('category');
             if(category == '자유'){
-            	$(".game-selection2").hide();
+            	$("#game-selection2").hide();
             	html = '<font color="#00c722"><b>자유 주제</b></font>';
 	            $(".header-edittext").html(html);
             }
             else {
-            	$(".game-selection2").show();
+            	$("#game-selection2").show();
 	            let game = $('.gameedit-button.active').data('game');
 	            if(game === undefined) game = editGameTitle;
 	            if(category == '일지') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 일지';

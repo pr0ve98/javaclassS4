@@ -12,6 +12,8 @@ public interface AdminDAO {
 
 	public ArrayList<GameVO> getGameList(@Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize);
 
-	public int gameAdd();
+	public int gameInput(@Param("vo") GameVO vo);
+
+	public GameVO gameTitleSearch(@Param("gameTitle") String gameTitle);
 
 }

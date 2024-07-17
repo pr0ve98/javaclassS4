@@ -1,6 +1,5 @@
 package com.spring.javaclassS4.service;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -34,20 +33,33 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
-	public int gameAdd(String mid, MultipartFile fName, HttpServletRequest request) {
-		UUID uid = UUID.randomUUID();
-		String oFileName = fName.getOriginalFilename();
-		String sFileName = mid + "_" + uid.toString().substring(0,8) + "_" + oFileName;
-		
-		// 서버에 파일 올리기
-		try {
-			javaclassProvide.writeFile(fName, sFileName, "member");
-			String realPath = request.getSession().getServletContext().getRealPath("/resources/data/game/");
+	public int gameInput(GameVO vo, MultipartFile fName, HttpServletRequest request) {
+		if(fName != null) {
+			UUID uid = UUID.randomUUID();
+			String oFileName = fName.getOriginalFilename();
+			String sFileName = vo.getGameTitle() + "_" + uid.toString().substring(0,4) + "_" + oFileName;
+			
+			// 서버에 파일 올리기
+			try {
+				javaclassProvide.writeFile(fName, sFileName, "game");
+				vo.setGameImg(sFileName);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			return adminDAO.gameInput(vo);
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return adminDAO.gameAdd();
+		else return adminDAO.gameInput(vo);
+	}
+	
+	@Override
+	public int gameInput2(GameVO vo) {
+		return adminDAO.gameInput(vo);
+	}
+
+	@Override
+	public GameVO gameTitleSearch(String gameTitle) {
+		return adminDAO.gameTitleSearch(gameTitle);
 	}
 
 }

@@ -14,6 +14,10 @@ public interface AdminService {
 
 	public ArrayList<GameVO> getGameList(int startIndexNo, int pageSize);
 
-	public int gameAdd(String mid, MultipartFile fName, HttpServletRequest request);
+	public int gameInput(GameVO vo, MultipartFile fName, HttpServletRequest request);
+
+	public GameVO gameTitleSearch(String gameTitle);
+
+	public int gameInput2(GameVO vo);
 
 }

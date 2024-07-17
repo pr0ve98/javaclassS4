@@ -48,6 +48,7 @@
 					if(res) {
 						isFetching = false;
 						$("#root").append(res);
+						removeLoadingPage();
 					}
 					else {
 						isFetching = true;
@@ -87,9 +88,14 @@
 	    
 	    // 페이지 로드 로딩페이지 제거
 	    $(window).on('load', function() {
+	    	removeLoadingPage();
+	    });
+	    
+	    // 로딩페이지 제거 함수
+	    function removeLoadingPage() {
 	        $('.mask').hide();
 	        $('html').css('overflow', 'auto');
-	    });
+	    }
 		
 		// 처음 창 뜰 때 첫번째 게임 선택
         const firstGameButton = $('.game-button').first();
@@ -272,7 +278,7 @@
     	const popup = document.querySelector('#popup-write');
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
-        html.classList.add('popup-open');
+        html.style.overflow = 'hidden';
     }
 	
 	async function showPopupEdit(voString) {
@@ -283,7 +289,7 @@
     	const vo = parseCommunityVO(voString);
     	
         popup.classList.remove('hide');
-        html.classList.add('popup-open');
+        html.style.overflow = 'hidden';
         
         let headertext = '';
         $('.community-editcategory').removeClass('active');
@@ -392,7 +398,7 @@
     	const popup = document.querySelector('#popup-gamesearch');
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
-        html.classList.add('popup-open');
+        html.style.overflow = 'hidden';
     }
 	
 	function gamelistAdd(gameIdx) {
@@ -630,6 +636,57 @@
 			}
 		});
 	}
+ 	
+ 	function replyEditPopup(replyIdx, replyContent) {
+    	const popup = document.querySelector('#popup-replyedit');
+    	const html = document.querySelector('html');
+        $("#replyedit").val(replyContent);
+        $("#replyIdx").val(replyIdx);
+        popup.classList.remove('hide');
+        html.style.overflow = 'hidden';
+	}
+ 	
+ 	function replyEdit() {
+ 		let replyedit = $("#replyedit").val().trim();
+ 		let replyIdx = $("#replyIdx").val();
+ 		let replyMid = $("#replyMid").val();
+ 		
+ 		$.ajax({
+ 			url : "${ctp}/community/replyEdit",
+ 			type : "post",
+ 			data : {replyContent : replyedit, replyIdx : replyIdx, replyMid : replyMid},
+ 			success : function(res) {
+				if(res != "0") {
+					location.reload();
+				}
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
+	}
+ 	
+ 	function replyDelete(replyIdx, sw) {
+		let ans = '';
+		if(sw == 0) ans = confirm("댓글을 삭제하시겠어요?\n답글도 전부 삭제됩니다!");
+		else ans = confirm("답글을 삭제하시겠어요?");
+		
+		if(ans) {
+	 		$.ajax({
+	 			url : "${ctp}/community/replyDelete",
+	 			type : "post",
+	 			data : {replyIdx : replyIdx},
+	 			success : function(res) {
+					if(res != "0") {
+						location.reload();
+					}
+				},
+	 			error : function() {
+					alert("전송오류!");
+				}
+	 		});
+		}
+	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
@@ -747,7 +804,13 @@
 											<c:if test="${parentReply.hour_diff < 1}">${parentReply.min_diff}분 전</c:if>
 											<c:if test="${parentReply.hour_diff < 24 && parentReply.hour_diff >= 1}">${parentReply.hour_diff}시간 전</c:if>
 											<c:if test="${parentReply.hour_diff >= 24}">${fn:substring(parentReply.replyDate, 0, 10)}</c:if>
-											<c:if test="${sMid != null}"><div onclick="rreplyPreview(${parentReply.replyIdx})">답글</div></c:if>
+											<c:if test="${sMid != null}">
+												<div class="replymenu">
+													<span class="mr-2" onclick="rreplyPreview(${parentReply.replyIdx})">답글</span>
+													<c:if test="${sMid == parentReply.replyMid}"><span class="mr-2" onclick="replyEditPopup(${parentReply.replyIdx}, '${parentReply.replyContent}')">수정</span></c:if>
+													<c:if test="${(sMid == parentReply.replyMid && sLevel != 0) || sLevel == 0}"><span onclick="replyDelete(${parentReply.replyIdx}, 0)">삭제</span></c:if>
+												</div>
+											</c:if>
 										</div>
 									</div>
 								</div>
@@ -765,7 +828,13 @@
 														<c:if test="${childReply.hour_diff < 1}">${childReply.min_diff}분 전</c:if>
 														<c:if test="${childReply.hour_diff < 24 && childReply.hour_diff >= 1}">${childReply.hour_diff}시간 전</c:if>
 														<c:if test="${childReply.hour_diff >= 24}">${fn:substring(childReply.replyDate, 0, 10)}</c:if>
-														<c:if test="${sMid != null}"><div onclick="rreplyPreview(${parentReply.replyIdx})">답글</div></c:if>
+														<c:if test="${sMid != null}">
+															<div class="replymenu">
+																<span class="mr-2" onclick="rreplyPreview(${parentReply.replyIdx})">답글</span>
+																<c:if test="${sMid == childReply.replyMid}"><span class="mr-2" onclick="replyEditPopup(${childReply.replyIdx}, '${childReply.replyContent}')">수정</span></c:if>
+																<c:if test="${(sMid == childReply.replyMid && sLevel != 0) || sLevel == 0}"><span onclick="replyDelete(${childReply.replyIdx}, 1)">삭제</span></c:if>
+															</div>
+														</c:if>
 													</div>
 												</div>
 											</div>
@@ -1161,6 +1230,18 @@
  	    		detectDeletedImages2(editCurrentImages, editInitialImages);
 			};
 		</script>
+    </div>
+</div>
+<div id="popup-replyedit" class="hide">
+  <div class="popup-replyedit-content scrollbar">
+  		<div class="popup-replyedit-header mb-4">
+            <span class="e-header-text">댓글 수정</span>
+    		<a href="" onclick="closePopup('replyedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+		</div>
+ 		<div><input type="text" id="replyedit" name="replyedit" class="forminput mb-3" style="width:100%" placeholder="수정할 댓글을 입력하세요"></div>
+ 		<input type="hidden" id="replyIdx" name="replyIdx" />
+ 		<input type="hidden" id="replyMid" name="replyMid" value="${sMid}" />
+	 	<div class="text-right"><button class="edit-button" onclick="replyEdit()">수정하기</button></div>
     </div>
 </div>
 </body>

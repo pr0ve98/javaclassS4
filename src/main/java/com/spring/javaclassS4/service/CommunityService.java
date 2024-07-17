@@ -59,4 +59,8 @@ public interface CommunityService {
 
 	public ArrayList<ReplyVO> getCommunityChildReply(int cmIdx, int replyIdx);
 
+	public int replyEdit(String replyContent, int replyIdx, String replyMid);
+
+	public int replyDelete(int replyIdx);
+
 }

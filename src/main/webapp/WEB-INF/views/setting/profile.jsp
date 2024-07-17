@@ -142,6 +142,8 @@
 				contentType: false,
 				success : function(res) {
 					if(res != "0"){
+						mask.style.display = 'none';
+						html.style.overflow = 'auto';
 						location.reload();
 					}
 					else alert("변경 실패...");
@@ -156,6 +158,12 @@
 	function memberEdit() {
 		let memInfo = myform.memInfo.value;
 		let nickname = myform.nickname.value.trim();
+		let level = ${sLevel};
+		
+		if(level != 0 && nickname.toLowerCase().indexOf("gm") != -1) {
+			alert("닉네임에 GM을 사용할 수 없어요!");
+			return false;
+		}
 		
 		$.ajax({
 			url : "${ctp}/member/memberEdit",
@@ -163,10 +171,8 @@
 			data : {nickname : nickname, memInfo : memInfo},
 			success : function(res) {
 				if(res == "1") {
+					alert("변경완료!");
 					location.reload();
-				}
-				else if(res == "2") {
-					alert("닉네임에 'GM'이 들어갈 수 없어요!");
 				}
 				else {
 					alert("변경에 실패했어요...");

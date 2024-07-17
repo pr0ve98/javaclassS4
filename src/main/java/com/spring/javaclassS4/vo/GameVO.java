@@ -11,6 +11,7 @@ public class GameVO {
 	private String platform;
 	private String showDate;
 	private int price;
+	private double invenscore;
 	private int metascore;
 	private String steamscore;
 	private String steamPage;

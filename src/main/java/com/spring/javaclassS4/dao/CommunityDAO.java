@@ -57,4 +57,8 @@ public interface CommunityDAO {
 
 	public ArrayList<ReplyVO> getCommunityChildAllReply(@Param("replyCmIdx") int replyCmIdx, @Param("replyIdx") int replyIdx);
 
+	public int replyEdit(@Param("replyContent") String replyContent, @Param("replyIdx") int replyIdx, @Param("replyMid") String replyMid);
+
+	public int replyDelete(@Param("replyIdx") int replyIdx);
+
 }

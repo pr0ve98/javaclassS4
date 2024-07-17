@@ -29,7 +29,7 @@
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
         loginpopup.classList.add('hide');
-        html.classList.add('popup-open');
+        html.style.overflow = 'hidden';
     }
 
     function showPopupLogin() {
@@ -38,7 +38,7 @@
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
         joinpopup.classList.add('hide');
-        html.classList.add('popup-open');
+        html.style.overflow = 'hidden';
     }
     
     function closePopup(flag) {
@@ -47,9 +47,11 @@
     	else if(flag == 'login') popup = document.querySelector('#popup-login');
     	else if(flag == 'search') popup = document.querySelector('#popup-gamesearch');
     	else if(flag == 'write') popup = document.querySelector('#popup-write');
+    	else if(flag == 'replyedit') popup = document.querySelector('#popup-replyedit');
+    	else if(flag == 'add') popup = document.querySelector('#popup-add');
     	const html = document.querySelector('html');
     	popup.classList.add('hide');
-        html.classList.remove('popup-open');
+    	html.style.overflow = 'auto';
     }
 
  	document.addEventListener('DOMContentLoaded', function() {

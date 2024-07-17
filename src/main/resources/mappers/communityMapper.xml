@@ -73,6 +73,9 @@
 		update itCommunity set cmContent=#{vo.cmContent}, part=#{vo.part}, publicType=#{vo.publicType}, cmHostIp=#{vo.cmHostIp} where cmIdx=#{vo.cmIdx};
 		</if>
 	</update>
+	<update id="replyEdit">
+		update itReply set replyContent=#{replyContent},replyMid=#{replyMid} where replyIdx=#{replyIdx};
+	</update>
 	
 	<insert id="communityInput">
 		insert into itCommunity values(default,#{vo.mid},#{vo.section},#{vo.part},<if test="vo.part == '자유'">default,</if><if test="vo.part != '자유'">#{vo.cmGameIdx},</if>#{vo.cmContent},default,#{vo.cmHostIp},#{vo.publicType});
@@ -92,5 +95,8 @@
 	</delete>
 	<delete id="setCommunityDelete">
 		delete from itCommunity where cmIdx=#{cmIdx};
+	</delete>
+	<delete id="replyDelete">
+		delete from itReply where replyIdx=#{replyIdx};
 	</delete>
 </mapper>

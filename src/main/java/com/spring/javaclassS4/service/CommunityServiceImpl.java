@@ -281,6 +281,7 @@ public class CommunityServiceImpl implements CommunityService {
 		
 		String mid = session.getAttribute("sMid")==null ? "" : (String) session.getAttribute("sMid");
 		String memImg = session.getAttribute("sMemImg")==null ? "" : (String) session.getAttribute("sMemImg");
+		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 		
 		if(replyCount > 2) str += "<div id=\"moreReply"+vo.getReplyCmIdx()+"\" onclick=\"parentReplyMore("+vo.getReplyCmIdx()+")\" class=\"moreReply\">"+replyCount+"개의 댓글 모두 보기</div>";
 		for(ReplyVO p : parent) {
@@ -294,7 +295,12 @@ public class CommunityServiceImpl implements CommunityService {
 			if(p.getHour_diff() < 1) str += p.getMin_diff()+"분 전";
 			else if(p.getHour_diff() < 24 && p.getHour_diff() >= 1) str += p.getHour_diff()+"시간 전";
 			else str += p.getReplyDate().substring(0,10);
-			if(!mid.equals("")) str += "<div onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</div>";
+			if(!mid.equals("")) {
+				str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
+				if(mid.equals(p.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+p.getReplyIdx()+", '"+p.getReplyContent()+"')\">수정</span>";
+				if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+				str += "</div>";
+			}
 			str += "</div></div></div>"
 				+ "<div id=\"rreplyList"+p.getReplyIdx()+"\" class=\"rreplyList\">";
 			if(p.getChildReplyCount() > 1) str += "<div id=\"moreRReply"+p.getReplyIdx()+"\" onclick=\"childReplyMore("+p.getReplyIdx()+","+vo.getReplyCmIdx()+")\" class=\"moreReply\"> ──&nbsp;&nbsp;"+p.getChildReplyCount()+"개의 답글 모두 보기</div>";
@@ -310,7 +316,12 @@ public class CommunityServiceImpl implements CommunityService {
 					if(c.getHour_diff() < 1) str += c.getMin_diff()+"분 전";
 					else if(c.getHour_diff() < 24 && c.getHour_diff() >= 1) str += c.getHour_diff()+"시간 전";
 					else str += c.getReplyDate().substring(0,10);
-					if(!mid.equals("")) str += "<div onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</div>";
+					if(!mid.equals("")) {
+						str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
+						if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
+						if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+						str += "</div>";
+					}
 					str += "</div></div></div>";
 				}
 			}
@@ -336,6 +347,7 @@ public class CommunityServiceImpl implements CommunityService {
 		
 		String mid = session.getAttribute("sMid")==null ? "" : (String) session.getAttribute("sMid");
 		String memImg = session.getAttribute("sMemImg")==null ? "" : (String) session.getAttribute("sMemImg");
+		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 		
 		for(ReplyVO p : parent) {
 			child = communityDAO.getCommunityChildReply(replyCmIdx, p.getReplyIdx());
@@ -349,7 +361,12 @@ public class CommunityServiceImpl implements CommunityService {
 			if(p.getHour_diff() < 1) str += p.getMin_diff()+"분 전";
 			else if(p.getHour_diff() < 24 && p.getHour_diff() >= 1) str += p.getHour_diff()+"시간 전";
 			else str += p.getReplyDate().substring(0,10);
-			if(!mid.equals("")) str += "<div onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</div>";
+			if(!mid.equals("")) {
+				str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
+				if(mid.equals(p.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+p.getReplyIdx()+", '"+p.getReplyContent()+"')\">수정</span>";
+				if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+				str += "</div>";
+			}
 			str += "</div></div></div>"
 					+ "<div id=\"rreplyList"+p.getReplyIdx()+"\" class=\"rreplyList\">";
 			if(p.getChildReplyCount() > 1) str += "<div id=\"moreRReply"+p.getReplyIdx()+"\" onclick=\"childReplyMore("+p.getReplyIdx()+","+replyCmIdx+")\" class=\"moreReply\"> ──&nbsp;&nbsp;"+p.getChildReplyCount()+"개의 답글 모두 보기</div>";
@@ -364,7 +381,12 @@ public class CommunityServiceImpl implements CommunityService {
 					if(c.getHour_diff() < 1) str += c.getMin_diff()+"분 전";
 					else if(c.getHour_diff() < 24 && c.getHour_diff() >= 1) str += c.getHour_diff()+"시간 전";
 					else str += c.getReplyDate().substring(0,10);
-					if(!mid.equals("")) str += "<div onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</div>";
+					if(!mid.equals("")) {
+						str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
+						if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
+						if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+						str += "</div>";
+					}
 					str += "</div></div></div>";
 				}
 			}
@@ -392,6 +414,7 @@ public class CommunityServiceImpl implements CommunityService {
 		String str = "";
 		
 		String mid = session.getAttribute("sMid")==null ? "" : (String) session.getAttribute("sMid");
+		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 	
 		if(childReplyCount > 1) str += "<div id=\"moreRReply"+vo.getReplyParentIdx()+"\" onclick=\"childReplyMore("+vo.getReplyParentIdx()+","+vo.getReplyCmIdx()+")\" class=\"moreReply\"> ──&nbsp;&nbsp;"+childReplyCount+"개의 답글 모두 보기</div>";
 		for(ReplyVO c : child) {
@@ -405,7 +428,12 @@ public class CommunityServiceImpl implements CommunityService {
 				if(c.getHour_diff() < 1) str += c.getMin_diff()+"분 전";
 				else if(c.getHour_diff() < 24 && c.getHour_diff() >= 1) str += c.getHour_diff()+"시간 전";
 				else str += c.getReplyDate().substring(0,10);
-				if(!mid.equals("")) str += "<div onclick=\"rreplyPreview("+vo.getReplyParentIdx()+")\">답글</div>";
+				if(!mid.equals("")) {
+					str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+vo.getReplyParentIdx()+")\">답글</span>";
+					if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
+					if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+					str += "</div>";
+				}
 				str += "</div></div></div>";
 			}
 		}
@@ -419,6 +447,7 @@ public class CommunityServiceImpl implements CommunityService {
 		String str = "";
 		
 		String mid = session.getAttribute("sMid")==null ? "" : (String) session.getAttribute("sMid");
+		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 		
 		for(ReplyVO c : child) {
 			if(c.getReplyParentIdx() == replyParentIdx) {
@@ -431,7 +460,12 @@ public class CommunityServiceImpl implements CommunityService {
 				if(c.getHour_diff() < 1) str += c.getMin_diff()+"분 전";
 				else if(c.getHour_diff() < 24 && c.getHour_diff() >= 1) str += c.getHour_diff()+"시간 전";
 				else str += c.getReplyDate().substring(0,10);
-				if(!mid.equals("")) str += "<div onclick=\"rreplyPreview("+replyParentIdx+")\">답글</div>";
+				if(!mid.equals("")) {
+					str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+replyParentIdx+")\">답글</span>";
+					if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
+					if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+					str += "</div>";
+				}
 				str += "</div></div></div>";
 			}
 		}
@@ -447,6 +481,16 @@ public class CommunityServiceImpl implements CommunityService {
 	@Override
 	public ArrayList<ReplyVO> getCommunityChildReply(int cmIdx, int replyIdx) {
 		return communityDAO.getCommunityChildReply(cmIdx, replyIdx);
+	}
+
+	@Override
+	public int replyEdit(String replyContent, int replyIdx, String replyMid) {
+		return communityDAO.replyEdit(replyContent, replyIdx, replyMid);
+	}
+
+	@Override
+	public int replyDelete(int replyIdx) {
+		return communityDAO.replyDelete(replyIdx);
 	}
 
 }

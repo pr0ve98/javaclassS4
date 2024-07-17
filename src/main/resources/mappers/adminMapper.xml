@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaclassS4.dao.AdminDAO">
+	<select id="getGameTotRecCnt" resultType="int">
+		select count(*) as totRecCnt from itGame;
+	</select>
+	<select id="getGameList" resultType="com.spring.javaclassS4.vo.GameVO">
+		select * from itGame order by gameIdx desc limit #{startIndexNo},#{pageSize};
+	</select>
+</mapper>

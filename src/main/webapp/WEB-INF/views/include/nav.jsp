@@ -29,7 +29,7 @@
 								<c:if test="${sMid != null}">
 					<i class="fa-solid fa-bell fa"></i>
 					<span class="profile-menu" style="position: relative;">
-						<img src="${ctp}/member/${sMemImg}" alt="프로필" width="40px" onclick="mtoggleProfileMenu()">
+						<img src="${ctp}/member/${sMemImg}" style="cursor:pointer;" alt="프로필" width="40px" onclick="mtoggleProfileMenu()">
 						<!-- 일반 프로필 메뉴 드롭다운 -->
 						<c:if test="${sLevel != 0}">
 						    <div id="mprofileDropdown" class="dropdown-content">
@@ -54,12 +54,19 @@
 						<!-- 관리자 프로필 메뉴 드롭다운 -->
 					    <c:if test="${sLevel == 0}">
 					    	<div id="mprofileDropdown" class="dropdown-content">
-					    		<div style="color:#00c722; font-weight:bold; padding:12px 16px;" class="text-center">관리자로 접속중</div>
+					    		<div class="profile-info">
+						            <img src="${ctp}/member/${sMemImg}" alt="프로필" class="profile-pic">
+						        	<div style="display: flex; flex-direction: column;">
+							            <div class="profile-nickname">${sNickname}</div>
+							            <div class="profile-name">@${sMid}</div>
+						            </div>
+						        </div>
 						        <a href="#">회원 관리</a>
-						        <a href="#">게임 관리</a>
+						        <a href="${ctp}/admin/gamelist">게임 관리</a>
 						        <a href="#">리뷰 관리</a>
 						        <a href="#">문의 목록</a>
 						        <a href="#">신고 목록</a>
+						        <a href="${ctp}/setting/profile">계정 설정</a>
 						        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>
 						        <c:if test="${sKakao == 'NO'}"><a href="${ctp}/member/memberLogout">로그아웃</a></c:if>
 						    </div>
@@ -88,7 +95,7 @@
 			    <c:if test="${sMid != null}">
 					<i class="fa-solid fa-bell fa-lg"></i>
 					<span class="profile-menu" style="position: relative;">
-						<img src="${ctp}/member/${sMemImg}" alt="프로필" width="50px" onclick="toggleProfileMenu()">
+						<img src="${ctp}/member/${sMemImg}" style="cursor:pointer;" alt="프로필" width="50px" onclick="toggleProfileMenu()">
 						    <!-- 프로필 메뉴 드롭다운 -->
 						    <c:if test="${sLevel != 0}">
 							    <div id="profileDropdown" class="dropdown-content">
@@ -113,13 +120,19 @@
 						  <!-- 관리자 프로필 메뉴 드롭다운 -->
 					    <c:if test="${sLevel == 0}">
 					    	<div id="profileDropdown" class="dropdown-content">
-					    		<div style="color:#00c722; font-weight:bold; padding:12px 16px;" class="text-center">관리자로 접속중</div>
-					    		<hr/>
+					    		<div class="profile-info">
+						            <img src="${ctp}/member/${sMemImg}" alt="프로필" class="profile-pic">
+						        	<div style="display: flex; flex-direction: column;">
+							            <div class="profile-nickname">${sNickname}</div>
+							            <div class="profile-name">@${sMid}</div>
+						            </div>
+						        </div>
 						        <a href="#">회원 관리</a>
-						        <a href="#">게임 관리</a>
+						        <a href="${ctp}/admin/gamelist">게임 관리</a>
 						        <a href="#">리뷰 관리</a>
 						        <a href="#">문의 목록</a>
 						        <a href="#">신고 목록</a>
+						        <a href="${ctp}/setting/profile">계정 설정</a>
 						        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>
 						        <c:if test="${sKakao == 'NO'}"><a href="${ctp}/member/memberLogout">로그아웃</a></c:if>
 						    </div>

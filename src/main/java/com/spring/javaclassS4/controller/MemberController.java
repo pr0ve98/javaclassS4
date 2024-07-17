@@ -184,8 +184,6 @@ public class MemberController {
 		
 		if(mid == null) return "redirect:/";
 		
-		if(nickname.toLowerCase().indexOf("gm") != -1) return "2"; 
-		
 		int res = memberService.setmemberEdit(nickname, memInfo, mid);
 		if(res != 0) {
 			session.setAttribute("sNickname", nickname);

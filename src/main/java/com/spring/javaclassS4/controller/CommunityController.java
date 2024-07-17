@@ -302,7 +302,7 @@ public class CommunityController {
 			    	str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
 			    }
 			    else if (level == 0) {
-			        str += "<div><font color=\"red\">삭제</font></div>";
+			        str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
 			        str += "<div>사용자 제재</div>";
 			    }
 			    else str += "<div>팔로우</div><div>신고</div>";
@@ -346,7 +346,12 @@ public class CommunityController {
 				if(p.getHour_diff() < 1) str += p.getMin_diff()+"분 전";
 				else if(p.getHour_diff() < 24 && p.getHour_diff() >= 1) str += p.getHour_diff()+"시간 전";
 				else str += p.getReplyDate().substring(0,10);
-				if(!mid.equals("")) str += "<div onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</div>";
+				if(!mid.equals("")) {
+					str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
+					if(mid.equals(p.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+p.getReplyIdx()+", '"+p.getReplyContent()+"')\">수정</span>";
+					if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+					str += "</div>";
+				}
 				str += "</div></div></div>"
 					+ "<div id=\"rreplyList"+p.getReplyIdx()+"\" class=\"rreplyList\">";
 				if(p.getChildReplyCount() > 1) str += "<div id=\"moreRReply"+p.getReplyIdx()+"\" onclick=\"childReplyMore("+p.getReplyIdx()+","+vo.getCmIdx()+")\" class=\"moreReply\"> ──&nbsp;&nbsp;"+p.getChildReplyCount()+"개의 답글 모두 보기</div>";
@@ -361,7 +366,12 @@ public class CommunityController {
 						if(c.getHour_diff() < 1) str += c.getMin_diff()+"분 전";
 						else if(c.getHour_diff() < 24 && c.getHour_diff() >= 1) str += c.getHour_diff()+"시간 전";
 						else str += c.getReplyDate().substring(0,10);
-						if(!mid.equals("")) str += "<div onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</div>";
+						if(!mid.equals("")) {
+							str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
+							if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
+							if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+							str += "</div>";
+						}
 						str += "</div></div></div>";
 					}
 				}
@@ -436,6 +446,18 @@ public class CommunityController {
 	@RequestMapping(value = "/childReplyMore", method = RequestMethod.POST, produces = "application/text; charset=utf8")
 	public String childReplyMorePost(int replyCmIdx, int replyParentIdx, HttpSession session, HttpServletRequest request) {
 		return communityService.childReplyMore(replyCmIdx, replyParentIdx, request, session);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/replyEdit", method = RequestMethod.POST)
+	public String replyEdit(String replyContent, int replyIdx, String replyMid) {
+		return communityService.replyEdit(replyContent, replyIdx, replyMid)+"";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/replyDelete", method = RequestMethod.POST)
+	public String replyDelete(int replyIdx) {
+		return communityService.replyDelete(replyIdx)+"";
 	}
 		
 	

@@ -414,8 +414,8 @@ public class CommunityController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/communityDelete", method = RequestMethod.POST)
-	public String setCommunityDeletePost(int cmIdx) {
-		return communityService.setCommunityDelete(cmIdx)+"";
+	public String setCommunityDeletePost(int cmIdx, HttpServletRequest request) {
+		return communityService.setCommunityDelete(cmIdx, request)+"";
 	}
 	
 	@ResponseBody
@@ -449,9 +449,9 @@ public class CommunityController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/replyEdit", method = RequestMethod.POST)
-	public String replyEdit(String replyContent, int replyIdx, String replyMid) {
-		return communityService.replyEdit(replyContent, replyIdx, replyMid)+"";
+	@RequestMapping(value = "/replyEdit", method = RequestMethod.POST, produces = "application/text; charset=utf8")
+	public String replyEdit(String replyContent, int replyIdx, String replyMid, HttpServletRequest request, HttpSession session) {
+		return communityService.replyEdit(replyContent, replyIdx, replyMid, request, session);
 	}
 	
 	@ResponseBody

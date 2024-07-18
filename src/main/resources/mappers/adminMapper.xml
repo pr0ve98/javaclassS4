@@ -13,6 +13,27 @@
 	
 	
 	<insert id="gameInput">
-		insert into itGame values(default, #{vo.gameTitle}, #{vo.gameSubTitle}, #{vo.jangre}, #{vo.platform}, <if test="vo.showDate == ''">default</if><if test="vo.showDate != ''">#{vo.showDate}</if>, #{vo.price}, default, #{vo.metascore}, #{vo.steamscore}, #{vo.steamPage}, #{vo.developer}, #{vo.gameImg}, #{vo.gameInfo});
+		insert into itGame values(default, #{vo.gameTitle}, #{vo.gameSubTitle}, #{vo.jangre}, #{vo.platform}, <if test="vo.showDate == ''">default,</if><if test="vo.showDate != ''">#{vo.showDate},</if>#{vo.price}, default, #{vo.metascore}, #{vo.steamscore}, #{vo.steamPage}, #{vo.developer}, #{vo.gameImg}, #{vo.gameInfo});
 	</insert>
+	
+	
+	<update id="gameEdit">
+		<if test="flag == 'nameno'">
+			update itGame set gameSubTitle=#{vo.gameSubTitle}, jangre=#{vo.jangre}, platform=#{vo.platform},showDate=<if test="vo.showDate == ''">default,</if><if test="vo.showDate != ''">#{vo.showDate},</if>price=#{vo.price}, metascore=#{vo.metascore}, steamscore=#{vo.steamscore}, steamPage=#{vo.steamPage}, developer=#{vo.developer}, gameInfo=#{vo.gameInfo} where gameIdx=#{vo.gameIdx};
+		</if>
+		<if test="flag == 'nameok'">
+			update itGame set gameSubTitle=#{vo.gameSubTitle}, jangre=#{vo.jangre}, platform=#{vo.platform},showDate=<if test="vo.showDate == ''">default,</if><if test="vo.showDate != ''">#{vo.showDate},</if>price=#{vo.price}, metascore=#{vo.metascore}, steamscore=#{vo.steamscore}, steamPage=#{vo.steamPage}, developer=#{vo.developer}, gameImg=#{vo.gameImg}, gameInfo=#{vo.gameInfo} where gameIdx=#{vo.gameIdx};
+		</if>
+		<if test="flag == 'no'">
+			update itGame set gameTitle=#{vo.gameTitle}, gameSubTitle=#{vo.gameSubTitle}, jangre=#{vo.jangre}, platform=#{vo.platform},showDate=<if test="vo.showDate == ''">default,</if><if test="vo.showDate != ''">#{vo.showDate},</if>price=#{vo.price}, metascore=#{vo.metascore}, steamscore=#{vo.steamscore}, steamPage=#{vo.steamPage}, developer=#{vo.developer}, gameInfo=#{vo.gameInfo} where gameIdx=#{vo.gameIdx};
+		</if>
+		<if test="flag == 'ok'">
+			update itGame set gameTitle=#{vo.gameTitle}, gameSubTitle=#{vo.gameSubTitle}, jangre=#{vo.jangre}, platform=#{vo.platform},showDate=<if test="vo.showDate == ''">default,</if><if test="vo.showDate != ''">#{vo.showDate},</if>price=#{vo.price}, metascore=#{vo.metascore}, steamscore=#{vo.steamscore}, steamPage=#{vo.steamPage}, developer=#{vo.developer}, gameImg=#{vo.gameImg}, gameInfo=#{vo.gameInfo} where gameIdx=#{vo.gameIdx};
+		</if>
+	</update>
+	
+	
+	<delete id="gameDelete">
+		delete from itGame where gameIdx=#{gameIdx};
+	</delete>
 </mapper>

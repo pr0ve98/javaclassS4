@@ -45,7 +45,7 @@ public interface CommunityService {
 
 	public int communityEdit(CommunityVO vo, int sw);
 
-	public int setCommunityDelete(int cmIdx);
+	public int setCommunityDelete(int cmIdx, HttpServletRequest request);
 
 	public String replyInput(ReplyVO vo, HttpServletRequest request, HttpSession session);
 
@@ -59,7 +59,7 @@ public interface CommunityService {
 
 	public ArrayList<ReplyVO> getCommunityChildReply(int cmIdx, int replyIdx);
 
-	public int replyEdit(String replyContent, int replyIdx, String replyMid);
+	public String replyEdit(String replyContent, int replyIdx, String replyMid, HttpServletRequest request, HttpSession session);
 
 	public int replyDelete(int replyIdx);
 

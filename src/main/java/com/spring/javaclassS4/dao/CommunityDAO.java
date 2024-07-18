@@ -61,4 +61,6 @@ public interface CommunityDAO {
 
 	public int replyDelete(@Param("replyIdx") int replyIdx);
 
+	public ReplyVO getCommunityReplyIdx(@Param("replyIdx") int replyIdx);
+
 }

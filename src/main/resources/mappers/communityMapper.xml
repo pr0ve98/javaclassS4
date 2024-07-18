@@ -61,6 +61,9 @@
 	<select id="getChildReplyCount" resultType="int">
 		SELECT count(*) as childReplyCount from itReply where replyParentIdx=#{replyIdx};
 	</select>
+	<select id="getCommunityReplyIdx" resultType="com.spring.javaclassS4.vo.ReplyVO">
+		SELECT * from itReply where replyIdx=#{replyIdx};
+	</select>
 	
 	<update id="setMemGameListEdit">
 		update itGamelist set gamelist=#{gamelist} where glMid=#{mid};

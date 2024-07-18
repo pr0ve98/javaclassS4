@@ -8,12 +8,10 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -91,6 +89,63 @@ public class AdminController {
 		if(testvo != null) return "2";
 		
 		int res = adminService.gameInput2(vo);
+		if(res != 0) return "1";
+		else return "0";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/gameEdit", method = RequestMethod.POST)
+	public String gameEdit(@RequestParam("fileName") MultipartFile fileName, @RequestParam("gameIdx") String gameIdx,
+			@RequestParam("gameTitle") String gameTitle,
+			@RequestParam("gameSubTitle") String gameSubTitle, @RequestParam("jangre") String jangre,
+			@RequestParam("platform") String platform, @RequestParam("showDate") String showDate,
+			@RequestParam("price") String price, @RequestParam("metascore") String metascore,
+			@RequestParam("steamscore") String steamscore, @RequestParam("steamPage") String steamPage,
+			@RequestParam("developer") String developer, @RequestParam("gameInfo") String gameInfo,
+			HttpServletRequest request) {
+		
+		
+		int pri, meta;
+		
+		if(price.equals("")) pri = 0;
+		else pri = Integer.parseInt(price);
+		if(metascore.equals("")) meta = 0;
+		else meta = Integer.parseInt(metascore);
+		
+		GameVO vo = new GameVO();
+		vo.setGameIdx(Integer.parseInt(gameIdx));
+		vo.setGameTitle(gameTitle);
+		vo.setGameSubTitle(gameSubTitle);
+		vo.setJangre(jangre);
+		vo.setPlatform(platform);
+		vo.setShowDate(showDate);
+		vo.setPrice(pri);
+		vo.setMetascore(meta);
+		vo.setSteamscore(steamscore);
+		vo.setSteamPage(steamPage);
+		vo.setDeveloper(developer);
+		vo.setGameInfo(gameInfo);
+		
+		int res = adminService.gameEdit(vo, fileName, request);
+		if(res == 1) return "1";
+		else if(res == 2) return "2";
+		else return "0";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/gameEdit2", method = RequestMethod.POST)
+	public String gameEdit2(@RequestBody GameVO vo) {
+		System.out.println(vo);
+		int res = adminService.gameEdit2(vo);
+		if(res == 1) return "1";
+		else if(res == 2) return "2";
+		else return "0";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/gameDelete", method = RequestMethod.POST)
+	public String gameDelete(int gameIdx, String gameImg, HttpServletRequest request) {
+		int res = adminService.gameDelete(gameIdx, gameImg, request);
 		if(res != 0) return "1";
 		else return "0";
 	}

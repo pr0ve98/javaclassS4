@@ -267,24 +267,42 @@ public class CommunityServiceImpl implements CommunityService {
 	}
 
 	@Override
-	public int setCommunityDelete(int cmIdx) {
+	public int setCommunityDelete(int cmIdx, HttpServletRequest request) {
+		CommunityVO vo = communityDAO.getCommunityIdx(cmIdx);
+		
+		Document doc = Jsoup.parse(vo.getCmContent()); // content에 뽑아낼 html 문자열을 넣는다
+		 
+        Elements imgElements = doc.select("img"); // html 코드에서 img만 추출
+        for (Element imgElement : imgElements) {
+            String src = imgElement.attr("src"); // img 코드에서 src만 추출
+            if(src.indexOf("http") == -1) {
+            	String fileName = src.substring(src.lastIndexOf("/") + 1);
+            
+				String realPath = request.getSession().getServletContext().getRealPath("/resources/data/community/");
+				
+				File file = new File(realPath + fileName);
+				if(file.exists() && file.isFile()) {
+					file.delete();
+				}
+            }
+        }
+
 		return communityDAO.setCommunityDelete(cmIdx);
 	}
 
 	@Override
 	public String replyInput(ReplyVO vo, HttpServletRequest request, HttpSession session) {
 		int res = communityDAO.replyInput(vo);
-		ArrayList<ReplyVO> parent = communityDAO.getCommunityReply(vo.getReplyCmIdx());
-		ArrayList<ReplyVO> child = communityDAO.getCommunityChildReply(vo.getReplyCmIdx(), vo.getReplyParentIdx());
-		int replyCount = communityDAO.getReplyCount(vo.getReplyCmIdx());
+		ArrayList<ReplyVO> parent = communityDAO.getCommunityAllReply(vo.getReplyCmIdx(), 0);
+		ArrayList<ReplyVO> child = null;
 		String str = "";
 		
 		String mid = session.getAttribute("sMid")==null ? "" : (String) session.getAttribute("sMid");
 		String memImg = session.getAttribute("sMemImg")==null ? "" : (String) session.getAttribute("sMemImg");
 		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 		
-		if(replyCount > 2) str += "<div id=\"moreReply"+vo.getReplyCmIdx()+"\" onclick=\"parentReplyMore("+vo.getReplyCmIdx()+")\" class=\"moreReply\">"+replyCount+"개의 댓글 모두 보기</div>";
 		for(ReplyVO p : parent) {
+			child = communityDAO.getCommunityChildReply(vo.getReplyCmIdx(), p.getReplyIdx());
 			p.setChildReplyCount(communityDAO.getChildReplyCount(p.getReplyIdx()));
 			str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
 				+"<img src=\""+request.getContextPath()+"/member/"+p.getMemImg()+"\" alt=\"프로필\" class=\"reply-pic\"><div>";
@@ -409,14 +427,12 @@ public class CommunityServiceImpl implements CommunityService {
 		vo.setReplyMid((String)session.getAttribute("sMid"));
 		vo.setReplyHostIp(request.getRemoteAddr());
 		int res = communityDAO.rreplyInput(vo);
-		ArrayList<ReplyVO> child = communityDAO.getCommunityChildReply(vo.getReplyCmIdx(), vo.getReplyParentIdx());
-		int childReplyCount = communityDAO.getChildReplyCount(vo.getReplyParentIdx());
+		ArrayList<ReplyVO> child = communityDAO.getCommunityChildAllReply(vo.getReplyCmIdx(), vo.getReplyParentIdx());
 		String str = "";
 		
 		String mid = session.getAttribute("sMid")==null ? "" : (String) session.getAttribute("sMid");
 		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 	
-		if(childReplyCount > 1) str += "<div id=\"moreRReply"+vo.getReplyParentIdx()+"\" onclick=\"childReplyMore("+vo.getReplyParentIdx()+","+vo.getReplyCmIdx()+")\" class=\"moreReply\"> ──&nbsp;&nbsp;"+childReplyCount+"개의 답글 모두 보기</div>";
 		for(ReplyVO c : child) {
 			if(c.getReplyParentIdx() == vo.getReplyParentIdx()) {
 				str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
@@ -484,8 +500,71 @@ public class CommunityServiceImpl implements CommunityService {
 	}
 
 	@Override
-	public int replyEdit(String replyContent, int replyIdx, String replyMid) {
-		return communityDAO.replyEdit(replyContent, replyIdx, replyMid);
+	public String replyEdit(String replyContent, int replyIdx, String replyMid, HttpServletRequest request, HttpSession session) {
+		int res = communityDAO.replyEdit(replyContent, replyIdx, replyMid);
+		ReplyVO vo = communityDAO.getCommunityReplyIdx(replyIdx);
+		ArrayList<ReplyVO> parent = communityDAO.getCommunityAllReply(vo.getReplyCmIdx(), 0);
+		ArrayList<ReplyVO> child = null;
+		String str = "";
+		
+		String mid = session.getAttribute("sMid")==null ? "" : (String) session.getAttribute("sMid");
+		String memImg = session.getAttribute("sMemImg")==null ? "" : (String) session.getAttribute("sMemImg");
+		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
+		
+		for(ReplyVO p : parent) {
+			child = communityDAO.getCommunityChildReply(vo.getReplyCmIdx(), p.getReplyIdx());
+			p.setChildReplyCount(communityDAO.getChildReplyCount(p.getReplyIdx()));
+			str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
+				+"<img src=\""+request.getContextPath()+"/member/"+p.getMemImg()+"\" alt=\"프로필\" class=\"reply-pic\"><div>";
+			if(!p.getTitle().equals("없음")) str += "<div style=\"font-size:12px;\">"+p.getTitle()+"</div>";
+			str += "<div style=\"font-weight:bold;\">"+p.getNickname()+"</div>"
+				+ "<div>"+p.getReplyContent().replace("\n", "<br/>")+"</div>"
+				+ "<div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\">";
+			if(p.getHour_diff() < 1) str += p.getMin_diff()+"분 전";
+			else if(p.getHour_diff() < 24 && p.getHour_diff() >= 1) str += p.getHour_diff()+"시간 전";
+			else str += p.getReplyDate().substring(0,10);
+			if(!mid.equals("")) {
+				str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
+				if(mid.equals(p.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+p.getReplyIdx()+", '"+p.getReplyContent()+"')\">수정</span>";
+				if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+				str += "</div>";
+			}
+			str += "</div></div></div>"
+				+ "<div id=\"rreplyList"+p.getReplyIdx()+"\" class=\"rreplyList\">";
+			if(p.getChildReplyCount() > 1) str += "<div id=\"moreRReply"+p.getReplyIdx()+"\" onclick=\"childReplyMore("+p.getReplyIdx()+","+vo.getReplyCmIdx()+")\" class=\"moreReply\"> ──&nbsp;&nbsp;"+p.getChildReplyCount()+"개의 답글 모두 보기</div>";
+			for(ReplyVO c : child) {
+				child = communityDAO.getCommunityChildReply(vo.getReplyCmIdx(), p.getReplyIdx());
+				if(c.getReplyParentIdx() == p.getReplyIdx()) {
+					str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
+						+ "<img src=\""+request.getContextPath()+"/member/"+c.getMemImg()+"\" alt=\"프로필\" class=\"reply-pic\"><div>";
+					if(!c.getTitle().equals("없음")) str += "<div style=\"font-size:12px;\">"+c.getTitle()+"</div>";
+					str += "<div style=\"font-weight:bold;\">"+c.getNickname()+"</div>"
+						+ "<div>"+c.getReplyContent().replace("\n", "<br/>")+"</div>"
+						+ "<div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\">";
+					if(c.getHour_diff() < 1) str += c.getMin_diff()+"분 전";
+					else if(c.getHour_diff() < 24 && c.getHour_diff() >= 1) str += c.getHour_diff()+"시간 전";
+					else str += c.getReplyDate().substring(0,10);
+					if(!mid.equals("")) {
+						str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
+						if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
+						if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+						str += "</div>";
+					}
+					str += "</div></div></div>";
+				}
+			}
+			str += "</div>"
+				+ "<div id=\"rreplyWrite"+p.getReplyIdx()+"\" style=\"display:none; justify-content: center;\">"
+				+ "<div style=\"display:flex;\">"
+				+ "<img src=\""+request.getContextPath()+"/member/"+memImg+"\" alt=\"프로필\" class=\"reply-pic\">"
+				+ "<textarea id=\"rreplyContent"+p.getReplyIdx()+"\" name=\"rreplyContent\" rows=\"2\" placeholder=\"답글을 작성해 보세요.\" class=\"form-control textarea\" style=\"background-color:#32373d;\"></textarea></div>"
+				+ "<div style=\"display:flex; justify-content: flex-end; margin-top: 5px;\">"
+				+ "<div class=\"replyno-button mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">취소</div>"
+				+ "<div class=\"replyok-button\" onclick=\"rreplyInput("+p.getReplyIdx()+", "+vo.getReplyCmIdx()+")\">작성</div>"
+				+ "</div></div>";
+		}
+		
+		return res + "|" + str + "|" + vo.getReplyCmIdx();
 	}
 
 	@Override

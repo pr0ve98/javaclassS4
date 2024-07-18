@@ -648,7 +648,7 @@
         html.style.overflow = 'hidden';
 	}
  	
- 	function replyEdit() {
+ 	function replyEdit(cmIdx) {
  		let replyedit = $("#replyedit").val().trim();
  		let replyIdx = $("#replyIdx").val();
  		let replyMid = $("#replyMid").val();
@@ -657,9 +657,11 @@
  			url : "${ctp}/community/replyEdit",
  			type : "post",
  			data : {replyContent : replyedit, replyIdx : replyIdx, replyMid : replyMid},
- 			success : function(res) {
-				if(res != "0") {
-					location.reload();
+ 			success : function(response) {
+				let res = response.split("|");
+				if(res[0] != "0") {
+					$("#replyList"+res[2]).html(res[1]);
+					closePopup('replyedit');
 				}
 			},
  			error : function() {

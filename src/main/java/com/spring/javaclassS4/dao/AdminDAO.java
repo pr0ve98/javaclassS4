@@ -16,4 +16,8 @@ public interface AdminDAO {
 
 	public GameVO gameTitleSearch(@Param("gameTitle") String gameTitle);
 
+	public int gameEdit(@Param("vo") GameVO vo, @Param("flag") String flag);
+
+	public int gameDelete(@Param("gameIdx") int gameIdx);
+
 }

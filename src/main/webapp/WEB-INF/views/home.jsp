@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <c:set var="ctp" value="${pageContext.request.contextPath}"/>
 <!DOCTYPE html>
 <html>
@@ -141,50 +142,25 @@
 				</div>
 				<div class="content-box">
 					<div class="newgame-list">
-						<div class="newgame-item">
-							<span class="newgame-item-img mb-2"><img src="${ctp}/game/러브크레센도.jpg"></span>
-							<span class="game-title">러브크레센도</span>
-							<span>06.28</span>
-							<span>PC</span>
-							<span class="newgame-text">비주얼 노벨, 시뮬레이션, 캐주얼</span>
-							<hr class="pc-line"/>
-							<span class="newgame-info">백마탄 공주님은 없다! 비밀스러운 그녀들과 함께하는 밴드부 생활.</span>
-							<hr class="mobile-line" />
-						</div>
-						<div class="v-line"></div>
-						<div class="newgame-item">
-							<span class="newgame-item-img mb-2"><img src="${ctp}/game/루이지맨션2hd.jpg"></span>
-							<span class="game-title">루이지 맨션 2 HD</span>
-							<span>06.27</span>
-							<span>닌텐도 스위치</span>
-							<span class="newgame-text">어드벤처, 액션어드벤처</span>
-							<hr class="pc-line"/>
-							<span class="newgame-info">겁 많고 소심한 루이지가 유령이 사는 맨션을 모험!
-							「아라따박사」에게 억지로 끌려온 루이지는 흩어진 「다크 문」의 조각을 모으기 위해 「유령 계곡」을 조사하게 되었습니다.
-							과연 루이지는 「유령 계곡」의 평화를 되찾을 수 있을까요……?</span>
-							<hr class="mobile-line" />
-						</div>
-						<div class="v-line"></div>
-						<div class="newgame-item">
-							<span class="newgame-item-img mb-2"><img src="${ctp}/game/스파이패밀리오퍼레이션다이어리.jpg"></span>
-							<span class="game-title">스파이패밀리 오퍼레이션 다이어리</span>
-							<span>06.27</span>
-							<span>PS5, PS4, 닌텐도 스위치, PC</span>
-							<span class="newgame-text">어드벤처</span>
-							<hr class="pc-line"/>
-							<span class="newgame-info">이든 칼리지의 숙제로 그림일기를 그리게 된 아냐. 평일에는 학교에 가고 휴일에는 가족들하고 바다, 수족관 같은 다양한 장소로 나들이하며 그림일기의 소재를 모아봐요. 『스파이 패밀리』다운 일상을 체험할 수 있는 미니 게임도 15종류 이상 수록. 과연 아냐는 그림일기를 완성할 수 있을까요?</span>
-							<hr class="mobile-line" />
-						</div>
-						<div class="v-line"></div>
-						<div class="newgame-item">
-							<span class="newgame-item-img mb-2"><img src="${ctp}/game/엘든링황금나무의그림자.jpg"></span>
-							<span class="game-title">엘든 링: 황금 나무의 그림자</span>
-							<span>06.21</span>
-							<span>PS5, PS4, XBOX, PC</span>
-							<span class="newgame-text">3인칭 오픈 월드 ARPG</span>
-							<hr class="pc-line"/>
-							<span class="newgame-info">다채로운 시추에이션을 지닌 탁 트인 필드와 복잡하면서 입체적으로 짜인 거대한 던전이 경계선 없이 이어지는 드넓은 세계. 탐색 끝에는 미지의 것들을 발견했다는 기쁨과 높은 성취감으로 이어지는 압도적인 위협이 플레이어를 기다립니다.</span>
-						</div>
+						<c:forEach var="newgame" items="${newgamelist}" varStatus="st">
+							<div class="newgame-item">
+								<span class="newgame-item-img mb-2">
+									<c:if test="${fn:indexOf(newgame.gameImg, 'http') != -1}"><img src="${newgame.gameImg}"></c:if>
+									<c:if test="${fn:indexOf(newgame.gameImg, 'http') == -1}"><img src="${ctp}/game/${newgame.gameImg}"></c:if>
+								</span>
+								<span class="game-title">${newgame.gameTitle}</span>
+								<span>
+									<c:set var="showDate" value="${fn:split(newgame.showDate, '-')}" />
+									${showDate[1]}.${showDate[2]}
+								</span>
+								<span>${newgame.platform}</span>
+								<span class="newgame-text">${newgame.jangre}</span>
+								<hr class="pc-line"/>
+								<span class="newgame-info">${newgame.gameInfo}</span>
+								<hr class="mobile-line" />
+							</div>
+							<c:if test="${fn:length(newgamelist) != st.count}"><div class="v-line"></div></c:if>
+						</c:forEach>
 					</div>
 				</div>
 			</div>

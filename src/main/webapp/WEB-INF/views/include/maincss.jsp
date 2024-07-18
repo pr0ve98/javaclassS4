@@ -757,7 +757,7 @@
     	flex-wrap: wrap;
     	justify-content: center;
     }
-    .g-button {
+    .g-button, .eg-button {
     	flex: 0 1 calc(20% - 10px);
     	background: #161d25;
     	color: #b2bdce;
@@ -781,7 +781,7 @@
     	text-wrap: nowrap;
 		cursor: pointer;
     }
-    .c-button-active, .g-button-active {
+    .c-button-active, .g-button-active, .eg-button-active {
     	background: #00c722;
     	color: #fff;
     	font-weight: bold;
@@ -1072,6 +1072,7 @@
 	.replymenu > span {
 		cursor: pointer;
 	}
+	#resetmobile {display: none;}
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;
@@ -1219,6 +1220,53 @@
 		#popup-write .popup-write-content {
 		    min-width: 300px;
 		}
+		#custom-responsive-table table, 
+		#custom-responsive-table thead, 
+		#custom-responsive-table tbody, 
+		#custom-responsive-table td, 
+		#custom-responsive-table tr { 
+			display: block; 
+		}
+	 
+		#custom-responsive-table #thbody { 
+			display: none;
+		}
+	 
+		#custom-responsive-table tr {
+			border: 1px solid #ccc;
+			padding: 20px 0px;
+		}
+	 
+		#custom-responsive-table td { 
+			/* Behave  like a "row" */
+			border: none;
+			white-space: normal;
+			text-align:center!important;
+		}
+	 
+		#custom-responsive-table td:before { 
+			white-space: nowrap;
+			text-align:center!important;
+			font-weight: bold;
+			display: inline;
+		}
+	 
+		/*
+		Label the data
+		*/
+		#custom-responsive-table td:before { content: attr(data-title); }
+		.table td, .table th {
+			padding-top: 0px;
+			padding: .45rem .75rem .75rem;
+		}
+		.gamelistImg {
+			width: 80%;
+			height: 150px;
+		}
+		#searchlist {width: 100%;}
+		#resetmobile {display: block;}
+		#resetpc {display: none;}
+		
 	}
 	@media screen and (max-width: 567px) {
 		.game-selection {justify-content: start;}

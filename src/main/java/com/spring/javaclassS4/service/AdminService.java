@@ -16,8 +16,13 @@ public interface AdminService {
 
 	public int gameInput(GameVO vo, MultipartFile fName, HttpServletRequest request);
 
+	public int gameInput2(GameVO vo);
+	
+	public int gameEdit(GameVO vo, MultipartFile fName, HttpServletRequest request);
+	
+	public int gameEdit2(GameVO vo);
+
 	public GameVO gameTitleSearch(String gameTitle);
 
-	public int gameInput2(GameVO vo);
-
+	public int gameDelete(int gameIdx, String gameImg, HttpServletRequest request);
 }

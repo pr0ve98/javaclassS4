@@ -135,7 +135,6 @@ public class AdminController {
 	@ResponseBody
 	@RequestMapping(value = "/gameEdit2", method = RequestMethod.POST)
 	public String gameEdit2(@RequestBody GameVO vo) {
-		System.out.println(vo);
 		int res = adminService.gameEdit2(vo);
 		if(res == 1) return "1";
 		else if(res == 2) return "2";

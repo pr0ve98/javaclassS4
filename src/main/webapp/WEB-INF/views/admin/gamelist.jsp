@@ -542,7 +542,7 @@
 						<c:if test="${vo.metascore != 0.0}">&nbsp;&nbsp;<img src="https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/color/Metacritic.svg" alt="" class="icon" width="18px">${vo.metascore}</c:if>
 					</td>
 					<td>
-						<button class="badge badge-success" onclick="showGameEditPopup('${fn:replace(fn:replace(fn:replace(vo, '\'', '&apos;'), '\"', '&quot;'), newLine, '<br/>')}')">수정</button>
+						<button class="badge badge-success" onclick="showGameEditPopup('${fn:replace(fn:replace(fn:replace(vo, '\'', ''), '\"', '&quot;'), newLine, '<br/>')}')">수정</button>
 						<button class="badge badge-danger" onclick="gameDelete(${vo.gameIdx}, '${vo.gameImg}')">삭제</button>
 					</td>
 				</tr>

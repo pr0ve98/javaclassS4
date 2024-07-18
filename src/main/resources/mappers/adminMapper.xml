@@ -18,16 +18,16 @@
 	
 	
 	<update id="gameEdit">
-		<if test="flag == 'nameno'">
+		<if test="flag == 'no'">
 			update itGame set gameSubTitle=#{vo.gameSubTitle}, jangre=#{vo.jangre}, platform=#{vo.platform},showDate=<if test="vo.showDate == ''">default,</if><if test="vo.showDate != ''">#{vo.showDate},</if>price=#{vo.price}, metascore=#{vo.metascore}, steamscore=#{vo.steamscore}, steamPage=#{vo.steamPage}, developer=#{vo.developer}, gameInfo=#{vo.gameInfo} where gameIdx=#{vo.gameIdx};
 		</if>
-		<if test="flag == 'nameok'">
+		<if test="flag == 'ok'">
 			update itGame set gameSubTitle=#{vo.gameSubTitle}, jangre=#{vo.jangre}, platform=#{vo.platform},showDate=<if test="vo.showDate == ''">default,</if><if test="vo.showDate != ''">#{vo.showDate},</if>price=#{vo.price}, metascore=#{vo.metascore}, steamscore=#{vo.steamscore}, steamPage=#{vo.steamPage}, developer=#{vo.developer}, gameImg=#{vo.gameImg}, gameInfo=#{vo.gameInfo} where gameIdx=#{vo.gameIdx};
 		</if>
-		<if test="flag == 'no'">
+		<if test="flag == 'nameno'">
 			update itGame set gameTitle=#{vo.gameTitle}, gameSubTitle=#{vo.gameSubTitle}, jangre=#{vo.jangre}, platform=#{vo.platform},showDate=<if test="vo.showDate == ''">default,</if><if test="vo.showDate != ''">#{vo.showDate},</if>price=#{vo.price}, metascore=#{vo.metascore}, steamscore=#{vo.steamscore}, steamPage=#{vo.steamPage}, developer=#{vo.developer}, gameInfo=#{vo.gameInfo} where gameIdx=#{vo.gameIdx};
 		</if>
-		<if test="flag == 'ok'">
+		<if test="flag == 'nameok'">
 			update itGame set gameTitle=#{vo.gameTitle}, gameSubTitle=#{vo.gameSubTitle}, jangre=#{vo.jangre}, platform=#{vo.platform},showDate=<if test="vo.showDate == ''">default,</if><if test="vo.showDate != ''">#{vo.showDate},</if>price=#{vo.price}, metascore=#{vo.metascore}, steamscore=#{vo.steamscore}, steamPage=#{vo.steamPage}, developer=#{vo.developer}, gameImg=#{vo.gameImg}, gameInfo=#{vo.gameInfo} where gameIdx=#{vo.gameIdx};
 		</if>
 	</update>

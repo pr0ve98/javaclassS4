@@ -2,10 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spring.javaclassS4.dao.AdminDAO">
 	<select id="getGameTotRecCnt" resultType="int">
-		select count(*) as totRecCnt from itGame;
+		<if test="search == ''">select count(*) as totRecCnt from itGame;</if>
+		<if test="search != ''">
+			<if test="searchpart == '제목'">select count(*) as totRecCnt from itGame where gameTitle like concat('%',#{search},'%') or gameSubTitle like concat('%',#{search},'%');</if>
+			<if test="searchpart == '개발사'">select count(*) as totRecCnt from itGame where developer like concat('%',#{search},'%');</if>
+		</if>
 	</select>
 	<select id="getGameList" resultType="com.spring.javaclassS4.vo.GameVO">
-		select * from itGame order by gameIdx desc limit #{startIndexNo},#{pageSize};
+		<if test="search == ''">select * from itGame order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
+		<if test="search != ''">
+			<if test="searchpart == '제목'">select * from itGame where gameTitle like concat('%',#{search},'%') or gameSubTitle like concat('%',#{search},'%') order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
+			<if test="searchpart == '개발사'">select * from itGame where developer like concat('%',#{search},'%') order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
+		</if>
 	</select>
 	<select id="gameTitleSearch" resultType="com.spring.javaclassS4.vo.GameVO">
 		select * from itGame where gameTitle=#{gameTitle};

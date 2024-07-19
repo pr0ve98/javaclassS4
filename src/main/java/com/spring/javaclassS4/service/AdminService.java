@@ -10,9 +10,9 @@ import com.spring.javaclassS4.vo.GameVO;
 
 public interface AdminService {
 
-	public int getGameTotRecCnt();
+	public int getGameTotRecCnt(String searchpart, String search);
 
-	public ArrayList<GameVO> getGameList(int startIndexNo, int pageSize);
+	public ArrayList<GameVO> getGameList(int startIndexNo, int pageSize, String viewpart, String searchpart, String search);
 
 	public int gameInput(GameVO vo, MultipartFile fName, HttpServletRequest request);
 

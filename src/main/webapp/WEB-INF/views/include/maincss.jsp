@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<c:set var="ctp" value="${pageContext.request.contextPath}"/>
 <style>
 		@font-face{
 		font-family:'DNFBitBitv2';
@@ -1072,6 +1074,68 @@
 	.replymenu > span {
 		cursor: pointer;
 	}
+	.view-wrap {
+		padding-bottom: 400px;
+	}
+	.gamebackground {
+		position: relative;
+	}
+	.backImg{
+		width: 100%;
+		height: 400px;
+		object-fit:cover;
+	}
+	.backgroud-cover {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		z-index: 20;
+	}
+	.background-b {
+		position: absolute;
+    	width: 100%;
+    	height: 100%;
+    	top: 0;
+    	left: 0;
+    	background-image: radial-gradient(circle at 50% 10%, rgba(24, 30, 38, 0) 0%, rgba(37, 40, 44, 0.83) 56.4%, rgba(50, 55, 61, 1) 87%);
+    }
+	.game-title-info {
+		position: absolute;
+		top: 257px;
+		left: 30px;
+		z-index:21;
+		width: 100%;
+	}
+	.platform-icon {
+		display: inline-block;
+		width: 24px;
+		height: 24px;
+		background-color: #fff;
+		margin-right: 10px;
+	}
+	.game-title-view {
+		font-size:50px;
+		color: #fff;
+		font-weight: bolder;
+	}
+	.score {
+		font-size: 24px;
+		color: #fff;
+		font-weight: bolder;
+		text-wrap: nowrap;
+	}
+	.score-info {
+		display: flex;
+		gap: 50px;
+	}
+	.review-game-img {
+		width: 180px;
+		height: 180px;
+	}
+	.review-star-add {
+		width: 50px;
+		height: 50px;
+	}
 	#resetmobile {display: none;}
 	@media screen and (min-width: 1200px) {
 		.game-item {
@@ -1266,7 +1330,15 @@
 		#searchlist {width: 100%;}
 		#resetmobile {display: block;}
 		#resetpc {display: none;}
-		
+		.backImg{
+			height: 200px;
+		}
+		.game-title-info {
+			top: 150px;
+			left: 0;
+		}
+		.platform-icon {margin-right: 4px;}
+		.game-title-view{font-size: 30px;}
 	}
 	@media screen and (max-width: 567px) {
 		.game-selection {justify-content: start;}

@@ -27,19 +27,25 @@ public class AdminController {
 	
 	@RequestMapping(value = "/gamelist", method = RequestMethod.GET)
 	public String settingGet(HttpSession session, Model model,
+			@RequestParam(name="viewpart", defaultValue = "gameIdx desc", required = false) String viewpart,
+			@RequestParam(name="searchpart", defaultValue = "제목", required = false) String searchpart,
+			@RequestParam(name="search", defaultValue = "", required = false) String search,
 			@RequestParam(name="page", defaultValue = "1", required = false) int page,
 			@RequestParam(name="pageSize", defaultValue = "20", required = false) int pageSize) {
 		
-		int totRecCnt = adminService.getGameTotRecCnt();
+		int totRecCnt = adminService.getGameTotRecCnt(searchpart, search);
 		int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
 		int startIndexNo = (page - 1) * pageSize;
 		model.addAttribute("page", page);
 		model.addAttribute("totRecCnt", totRecCnt);
 		model.addAttribute("totPage", totPage);
 		
-		ArrayList<GameVO> vos = adminService.getGameList(startIndexNo, pageSize);
+		ArrayList<GameVO> vos = adminService.getGameList(startIndexNo, pageSize, viewpart, searchpart, search);
 		
 		model.addAttribute("vos", vos);
+		model.addAttribute("viewpart", viewpart);
+		model.addAttribute("searchpart", searchpart);
+		model.addAttribute("search", search);
 		
 		return "admin/gamelist";
 	}

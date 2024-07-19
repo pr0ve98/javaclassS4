@@ -28,13 +28,13 @@ public class AdminServiceImpl implements AdminService {
 	JavaclassProvide javaclassProvide;
 
 	@Override
-	public int getGameTotRecCnt() {
-		return adminDAO.getGameTotRecCnt();
+	public int getGameTotRecCnt(String searchpart, String search) {
+		return adminDAO.getGameTotRecCnt(searchpart, search);
 	}
 
 	@Override
-	public ArrayList<GameVO> getGameList(int startIndexNo, int pageSize) {
-		return adminDAO.getGameList(startIndexNo, pageSize);
+	public ArrayList<GameVO> getGameList(int startIndexNo, int pageSize, String viewpart, String searchpart, String search) {
+		return adminDAO.getGameList(startIndexNo, pageSize, viewpart, searchpart, search);
 	}
 
 	@Override

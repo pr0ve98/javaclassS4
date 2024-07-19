@@ -48,6 +48,20 @@
                 ebutton.classList.toggle('eg-button-active');
             });
         });
+        
+        // 검색창 엔터로 검색
+         let searchInput = document.getElementById('search');
+
+	    if (searchInput) {
+	        searchInput.addEventListener('keyup', function(e) {
+	            if (e.key === 'Enter') {
+	        		let viewpart = $("#viewpart").val();
+	        		let searchpart = $("#searchpart").val();
+	        		let search = $("#search").val();
+	        		location.href = "${ctp}/admin/gamelist?page=${page}&viewpart="+viewpart+"&searchpart="+searchpart+"&search="+search;
+	            }
+	        });
+	    }
 	});
 
 	function showPopupAdd() {
@@ -157,7 +171,7 @@
 						if(res == "1"){
 							mask.style.display = 'none';
 							html.style.overflow = 'auto';
-							location.reload();
+							location.href='${ctp}/admin/gamelist';
 						}
 					},
 					error : function() {
@@ -197,7 +211,7 @@
 					if(res == "1"){
 						mask.style.display = 'none';
 						html.style.overflow = 'auto';
-						location.reload();
+						location.href='${ctp}/admin/gamelist';
 					}
 					else if(res == "2") {
 						alert("이미 해당 게임이 존재합니다!");
@@ -468,6 +482,13 @@
 			});
         }
 	}
+	
+	function partchange() {
+		let viewpart = $("#viewpart").val();
+		let searchpart = $("#searchpart").val();
+		let search = $("#search").val();
+		location.href = "${ctp}/admin/gamelist?page=${page}&viewpart="+viewpart+"&searchpart="+searchpart+"&search="+search;
+	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
@@ -484,11 +505,11 @@
 				<h2>게임리스트</h2>
 				<div style="display: flex; justify-content: space-between;">
 					<div id="searchlist" style="display: flex;">
-						<select name="searchpart" class="dropdown-btn mr-4">
-							<option>이름</option>
-							<option>개발사</option>
+						<select id="searchpart" name="searchpart" class="dropdown-btn mr-4">
+							<option ${searchpart == '제목' ? 'selected' : ''}>제목</option>
+							<option ${searchpart == '개발사' ? 'selected' : ''}>개발사</option>
 						</select>
-						<input type="text" name="search" id="search" placeholder="검색할 단어를 입력하세요" class="forminput mr-2" style="width: 100%;" />
+						<input type="text" name="search" id="search" value="${search}" placeholder="검색할 단어를 입력하세요" class="forminput mr-2" style="width: 100%;" />
 					</div>
 					<span id="resetpc"><button class="joinBtn-sm" onclick="location.href='${ctp}/admin/gamelist';">초기화면으로</button></span>
 				</div>
@@ -498,15 +519,15 @@
 		<hr/>
 		<div style="display: flex; align-items: center; justify-content: space-between;">
 			<div>총 ${totRecCnt}개<button class="badge badge-warning ml-3" onclick="showPopupAdd()">추가</button></div>
-			<select name="part" class="dropdown-btn">
-				<option>최근 등록된순</option>
-				<option>많이 담은순</option>
-				<option>발매일 최신순</option>
-				<option>발매일 오래된순</option>
-				<option>인벤스코어 높은순</option>
-				<option>인벤스코어 낮은순</option>
-				<option>메타스코어 높은순</option>
-				<option>메타스코어 낮은순</option>
+			<select id="viewpart" name="part" class="dropdown-btn" onchange="partchange()">
+				<option value="gameIdx desc" ${viewpart == 'gameIdx desc' ? 'selected' : ''}>최근 등록된순</option>
+				<option value="gameIdx desc">많이 담은순</option>
+				<option value="showDate desc" ${viewpart == 'showDate desc' ? 'selected' : ''}>발매일 최신순</option>
+				<option value="showDate" ${viewpart == 'showDate' ? 'selected' : ''}>발매일 오래된순</option>
+				<option value="gameIdx desc">인벤스코어 높은순</option>
+				<option value="gameIdx desc">인벤스코어 낮은순</option>
+				<option value="metascore desc" ${viewpart == 'metascore desc' ? 'selected' : ''}>메타스코어 높은순</option>
+				<option value="metascore" ${viewpart == 'metascore' ? 'selected' : ''}>메타스코어 낮은순</option>
 			</select>
 		</div>
 		<p><br/></p>
@@ -527,7 +548,7 @@
 						<c:if test="${fn:indexOf(vo.gameImg, 'http') != -1}"><img src="${vo.gameImg}" class="gamelistImg"></c:if>
 					</td>
 					<td data-title="제목" class="text-left">
-						<div>&nbsp;&nbsp;${vo.gameTitle}</div>
+						<div>&nbsp;&nbsp;<span style="cursor:pointer" onclick="location.href='${ctp}/gameview/${vo.gameIdx}'">${vo.gameTitle}</span></div>
 						<div style="font-size:12px; color:#b2bdce">&nbsp;&nbsp;${vo.gameSubTitle}</div>
 					</td>
 					<td data-title="장르">&nbsp;&nbsp;${vo.jangre}</td>
@@ -549,9 +570,9 @@
 			</c:forEach>
 		</table>
 		<div class="news-page">
-			<c:if test="${page > 1}"><button class="prev" onclick="location.href='${ctp}/admin/gamelist?page=${page-1}';"><i class="fa-solid fa-chevron-left fa-2xs"></i></button></c:if>
+			<c:if test="${page > 1}"><button class="prev" onclick="location.href='${ctp}/admin/gamelist?page=${page-1}&viewpart=${viewpart}&searchpart=${searchpart}&search=${search}';"><i class="fa-solid fa-chevron-left fa-2xs"></i></button></c:if>
 	        <span class="page-info">${page}/${totPage}</span>
-	        <c:if test="${page < totPage}"><button class="next" onclick="location.href='${ctp}/admin/gamelist?page=${page+1}';"><i class="fa-solid fa-chevron-right fa-2xs"></i></button></c:if>
+	        <c:if test="${page < totPage}"><button class="next" onclick="location.href='${ctp}/admin/gamelist?page=${page+1}&viewpart=${viewpart}&searchpart=${searchpart}&search=${search}';"><i class="fa-solid fa-chevron-right fa-2xs"></i></button></c:if>
 		</div>
 	</div>
 </main>

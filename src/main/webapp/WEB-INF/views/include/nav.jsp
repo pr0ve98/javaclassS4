@@ -11,11 +11,7 @@
 				<a href="${ctp}/community/recent" class="w3-bar-item w3-button">피드</a>
 				<a href="#" class="w3-bar-item w3-button">뉴스</a>
 			</div>
-			<button class="w3-button w3-block w3-left-align" onclick="myAccFunc(3)">Accordion3</button>
-			<div id="demoAcc3" class="w3-bar-block w3-hide w3-card-4 litiledark">
-				<a href="#" class="w3-bar-item w3-button">Link</a>
-				<a href="#" class="w3-bar-item w3-button">Link</a>
-			</div>
+			<button class="w3-button w3-block w3-left-align" onclick="location.href='${ctp}/review'">평가</button>
 			<button class="w3-button w3-block w3-left-align" onclick="myAccFunc(4)">Accordion4</button>
 			<div id="demoAcc4" class="w3-bar-block w3-hide w3-card-4 litiledark">
 				<a href="#" class="w3-bar-item w3-button">Link</a>
@@ -85,7 +81,7 @@
 				<img src="${ctp}/resources/images/logo.png" alt="로고" height="80px" class="p-2 ml-2">
 				<span class="menu-item"><a href="${ctp}/main" ${flag == 'main' ? 'class="selected"' : ''}>홈</a></span>
 				<span class="menu-item"><a href="${ctp}/community/recent" ${flag == 'community' ? 'class="selected"' : ''}>커뮤니티</a></span>
-				<span class="menu-item"><a href="#" ${flag == 'review' ? 'class="selected"' : ''}>평가</a></span>
+				<span class="menu-item"><a href="${ctp}/review" ${flag == 'review' ? 'class="selected"' : ''}>평가</a></span>
 				<span class="menu-item"><a href="#" ${flag == 'store' ? 'class="selected"' : ''}>스토어</a></span>
 			</div>
 			<div class="right-menu">

@@ -4,4 +4,7 @@
 	<select id="getNewGameList" resultType="com.spring.javaclassS4.vo.GameVO">
 		select * from itGame where <![CDATA[showDate <= now()]]> order by showDate desc limit 4;
 	</select>
+	<select id="getGame" resultType="com.spring.javaclassS4.vo.GameVO">
+		select * from itGame where gameIdx=#{gameIdx};
+	</select>
 </mapper>

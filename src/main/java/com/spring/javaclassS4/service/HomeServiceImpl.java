@@ -19,4 +19,9 @@ public class HomeServiceImpl implements HomeService {
 		return homeDAO.getNewGameList();
 	}
 
+	@Override
+	public GameVO getGame(int gameIdx) {
+		return homeDAO.getGame(gameIdx);
+	}
+
 }

@@ -8,4 +8,6 @@ public interface HomeService {
 
 	public ArrayList<GameVO> getNewGameList();
 
+	public GameVO getGame(int gameIdx);
+
 }

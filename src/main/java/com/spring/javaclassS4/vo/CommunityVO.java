@@ -30,6 +30,8 @@ public class CommunityVO {
 	// 게임 정보
 	private int gameIdx;
 	private String gameTitle;
+	private String gameImg;
+	private String showDate;
 	
 	// 좋아요
 	private int likeCnt;
@@ -40,4 +42,8 @@ public class CommunityVO {
 	private ArrayList<ReplyVO> parentsReply;
 	private ArrayList<ReplyVO> childReply;
 	private int replyCount;
+	
+	// 리뷰용
+	private int rating;
+	private String state;
 }

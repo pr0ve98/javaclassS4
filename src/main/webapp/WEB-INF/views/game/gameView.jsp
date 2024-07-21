@@ -14,8 +14,6 @@
 <script>
 	'use strict';
 	
-	window.Kakao.init("f1fade264b3d07d67f8e358b3d68803e");
-
 	document.addEventListener('DOMContentLoaded', function() {
 		// 페이지가 로딩될 때 로딩페이지 보여주기
 		const mask = document.querySelector('.mask');

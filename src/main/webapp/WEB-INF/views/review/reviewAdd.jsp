@@ -15,7 +15,8 @@
 <script>
 	'use strict';
 	
-	window.Kakao.init("f1fade264b3d07d67f8e358b3d68803e");
+	let isFetching = false;
+	let totPage = 1;
 
 	document.addEventListener('DOMContentLoaded', function() {
 		// 페이지가 로딩될 때 로딩페이지 보여주기
@@ -23,13 +24,66 @@
 		const html = document.querySelector('html');
 		html.style.overflow = 'hidden';
 		
-		window.addEventListener('load', function() {
-			const mask = document.querySelector('.mask');
-	        const html = document.querySelector('html');
-	        
-			mask.style.display = 'none';
-			html.style.overflow = 'auto';
-		});
+		// 무한스크롤
+		function rootData() {
+			isFetching = true;
+			
+			$.ajax({
+				url : "${ctp}/review/rootData",
+				type : "post",
+				data : {page : ${page}+totPage},
+				success : function(res) {
+					if(res) {
+						isFetching = false;
+						$("#root").append(res);
+						removeLoadingPage();
+					}
+					else {
+						isFetching = true;
+					}
+				},
+				error : function() {
+					alert("전송오류!");
+					isFetching = false;
+				}
+			});
+		}
+		
+		// 스크롤 이벤트
+		const handleScroll = debounce(function() {
+		    if (isFetching || totPage >= ${totPage}) {
+		        return false;
+		    }
+
+		    const scrollPercentage = (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight;
+	        if (scrollPercentage > 0.9) { // 90% 지점에서 데이터를 불러오기
+	            rootData();
+	            totPage++;
+	        }
+		}, 50);
+		
+		$(window).on('scroll', handleScroll);
+		
+		
+	    // 디바운스 함수
+	    function debounce(func, wait) {
+	        let timeout;
+	        return function(...args) {
+	            clearTimeout(timeout);
+	            timeout = setTimeout(() => func.apply(this, args), wait);
+	        };
+	    }
+	    
+	    // 페이지 로드 로딩페이지 제거
+	    $(window).on('load', function() {
+	    	removeLoadingPage();
+	    });
+	    
+	    // 로딩페이지 제거 함수
+	    function removeLoadingPage() {
+	        $('.mask').hide();
+	        $('html').css('overflow', 'auto');
+	    }
 		
         
         // 검색창 엔터로 검색
@@ -39,11 +93,190 @@
 	        searchInput.addEventListener('keyup', function(e) {
 	            if (e.key === 'Enter') {
 	        		let viewpart = $("#viewpart").val();
-	        		let searchpart = $("#searchpart").val();
 	        		let search = $("#search").val();
-	        		location.href = "${ctp}/admin/gamelist?page=${page}&viewpart="+viewpart+"&searchpart="+searchpart+"&search="+search;
+	        		location.href = "${ctp}/review?page=${page}&viewpart="+viewpart+"&search="+search;
 	            }
 	        });
+	    }
+	    
+	    // 별점 및 상태 추가
+	    const gameContainers = document.querySelectorAll('.cm-box');
+	
+	    gameContainers.forEach(container => {
+	        const stars = container.querySelectorAll('.review-star-add');
+	        const zeroRatingArea1 = container.querySelector('#zero-rating-area1');
+	        const zeroRatingArea2 = container.querySelector('#zero-rating-area2');
+	        const gameIdx = parseInt(container.getAttribute('data-game-idx'));
+	        const state = container.querySelectorAll('.review-star-add');
+	        let currentRating = parseInt(container.getAttribute('data-rating')) || 0; // 초기 별점 값을 가져옴(이미 리뷰한 게임)
+	
+	        // 초기 별점 설정
+	        if (currentRating) {
+	            lockStars(stars, currentRating);
+	            updateReviewText(gameIdx, currentRating); // 초기 별점에 맞게 텍스트 업데이트
+	        }
+	
+	     	// 각 별에 마우스를 올렸을 때 별점과 임시 텍스트를 업데이트
+	        stars.forEach(star => {
+	            star.addEventListener('mouseover', function() {
+	                const index = parseInt(this.getAttribute('data-index'));
+	                highlightStars(stars, index);
+	                updateTemporaryReviewText(gameIdx, index);
+	            });
+				
+	         	// 마우스가 별에서 벗어났을 때 별점과 텍스트를 초기화
+	            star.addEventListener('mouseout', function() {
+	                resetStars(stars, currentRating); // 별점을 현재 고정된 값으로 초기화
+	                updateReviewText(gameIdx, currentRating); // 별점 초기화 후 텍스트도 초기화
+	            });
+	
+	         	// 별을 클릭했을 때 별점을 고정하고 텍스트를 업데이트
+	            star.addEventListener('click', function() {
+	                const index = parseInt(this.getAttribute('data-index'));
+	                currentRating = index;
+	                lockStars(stars, currentRating);
+	                updateReviewText(gameIdx, currentRating);
+	                inputReview(gameIdx, currentRating); // 별점 저장
+	            });
+	        });
+			
+	     	// 별점 삭제 영역을 클릭했을 때 별점을 0으로 설정하고 텍스트를 초기화
+	        const zeroRatingAreas = [zeroRatingArea1, zeroRatingArea2];
+	        zeroRatingAreas.forEach(zeroRatingArea => {
+	            zeroRatingArea.addEventListener('click', function() {
+	                currentRating = 0;
+	                lockStars(stars, currentRating);
+	                updateReviewText(gameIdx, currentRating);
+	                deleteReview(gameIdx); // 별점 삭제
+	            });
+	        });
+	        
+	     	// 상태 버튼
+	        const buttons = container.querySelectorAll('.state-button');
+	        const stateIcon = container.querySelector('#stateIcon');
+
+	        buttons.forEach(button => {
+	            button.addEventListener('click', function() {
+	                // 모든 버튼에서 selected 클래스를 제거
+	                buttons.forEach(btn => {
+	                    if (btn !== button) {
+	                        btn.classList.remove('selected');
+	                    }
+	                });
+
+	                // 클릭된 버튼의 selected 클래스를 토글
+	                const isSelected = button.classList.toggle('selected');
+	                
+	                if (isSelected) {
+	                    const state = button.getAttribute('data-state');
+	                    switch (state) {
+	                        case 'play':
+	                            stateIcon.src = '${ctp}/images/playIcon.svg';
+	                            $("#statetext"+gameIdx).html("<font color=\"#fff\">하고있어요</font>");
+	                            break;
+	                        case 'done':
+	                            stateIcon.src = '${ctp}/images/doneIcon.png';
+	                            $("#statetext"+gameIdx).html("<font color=\"#fff\">다했어요</font>");
+	                            break;
+	                        case 'stop':
+	                            stateIcon.src = '${ctp}/images/stopIcon.svg';
+	                            $("#statetext"+gameIdx).html("<font color=\"#fff\">그만뒀어요</font>");
+	                            break;
+	                        case 'folder':
+	                            stateIcon.src = '${ctp}/images/folderIcon.svg';
+	                            $("#statetext"+gameIdx).html("<font color=\"#fff\">모셔놨어요</font>");
+	                            break;
+	                        case 'pin':
+	                            stateIcon.src = '${ctp}/images/pinIcon.svg';
+	                            $("#statetext"+gameIdx).html("<font color=\"#fff\">관심있어요</font>");
+	                            break;
+	                        default:
+	                            stateIcon.src = '${ctp}/images/noneIcon.svg';
+	                            $("#statetext"+gameIdx).html("현재 게임 상태를 선택해주세요");
+	                            break;
+	                    }
+	                } else {
+	                    stateIcon.src = '${ctp}/images/noneIcon.svg';
+	                    $("#statetext"+gameIdx).html("현재 게임 상태를 선택해주세요");
+	                }
+	            });
+	        });
+	    });
+	
+	 	// 별점 색 채우기 함수
+	    function highlightStars(stars, index) {
+	        stars.forEach(star => {
+	            const starIndex = parseInt(star.getAttribute('data-index'));
+	            if (starIndex <= index) {
+	                star.style.backgroundImage = 'url("${ctp}/images/starpull.png")';
+	            } else {
+	                star.style.backgroundImage = 'url("${ctp}/images/star.png")';
+	            }
+	        });
+	    }
+	
+	 	// 별점 초기화 함수
+	    function resetStars(stars, currentRating) {
+	        stars.forEach(star => {
+	            const starIndex = parseInt(star.getAttribute('data-index'));
+	            if (currentRating && starIndex <= currentRating) {
+	                star.style.backgroundImage = 'url("${ctp}/images/starpull.png")';
+	            } else {
+	                star.style.backgroundImage = 'url("${ctp}/images/star.png")';
+	            }
+	        });
+	    }
+	
+	    function lockStars(stars, index) {
+	        stars.forEach(star => {
+	            const starIndex = parseInt(star.getAttribute('data-index'));
+	            if (index === 0) {
+	                star.style.backgroundImage = 'url("${ctp}/images/star.png")';
+	            } else {
+	                if (starIndex <= index) {
+	                    star.style.backgroundImage = 'url("${ctp}/images/starpull.png")';
+	                } else {
+	                    star.style.backgroundImage = 'url("${ctp}/images/star.png")';
+	                }
+	            }
+	        });
+	    }
+	
+	    function updateTemporaryReviewText(gameIdx, rating) {
+	        const reviewText = {
+	            1: "😰 끔찍해요!",
+	            2: "🤨 별로예요",
+	            3: "🙂 괜찮아요",
+	            4: "😊 맘에 들어요!",
+	            5: "😍 완전 최고!"
+	        };
+	        if (rating >= 1 && rating <= 5) {
+	            $("#startext"+gameIdx).html(reviewText[rating]);
+	        } else {
+	            $("#startext"+gameIdx).html("");
+	        }
+	    }
+	
+	    function updateReviewText(gameIdx, rating) {
+	        const reviewText = {
+	            0: "이 게임에 별점을 주세요!",
+	            1: "<font color=\"#fff\">😰 끔찍해요!</font>",
+	            2: "<font color=\"#fff\">🤨 별로예요</font>",
+	            3: "<font color=\"#fff\">🙂 괜찮아요</font>",
+	            4: "<font color=\"#fff\">😊 맘에 들어요!</font>",
+	            5: "<font color=\"#fff\">😍 완전 최고!</font>"
+	        };
+	        $("#startext"+gameIdx).html(reviewText[rating]);
+	    }
+	
+	    // 리뷰 추가 및 수정
+	    function inputReview(gameIdx, rating) {
+	        
+	    }
+	    
+	    // 리뷰 삭제
+	    function deleteReview(gameIdx) {
+	        
 	    }
 	});
 
@@ -54,6 +287,21 @@
         html.style.overflow = 'hidden';
     }
 	
+ 	function toggleContentMenu(gameIdx) {
+ 	   	const elements = document.querySelectorAll('[id^="contentMenu"]');
+ 	   	const otherElements = Array.from(elements).filter(element => element.id !== "contentMenu" + gameIdx); // 필터 적용해 조건부로 가져오기
+ 	    let dropdown = document.getElementById("contentMenu"+gameIdx);
+ 	    
+ 	   otherElements.forEach(element => {
+ 	   		element.style.display = "none";
+ 		});
+ 	    
+ 	    if (dropdown.style.display === "block") {
+ 	        dropdown.style.display = "none";
+ 	    } else {
+ 	        dropdown.style.display = "block";
+ 	    }
+ 	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
@@ -71,7 +319,7 @@
 			</div>
 		</div>
 		<div style="display: flex;">
-			<div style="flex-grow:2">
+			<div style="flex-grow:1">
 				<div style="display: flex; align-items: center; justify-content: space-between;">
 					<div id="searchlist" style="display: flex; align-items: center;">
 						<i class="fa-solid fa-magnifying-glass mr-2"></i>
@@ -86,24 +334,74 @@
 					</select>
 				</div>
 				<p><br/></p>
-				<div class="cm-box" style="padding:0">
-					<div style="display: flex">
-						<div>
-							<img src="${ctp}/game/발더스게이트.jpg" class="review-game-img">
-							<c:if test="${fn:indexOf(vo.gameImg, 'http') != -1}"><img src="${ctp}/game/${vo.gameImg}" class="review-game-img"></c:if>
-							<c:if test="${fn:indexOf(vo.gameImg, 'http') != -1}"><img src="${vo.gameImg}" class="review-game-img"></c:if>
-						</div>
-						<div class="review-text">
+				<c:forEach var="vo" items="${vos}">
+					<div class="cm-box" style="padding:0" data-game-idx="${vo.gameIdx}" data-rating="${vo.rating}">
+						<div style="display: flex">
 							<div>
-								<div>게임 이름</div>
+								<c:if test="${fn:indexOf(vo.gameImg, 'http') == -1}"><img src="${ctp}/game/${vo.gameImg}" class="review-game-i"></c:if>
+								<c:if test="${fn:indexOf(vo.gameImg, 'http') != -1}"><img src="${vo.gameImg}" class="review-game-i"></c:if>
 							</div>
-							<div>출시일</div>
-							<div>
-								<span><img class="review-star-add" src="${ctp}/images/star.png"></span>
+							<div class="review-add">
+								<div style="display: flex; justify-content: space-between; align-items: center;">
+									<div class="review-add-title">${vo.gameTitle}</div>
+									<div style="position: relative;">
+										<img id="stateIcon" src="${ctp}/images/noneIcon.svg" onclick="toggleContentMenu(${vo.gameIdx})">
+										<div id="contentMenu${vo.gameIdx}" class="review-menu">
+								        	<div class="review-menu-star">
+												<div id="zero-rating-area1" style="position: absolute; left: -20px; width: 20px; height: 40px; cursor: pointer;"></div>
+												<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="1"></span>
+												<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="2"></span>
+												<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="3"></span>
+												<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="4"></span>
+												<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="5"></span>
+											</div>
+											<div id="startext${vo.gameIdx}">이 게임에 별점을 주세요!</div>
+											<hr/>
+											<div class="state-buttons" style="display: flex;">
+												<div class="state-button" data-state="play">
+													<div class="button-background">
+														<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Play.svg&quot;);"></span>
+													</div>
+												</div>
+												<div class="state-button" data-state="done">
+													<div class="button-background">
+														<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Check.svg&quot;);"></span>
+													</div>
+												</div>
+												<div class="state-button" data-state="stop">
+													<div class="button-background">
+														<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Cancel.svg&quot;);"></span>
+													</div>
+												</div>
+												<div class="state-button" data-state="folder">
+													<div class="button-background">
+														<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Folder.svg&quot;);"></span>
+													</div>
+												</div>
+												<div class="state-button" data-state="pin">
+													<div class="button-background">
+														<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Pin.svg&quot;);"></span>
+													</div>
+												</div>
+											</div>
+											<div id="statetext${vo.gameIdx}">현재 게임 상태를 선택해주세요</div>
+								    	</div>
+									</div>
+								</div>
+								<div style="margin-bottom: 30px;">${fn:substring(vo.showDate,0,4)}</div>
+								<div style="display: flex; position: relative;">
+									<div id="zero-rating-area2" style="position: absolute; left: -20px; width: 20px; height: 40px; cursor: pointer;"></div>
+									<span class="review-star-add mr-1" data-index="1"></span>
+									<span class="review-star-add mr-1" data-index="2"></span>
+									<span class="review-star-add mr-1" data-index="3"></span>
+									<span class="review-star-add mr-1" data-index="4"></span>
+									<span class="review-star-add mr-1" data-index="5"></span>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+				</c:forEach>
+				<div id="root"></div>
 			</div>
 			<div style="flex-grow:1">유저가 평가한 게임수</div>
 		</div>

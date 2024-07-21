@@ -81,7 +81,7 @@
 	</update>
 	
 	<insert id="communityInput">
-		insert into itCommunity values(default,#{vo.mid},#{vo.section},#{vo.part},<if test="vo.part == '자유'">default,</if><if test="vo.part != '자유'">#{vo.cmGameIdx},</if>#{vo.cmContent},default,#{vo.cmHostIp},#{vo.publicType});
+		insert into itCommunity values(default,#{vo.mid},#{vo.section},#{vo.part},<if test="vo.part == '자유'">default,</if><if test="vo.part != '자유'">#{vo.cmGameIdx},</if>#{vo.cmContent},default,#{vo.cmHostIp},#{vo.publicType},default,default);
 	</insert>
 	<insert id="setLikeAdd">
 		insert into itLike values(default, #{cmIdx}, #{mid});

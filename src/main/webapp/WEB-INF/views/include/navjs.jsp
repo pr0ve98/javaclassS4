@@ -2,7 +2,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:set var="ctp" value="${pageContext.request.contextPath}"/>
  	<script>
-	
+ 	
+    window.Kakao.init("f1fade264b3d07d67f8e358b3d68803e");
+    Kakao.isInitialized();
+    
 	function w3_open() {
 	  document.getElementById("mySidebar").style.display = "block";
 	}

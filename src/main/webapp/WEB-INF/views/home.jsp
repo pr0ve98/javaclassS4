@@ -13,23 +13,19 @@
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 <script>
 	'use strict';
-	
- 	window.Kakao.init("f1fade264b3d07d67f8e358b3d68803e");
  	
- 	$(document).ready(function() {
+ 	document.addEventListener('DOMContentLoaded', function() {
 		// 페이지가 로딩될 때 로딩페이지 보여주기
 		const mask = document.querySelector('.mask');
 		const html = document.querySelector('html');
 		html.style.overflow = 'hidden';
+		
+		window.addEventListener('load', function() {
+			mask.style.display = 'none';
+			html.style.overflow = 'auto';
+		});
  	});
  	
-	window.addEventListener('load', function() {
-		const mask = document.querySelector('.mask');
-        const html = document.querySelector('html');
-        
-		mask.style.display = 'none';
-		html.style.overflow = 'auto';
-	});
 
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
@@ -100,8 +96,8 @@
 			                        <div class="cnt-item"><span><i class="fa-solid fa-play fa-sm" style="color: #0085eb;"></i>&nbsp;&nbsp;하고있어요</span><span>${sMid != null ? '3' : '-'}</span></div>
 			                        <div class="cnt-item"><span><i class="fa-solid fa-check" style="color: #00c722;"></i>&nbsp;&nbsp;다했어요</span><span>${sMid != null ? '42' : '-'}</span></div>
 			                        <div class="cnt-item"><span><i class="fa-solid fa-xmark" style="color: #f50000;"></i>&nbsp;&nbsp;그만뒀어요</span><span>${sMid != null ? '29' : '-'}</span></div>
-			                        <div class="cnt-item"><span><i class="fa-solid fa-thumbtack fa-sm" style="color: #fff700;"></i>&nbsp;&nbsp;관심있어요</span><span>${sMid != null ? '12' : '-'}</span></div>
 			                        <div class="cnt-item"><span><i class="fa-solid fa-folder fa-sm" style="color: #d9d9d9;"></i>&nbsp;&nbsp;모셔놨어요</span><span>${sMid != null ? '10' : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-thumbtack fa-sm" style="color: #fff700;"></i>&nbsp;&nbsp;관심있어요</span><span>${sMid != null ? '12' : '-'}</span></div>
 			                        <div class="cnt-item"><span><i class="fa-solid fa-ellipsis" style="color:#37414cd6;"></i>&nbsp;&nbsp;상태없음</span><span>${sMid != null ? '12' : '-'}</span></div>
 			                    </div>
 			                </div>

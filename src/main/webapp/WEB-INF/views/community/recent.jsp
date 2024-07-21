@@ -16,8 +16,6 @@
 <script>
 	'use strict';
 	
-	window.Kakao.init("f1fade264b3d07d67f8e358b3d68803e");
-	
 	let isWriteButtonClicked = false;
 	
 	let isFetching = false;

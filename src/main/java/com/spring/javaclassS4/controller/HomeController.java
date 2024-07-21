@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.spring.javaclassS4.service.AdminService;
 import com.spring.javaclassS4.service.HomeService;
+import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 
 @Controller
@@ -49,19 +50,22 @@ public class HomeController {
 			@RequestParam(name="page", defaultValue = "1", required = false) int page,
 			@RequestParam(name="pageSize", defaultValue = "20", required = false) int pageSize) {
 		
-		int totRecCnt = adminService.getGameTotRecCnt(searchpart, search);
+		String mid = session.getAttribute("sMid")==null ? "" : (String)session.getAttribute("sMid");
+		
+		int totRecCnt = homeService.getGameTotRecCnt(searchpart, search, mid);
 		int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
 		int startIndexNo = (page - 1) * pageSize;
 		model.addAttribute("page", page);
 		model.addAttribute("totRecCnt", totRecCnt);
 		model.addAttribute("totPage", totPage);
 		
-		ArrayList<GameVO> vos = adminService.getGameList(startIndexNo, pageSize, viewpart, searchpart, search);
+		ArrayList<CommunityVO> vos = homeService.getGameList(startIndexNo, pageSize, viewpart, searchpart, search, mid);
 		
 		model.addAttribute("vos", vos);
 		model.addAttribute("viewpart", viewpart);
 		model.addAttribute("searchpart", searchpart);
 		model.addAttribute("search", search);
+		model.addAttribute("flag", "review");
 		
 		return "review/reviewAdd";
 	}

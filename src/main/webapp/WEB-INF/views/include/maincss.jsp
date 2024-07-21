@@ -1128,15 +1128,114 @@
 		display: flex;
 		gap: 50px;
 	}
-	.review-game-img {
+	.review-game-i {
 		width: 180px;
 		height: 180px;
+		border-radius: 8px;
+	    margin-right: 12px;
+	    object-fit: cover;
 	}
 	.review-star-add {
-		width: 50px;
-		height: 50px;
+		width: 40px;
+		height: 40px;
+		background-image: url('${ctp}/images/star.png');
+	    background-size: cover;
+	    cursor: pointer;
+	    transition: transform 0.2s, background-image 0.2s;
 	}
 	#resetmobile {display: none;}
+	.review-add {
+		width: 100%;
+		padding: 20px;
+	}
+	.review-add-title {
+		color:#fff;
+		font-size: 20px;
+	}
+	.review-menu {
+	   	display: none;
+	    position: absolute;
+	    right: -2px;
+	    top: 26px;
+	    background-color: #161d25;
+	    color: #b2bdce;
+	    z-index: 1;
+	    border-radius: 5px;
+	    padding: 10px;
+	    font-family: 'SUITE-Regular';
+	    width: 200px;
+	    box-shadow: 0 4px 5px rgba(0, 0, 0, .06), 0 1px 10px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .4);
+	    text-align: center;
+    }
+    .review-menu-star {
+    	display: flex;
+    	position: relative;
+    	justify-content: center;
+    }
+    [id^="startext"], [id^="statetext"] {
+    	font-size: 14px;
+    	margin-top: 5px;
+    	color: #32373d;
+	}
+	.state-button {
+		text-align: center;
+	    width: 38px;
+	    height: 32px;
+	    cursor: pointer;
+	    padding: 0 3px;
+	}
+	.button-background {
+		display: flex;
+		width: 100%;
+	    height: 100%;
+	    border-radius: 50%;
+	    background-color: #32373d;
+	    transition: background-color .1s linear;
+	    justify-content: center;
+	}
+	.state-icon {
+		-webkit-mask-size: cover;
+    	mask-size: cover;
+		width: 18px;
+	    height: 18px;
+	    margin-top: 7px;
+	    color: #b2bdce;
+	    transition: color .1s linear;
+		background-color: #b2bdce59;
+	}
+	.state-button[data-state="play"]:hover .button-background {
+    	background-color: #0085eb;
+	}
+	.state-button[data-state="done"]:hover .button-background {
+	    background-color: #00c722;
+	}
+	.state-button[data-state="stop"]:hover .button-background {
+	    background-color: #f50000;
+	}
+	.state-button[data-state="folder"]:hover .button-background {
+	    background-color: #3b4757;
+	}
+	.state-button[data-state="pin"]:hover .button-background {
+	    background-color: #fab400;
+	}
+	.state-button[data-state="play"].selected .button-background {
+    	background-color: #0085eb;
+	}
+	.state-button[data-state="done"].selected .button-background {
+	    background-color: #00c722;
+	}
+	.state-button[data-state="stop"].selected .button-background {
+	    background-color: #f50000;
+	}
+	.state-button[data-state="folder"].selected .button-background {
+	    background-color: #3b4757;
+	}
+	.state-button[data-state="pin"].selected .button-background {
+	    background-color: #fab400;
+	}
+	.state-button:hover .state-icon, .state-button.selected .state-icon {
+	    background-color: #fff; /* 아이콘 색상을 하얀색으로 변경 */
+	}
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;

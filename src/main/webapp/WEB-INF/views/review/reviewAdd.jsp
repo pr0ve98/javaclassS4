@@ -17,6 +17,7 @@
 	
 	let isFetching = false;
 	let totPage = 1;
+	let mid = '${sMid}';
 
 	document.addEventListener('DOMContentLoaded', function() {
 		// 페이지가 로딩될 때 로딩페이지 보여주기
@@ -132,11 +133,19 @@
 	
 	         	// 별을 클릭했을 때 별점을 고정하고 텍스트를 업데이트
 	            star.addEventListener('click', function() {
+	            	if(mid == '') {
+	            		showPopupLogin();
+	            		return false;
+	            	}
 	                const index = parseInt(this.getAttribute('data-index'));
 	                currentRating = index;
 	                lockStars(stars, currentRating);
 	                updateReviewText(gameIdx, currentRating);
-	                inputReview(gameIdx, currentRating); // 별점 저장
+	                $("#moreReviewInput"+gameIdx).show();
+	                
+	                const stateButton = container.querySelector('.state-button.selected');
+	                const state = stateButton ? stateButton.getAttribute('data-state') || 'none' : 'none';
+	               	inputReview(gameIdx, currentRating, state); // 별점 저장
 	            });
 	        });
 			
@@ -144,10 +153,19 @@
 	        const zeroRatingAreas = [zeroRatingArea1, zeroRatingArea2];
 	        zeroRatingAreas.forEach(zeroRatingArea => {
 	            zeroRatingArea.addEventListener('click', function() {
+	            	if(mid == '') {
+	            		showPopupLogin();
+	            		return false;
+	            	}
 	                currentRating = 0;
 	                lockStars(stars, currentRating);
 	                updateReviewText(gameIdx, currentRating);
-	                deleteReview(gameIdx); // 별점 삭제
+	                $("#moreReviewInput"+gameIdx).hide();
+	                
+	                const stateButton = container.querySelector('.state-button.selected');
+	                const state = stateButton ? stateButton.getAttribute('data-state') || 'none' : 'none';
+	                if(currentRating == 0 && state == 'none') deleteReview(gameIdx);
+	                else inputReview(gameIdx, currentRating, state); // 별점 저장
 	            });
 	        });
 	        
@@ -163,10 +181,9 @@
 	                        btn.classList.remove('selected');
 	                    }
 	                });
-
+	                
 	                // 클릭된 버튼의 selected 클래스를 토글
 	                const isSelected = button.classList.toggle('selected');
-	                
 	                if (isSelected) {
 	                    const state = button.getAttribute('data-state');
 	                    switch (state) {
@@ -199,6 +216,11 @@
 	                    stateIcon.src = '${ctp}/images/noneIcon.svg';
 	                    $("#statetext"+gameIdx).html("현재 게임 상태를 선택해주세요");
 	                }
+	                
+	                const stateButton = container.querySelector('.state-button.selected');
+	                const state = stateButton ? stateButton.getAttribute('data-state') || 'none' : 'none';
+	                if(currentRating == 0 && state == 'none') deleteReview(gameIdx);
+	                else inputReview(gameIdx, currentRating, state); // 별점 저장
 	            });
 	        });
 	    });
@@ -270,27 +292,53 @@
 	    }
 	
 	    // 리뷰 추가 및 수정
-	    function inputReview(gameIdx, rating) {
-	        
+	    function inputReview(gameIdx, rating, state) {
+	        $.ajax({
+	        	url : "${ctp}/review/reviewAdd",
+	        	type : "post",
+	        	data : {gameIdx:gameIdx, rating:rating, state:state, mid:mid},
+	        	success : function() {
+					
+				},
+				error : function() {
+					alert("전송오류!");
+				}
+	        });
 	    }
 	    
 	    // 리뷰 삭제
 	    function deleteReview(gameIdx) {
-	        
+	        $.ajax({
+	        	url : "${ctp}/review/reviewDelete",
+	        	type : "post",
+	        	data : {gameIdx:gameIdx, mid:mid},
+	        	success : function() {
+					
+				},
+				error : function() {
+					alert("전송오류!");
+				}
+	        });
 	    }
 	});
 
-	function showPopupAdd() {
+	function showPopupReviewAllAdd() {
     	const popup = document.querySelector('#popup-add');
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
         html.style.overflow = 'hidden';
+        console.log("Asfsdafsadfsdfsd");
     }
 	
  	function toggleContentMenu(gameIdx) {
  	   	const elements = document.querySelectorAll('[id^="contentMenu"]');
  	   	const otherElements = Array.from(elements).filter(element => element.id !== "contentMenu" + gameIdx); // 필터 적용해 조건부로 가져오기
  	    let dropdown = document.getElementById("contentMenu"+gameIdx);
+ 	   	
+    	if(mid == '') {
+    		showPopupLogin();
+    		return false;
+    	}
  	    
  	   otherElements.forEach(element => {
  	   		element.style.display = "none";
@@ -300,6 +348,15 @@
  	        dropdown.style.display = "none";
  	    } else {
  	        dropdown.style.display = "block";
+ 	        
+ 	       // 바깥 부분 클릭 시 메뉴 닫기
+ 	       document.addEventListener('click', function outsideClickListener(event) {
+ 	          // 클릭된 요소가 메뉴나 메뉴 아이콘이 아니면 메뉴 닫기
+ 	          if (!dropdown.contains(event.target) && !event.target.matches('#stateIcon')) {
+ 	            dropdown.style.display = "none";
+ 	            document.removeEventListener('click', outsideClickListener);
+ 	          }
+ 	       });
  	    }
  	}
 </script>
@@ -336,7 +393,7 @@
 				<p><br/></p>
 				<c:forEach var="vo" items="${vos}">
 					<div class="cm-box" style="padding:0" data-game-idx="${vo.gameIdx}" data-rating="${vo.rating}">
-						<div style="display: flex">
+						<div class="review-viewflex">
 							<div>
 								<c:if test="${fn:indexOf(vo.gameImg, 'http') == -1}"><img src="${ctp}/game/${vo.gameImg}" class="review-game-i"></c:if>
 								<c:if test="${fn:indexOf(vo.gameImg, 'http') != -1}"><img src="${vo.gameImg}" class="review-game-i"></c:if>
@@ -345,10 +402,10 @@
 								<div style="display: flex; justify-content: space-between; align-items: center;">
 									<div class="review-add-title">${vo.gameTitle}</div>
 									<div style="position: relative;">
-										<img id="stateIcon" src="${ctp}/images/noneIcon.svg" onclick="toggleContentMenu(${vo.gameIdx})">
+										<img id="stateIcon" src="${ctp}/images/${vo.state == null ? 'none' : vo.state}Icon.svg" onclick="toggleContentMenu(${vo.gameIdx})">
 										<div id="contentMenu${vo.gameIdx}" class="review-menu">
 								        	<div class="review-menu-star">
-												<div id="zero-rating-area1" style="position: absolute; left: -20px; width: 20px; height: 40px; cursor: pointer;"></div>
+												<div id="zero-rating-area1" style="position: absolute; left: 0px; width: 20px; height: 24px; cursor: pointer;"></div>
 												<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="1"></span>
 												<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="2"></span>
 												<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="3"></span>
@@ -356,35 +413,43 @@
 												<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="5"></span>
 											</div>
 											<div id="startext${vo.gameIdx}">이 게임에 별점을 주세요!</div>
+											<div id="moreReviewInput${vo.gameIdx}" onclick="showPopupReviewAllAdd()"><i class="fa-solid fa-pencil"></i>&nbsp;&nbsp;평가도 남겨보세요</div>
 											<hr/>
 											<div class="state-buttons" style="display: flex;">
-												<div class="state-button" data-state="play">
+												<div class="state-button ${vo.state == 'play' ? 'selected' : ''}" data-state="play">
 													<div class="button-background">
 														<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Play.svg&quot;);"></span>
 													</div>
 												</div>
-												<div class="state-button" data-state="done">
+												<div class="state-button ${vo.state == 'done' ? 'selected' : ''}" data-state="done">
 													<div class="button-background">
 														<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Check.svg&quot;);"></span>
 													</div>
 												</div>
-												<div class="state-button" data-state="stop">
+												<div class="state-button ${vo.state == 'stop' ? 'selected' : ''}" data-state="stop">
 													<div class="button-background">
 														<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Cancel.svg&quot;);"></span>
 													</div>
 												</div>
-												<div class="state-button" data-state="folder">
+												<div class="state-button ${vo.state == 'folder' ? 'selected' : ''}" data-state="folder">
 													<div class="button-background">
 														<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Folder.svg&quot;);"></span>
 													</div>
 												</div>
-												<div class="state-button" data-state="pin">
+												<div class="state-button ${vo.state == 'pin' ? 'selected' : ''}" data-state="pin">
 													<div class="button-background">
 														<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Pin.svg&quot;);"></span>
 													</div>
 												</div>
 											</div>
-											<div id="statetext${vo.gameIdx}">현재 게임 상태를 선택해주세요</div>
+											<div id="statetext${vo.gameIdx}">
+												<c:if test="${vo.state == 'play'}"><font color="#fff">하고있어요</font></c:if>
+												<c:if test="${vo.state == 'done'}"><font color="#fff">다했어요</font></c:if>
+												<c:if test="${vo.state == 'stop'}"><font color="#fff">그만뒀어요</font></c:if>
+												<c:if test="${vo.state == 'folder'}"><font color="#fff">모셔놨어요</font></c:if>
+												<c:if test="${vo.state == 'pin'}"><font color="#fff">관심있어요</font></c:if>
+												<c:if test="${vo.state == '' || vo.state == 'none'}">현재 게임 상태를 선택해주세요</c:if>
+											</div>
 								    	</div>
 									</div>
 								</div>
@@ -403,7 +468,7 @@
 				</c:forEach>
 				<div id="root"></div>
 			</div>
-			<div style="flex-grow:1">유저가 평가한 게임수</div>
+			<div class="userReview">유저가 평가한 게임수</div>
 		</div>
 	</div>
 </main>
@@ -413,7 +478,7 @@
   <div class="popup-add-content scrollbar">
 		<div class="popup-add-header">
 			<div class="e-header-text">게임 등록</div>
-    		<a href="" onclick="closePopup('add')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+    		<div style="cursor:pointer;" onclick="closePopup('add')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
 		<div class="popup-add-main">
 			<form name="gameaddform" method="post">
@@ -500,7 +565,7 @@
   <div class="popup-gameedit-content scrollbar">
 		<div class="popup-add-header">
 			<div class="e-header-text">게임 수정</div>
-    		<a href="" onclick="closePopup('gameedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+    		<div style="cursor:pointer;" onclick="closePopup('gameedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
 		<div class="popup-add-main">
 			<form name="egameaddform" method="post">

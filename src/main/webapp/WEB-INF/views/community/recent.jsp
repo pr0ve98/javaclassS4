@@ -290,6 +290,7 @@
     	
         popup.classList.remove('hide');
         html.style.overflow = 'hidden';
+        $("#contentMenu"+vo.cmIdx).hide();
         
         let headertext = '';
         $('.community-editcategory').removeClass('active');
@@ -760,7 +761,7 @@
 									<div style="position:relative;">
 										<i class="fa-solid fa-bars fa-xl" onclick="toggleContentMenu(${cmVO.cmIdx})" style="color: #D5D5D5;cursor:pointer;"></i>
 							 			<div id="contentMenu${cmVO.cmIdx}" class="content-menu">
-									        <c:if test="${sMid == cmVO.mid}"><div onclick="showPopupEdit('${fn:replace(cmVO, '\"', '&quot;')}')">수정</div></c:if>
+									        <c:if test="${sMid == cmVO.mid}"><div onclick="showPopupEdit('${fn:replace(fn:replace(cmVO, newLine, '<br>'), '\"', '&quot;')}')">수정</div></c:if>
 										    <c:if test="${sMid == cmVO.mid || sLevel == 0}"><div onclick="contentDelete(${cmVO.cmIdx})"><font color="red">삭제</font></div></c:if>
 									        <c:if test="${sLevel == 0}"><div>사용자 제재</div></c:if>
 									        <c:if test="${sMid != cmVO.mid && sLevel != 0}">
@@ -885,7 +886,7 @@
   <div class="popup-write-content scrollbar">
   		<div class="popup-write-header">
             <span class="header-text"></span>
-    		<a href="" onclick="closePopup('write')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+    		<div style="cursor:pointer;" onclick="closePopup('write')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
         <div class="category-selection">
             <button class="community-category active" data-category="일지">일지</button>
@@ -1058,7 +1059,7 @@
   <div class="popup-edit-content scrollbar">
   		<div class="popup-edit-header">
             <span class="header-edittext"></span>
-    		<a href="" onclick="closePopup('edit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+    		<div style="cursor:pointer;" onclick="closePopup('edit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
         <div class="category-selection">
             <button class="community-editcategory active" data-category="일지">일지</button>
@@ -1238,7 +1239,7 @@
   <div class="popup-replyedit-content scrollbar">
   		<div class="popup-replyedit-header mb-4">
             <span class="e-header-text">댓글 수정</span>
-    		<a href="" onclick="closePopup('replyedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+    		<div style="cursor:pointer;" onclick="closePopup('replyedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
  		<div><input type="text" id="replyedit" name="replyedit" class="forminput mb-3" style="width:100%" placeholder="수정할 댓글을 입력하세요"></div>
  		<input type="hidden" id="replyIdx" name="replyIdx" />

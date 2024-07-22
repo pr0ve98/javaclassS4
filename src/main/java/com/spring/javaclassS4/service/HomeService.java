@@ -11,9 +11,4 @@ public interface HomeService {
 
 	public GameVO getGame(int gameIdx);
 
-	public int getGameTotRecCnt(String searchpart, String search, String mid);
-
-	public ArrayList<CommunityVO> getGameList(int startIndexNo, int pageSize, String viewpart, String searchpart,
-			String search, String mid);
-
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaclassS4.dao.ReviewDAO">
+	<select id="getGameTotRecCnt" resultType="int">
+		<if test="search == ''">SELECT COUNT(DISTINCT g.gameIdx) as totRecCnt FROM itGame g LEFT JOIN itReview r ON g.gameIdx = r.revGameIdx AND r.revMid = #{mid} WHERE r.revMid IS NULL;</if>
+		<if test="search != ''">
+			select count(*) as totRecCnt from itGame g LEFT JOIN itReview r ON g.gameIdx = r.revGameIdx AND r.revMid = #{mid} where g.gameTitle like concat('%',#{search},'%') or g.gameSubTitle like concat('%',#{search},'%');
+		</if>
+	</select>
+	<select id="getGameList" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		<if test="search == ''">SELECT g.* FROM itGame g LEFT JOIN itReview r ON g.gameIdx = r.revGameIdx AND r.revMid = #{mid} WHERE r.revMid IS NULL ORDER BY ${viewpart} LIMIT #{startIndexNo}, #{pageSize};</if>
+		<if test="search != ''">
+			select g.*, r.* from itGame g LEFT JOIN itReview r ON g.gameIdx = r.revGameIdx AND r.revMid = #{mid} where g.gameTitle like concat('%',#{search},'%') or g.gameSubTitle like concat('%',#{search},'%') order by ${viewpart} limit #{startIndexNo},#{pageSize};
+		</if>
+	</select>
+	<select id="getMidAndIdx" resultType="com.spring.javaclassS4.vo.ReviewVO">
+		select * from itReview where revMid=#{mid} and revGameIdx=#{gameIdx};
+	</select>
+	
+	
+	
+	
+	<insert id="setReviewInput">
+		insert into itReview values(default, #{mid}, #{gameIdx}, #{rating}, #{state});
+	</insert>
+	
+	
+	
+	
+	
+	<update id="setReviewEdit">
+		update itReview set rating=#{rating}, state=#{state} where revMid=#{mid} and revGameIdx=#{gameIdx};
+	</update>
+	
+	
+	
+	
+	
+	
+	<delete id="setReviewDelete">
+		delete from itReview where revMid=#{mid} and revGameIdx=#{gameIdx};
+	</delete>
+</mapper>

@@ -50,6 +50,7 @@
     	else if(flag == 'login') popup = document.querySelector('#popup-login');
     	else if(flag == 'search') popup = document.querySelector('#popup-gamesearch');
     	else if(flag == 'write') popup = document.querySelector('#popup-write');
+    	else if(flag == 'edit') popup = document.querySelector('#popup-edit');
     	else if(flag == 'replyedit') popup = document.querySelector('#popup-replyedit');
     	else if(flag == 'add') popup = document.querySelector('#popup-add');
     	else if(flag == 'gameedit') popup = document.querySelector('#popup-gameedit');

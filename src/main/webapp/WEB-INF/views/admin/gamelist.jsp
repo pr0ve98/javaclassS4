@@ -580,7 +580,7 @@
   <div class="popup-add-content scrollbar">
 		<div class="popup-add-header">
 			<div class="e-header-text">게임 등록</div>
-    		<a href="" onclick="closePopup('add')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+    		<div style="cursor:pointer;" onclick="closePopup('add')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
 		<div class="popup-add-main">
 			<form name="gameaddform" method="post">
@@ -667,7 +667,7 @@
   <div class="popup-gameedit-content scrollbar">
 		<div class="popup-add-header">
 			<div class="e-header-text">게임 수정</div>
-    		<a href="" onclick="closePopup('gameedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></a>
+    		<div style="cursor:pointer;" onclick="closePopup('gameedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
 		<div class="popup-add-main">
 			<form name="egameaddform" method="post">

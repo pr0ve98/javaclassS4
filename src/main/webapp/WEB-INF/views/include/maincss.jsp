@@ -854,7 +854,6 @@
 		display: flex;
 		gap: 30px;
 		padding: 0 20px;
-		margin-bottom: 50px;
 		color: #fff;
 	}
 	.setting-left {
@@ -1152,6 +1151,9 @@
 		color:#fff;
 		font-size: 20px;
 	}
+	.review-viewflex {
+		display: flex;
+	}
 	.review-menu {
 	   	display: none;
 	    position: absolute;
@@ -1235,6 +1237,22 @@
 	}
 	.state-button:hover .state-icon, .state-button.selected .state-icon {
 	    background-color: #fff; /* 아이콘 색상을 하얀색으로 변경 */
+	}
+	[id^="moreReviewInput"] {
+		display: none;
+		padding: 5px 10px;
+		border-radius: 30px;
+		background-color: #32373d;
+		width: 90%;
+		margin: 5px auto 0;
+		cursor: pointer;
+	}
+	[id^="moreReviewInput"]:hover {
+		background-color: #b2bdce;
+		color: #32373d;
+	}
+	.userReview {
+		flex-grow: 1;
 	}
 	@media screen and (min-width: 1200px) {
 		.game-item {
@@ -1438,6 +1456,9 @@
 		}
 		.platform-icon {margin-right: 4px;}
 		.game-title-view{font-size: 30px;}
+		.review-viewflex {display: block;}
+		.review-game-i {width: 100%;}
+		.userReview {display: none;}
 	}
 	@media screen and (max-width: 567px) {
 		.game-selection {justify-content: start;}

@@ -7,16 +7,4 @@
 	<select id="getGame" resultType="com.spring.javaclassS4.vo.GameVO">
 		select * from itGame where gameIdx=#{gameIdx};
 	</select>
-	<select id="getGameTotRecCnt" resultType="int">
-		<if test="search == ''">SELECT COUNT(DISTINCT g.gameIdx) as totRecCnt FROM itGame g LEFT JOIN itReview r ON g.gameIdx = r.revGameIdx AND r.revMid = #{mid} WHERE r.revMid IS NULL;</if>
-		<if test="search != ''">
-			select count(*) as totRecCnt from itGame where gameTitle like concat('%',#{search},'%') or gameSubTitle like concat('%',#{search},'%');
-		</if>
-	</select>
-	<select id="getGameList" resultType="com.spring.javaclassS4.vo.CommunityVO">
-		<if test="search == ''">SELECT g.* FROM itGame g LEFT JOIN itReview r ON g.gameIdx = r.revGameIdx AND r.revMid = #{mid} WHERE r.revMid IS NULL ORDER BY ${viewpart} LIMIT #{startIndexNo}, #{pageSize};</if>
-		<if test="search != ''">
-			select g.*, r.* from itGame g LEFT JOIN itReview r ON g.gameIdx = r.revGameIdx AND r.revMid = #{mid} where g.gameTitle like concat('%',#{search},'%') or g.gameSubTitle like concat('%',#{search},'%') order by ${viewpart} limit #{startIndexNo},#{pageSize};
-		</if>
-	</select>
 </mapper>

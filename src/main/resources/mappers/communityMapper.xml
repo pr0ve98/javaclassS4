@@ -102,4 +102,7 @@
 	<delete id="replyDelete">
 		delete from itReply where replyIdx=#{replyIdx};
 	</delete>
+	<delete id="setReviewDelete">
+		delete from itReview where revMid=#{mid} and revGameIdx=#{gameIdx};
+	</delete>
 </mapper>

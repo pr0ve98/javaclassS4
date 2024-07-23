@@ -63,4 +63,6 @@ public interface CommunityService {
 
 	public int replyDelete(int replyIdx);
 
+	public void setReviewDelete(String mid, int cmGameIdx);
+
 }

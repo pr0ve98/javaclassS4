@@ -63,4 +63,6 @@ public interface CommunityDAO {
 
 	public ReplyVO getCommunityReplyIdx(@Param("replyIdx") int replyIdx);
 
+	public void setReviewDelete(@Param("mid") String mid, @Param("gameIdx") int gameIdx);
+
 }

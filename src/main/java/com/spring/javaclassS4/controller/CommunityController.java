@@ -415,6 +415,8 @@ public class CommunityController {
 	@ResponseBody
 	@RequestMapping(value = "/communityDelete", method = RequestMethod.POST)
 	public String setCommunityDeletePost(int cmIdx, HttpServletRequest request) {
+		CommunityVO vo = communityService.getCommunityIdx(cmIdx);
+		if(vo.getPart().equals("리뷰")) communityService.setReviewDelete(vo.getMid(), vo.getCmGameIdx());
 		return communityService.setCommunityDelete(cmIdx, request)+"";
 	}
 	

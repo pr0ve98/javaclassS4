@@ -572,4 +572,9 @@ public class CommunityServiceImpl implements CommunityService {
 		return communityDAO.replyDelete(replyIdx);
 	}
 
+	@Override
+	public void setReviewDelete(String mid, int cmGameIdx) {
+		communityDAO.setReviewDelete(mid, cmGameIdx);
+	}
+
 }

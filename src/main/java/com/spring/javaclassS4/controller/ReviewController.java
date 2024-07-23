@@ -2,6 +2,7 @@ package com.spring.javaclassS4.controller;
 
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,19 @@ public class ReviewController {
 	@RequestMapping(value = "/reviewDelete", method = RequestMethod.POST)
 	public void reviewDelete(int gameIdx, String mid) {
 		reviewService.setReviewDelete(mid, gameIdx);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/reviewMoreInput", method = RequestMethod.POST)
+	public void reviewMoreInput(CommunityVO vo, HttpServletRequest request) {
+		CommunityVO testvo = reviewService.getReviewMore(vo.getCmGameIdx(), vo.getMid());
+		
+		vo.setSection("피드");
+		vo.setPart("리뷰");
+		vo.setPublicType("전체");
+		vo.setCmHostIp(request.getRemoteAddr());
+		if(testvo != null) reviewService.reviewMoreEdit(vo);
+		else reviewService.reviewMoreInput(vo);
 	}
 	
 }

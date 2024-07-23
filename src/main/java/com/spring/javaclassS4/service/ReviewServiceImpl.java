@@ -46,5 +46,20 @@ public class ReviewServiceImpl implements ReviewService {
 		reviewDAO.setReviewDelete(mid, gameIdx);
 	}
 
+	@Override
+	public CommunityVO getReviewMore(int cmGameIdx, String mid) {
+		return reviewDAO.getReviewMore(cmGameIdx, mid);
+	}
+
+	@Override
+	public void reviewMoreInput(CommunityVO vo) {
+		reviewDAO.reviewMoreInput(vo);
+	}
+
+	@Override
+	public void reviewMoreEdit(CommunityVO vo) {
+		reviewDAO.reviewMoreEdit(vo);
+	}
+
 
 }

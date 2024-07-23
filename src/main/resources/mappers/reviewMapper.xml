@@ -16,12 +16,18 @@
 	<select id="getMidAndIdx" resultType="com.spring.javaclassS4.vo.ReviewVO">
 		select * from itReview where revMid=#{mid} and revGameIdx=#{gameIdx};
 	</select>
+	<select id="getReviewMore" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		select * from itCommunity where mid=#{mid} and cmGameIdx=#{gameIdx};
+	</select>
 	
 	
 	
 	
 	<insert id="setReviewInput">
 		insert into itReview values(default, #{mid}, #{gameIdx}, #{rating}, #{state});
+	</insert>
+	<insert id="reviewMoreInput">
+		insert into itCommunity values(default, #{vo.mid}, #{vo.section}, #{vo.part}, #{vo.cmGameIdx}, #{vo.cmContent}, default, #{vo.cmHostIp}, #{vo.publicType}, #{vo.rating}, #{vo.state});
 	</insert>
 	
 	
@@ -30,6 +36,9 @@
 	
 	<update id="setReviewEdit">
 		update itReview set rating=#{rating}, state=#{state} where revMid=#{mid} and revGameIdx=#{gameIdx};
+	</update>
+	<update id="reviewMoreEdit">
+		update itCommunity set cmContent=#{vo.cmContent}, rating=#{vo.rating}, state=#{vo.state} where mid=#{vo.mid} and cmGameIdx=#{vo.cmGameIdx} and part='리뷰';
 	</update>
 	
 	

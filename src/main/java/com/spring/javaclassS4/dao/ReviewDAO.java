@@ -23,4 +23,10 @@ public interface ReviewDAO {
 
 	public void setReviewDelete(@Param("mid") String mid, @Param("gameIdx") int gameIdx);
 
+	public CommunityVO getReviewMore(@Param("gameIdx") int gameIdx, @Param("mid") String mid);
+
+	public void reviewMoreInput(@Param("vo") CommunityVO vo);
+
+	public void reviewMoreEdit(@Param("vo") CommunityVO vo);
+
 }

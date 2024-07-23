@@ -19,4 +19,10 @@ public interface ReviewService {
 	public void setReviewInput(String mid, int gameIdx, int rating, String state);
 
 	public void setReviewDelete(String mid, int gameIdx);
+
+	public CommunityVO getReviewMore(int cmGameIdx, String mid);
+
+	public void reviewMoreInput(CommunityVO vo);
+
+	public void reviewMoreEdit(CommunityVO vo);
 }

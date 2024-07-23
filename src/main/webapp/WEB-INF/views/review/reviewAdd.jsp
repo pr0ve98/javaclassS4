@@ -12,12 +12,15 @@
 <link rel="icon" type="image/x-icon" href="${ctp}/images/ingametory.ico">
 <jsp:include page="/WEB-INF/views/include/bs4.jsp" />
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.css" rel="stylesheet">
 <script>
 	'use strict';
 	
 	let isFetching = false;
 	let totPage = 1;
 	let mid = '${sMid}';
+    let currentRating = 0;
+	let currentGameIdx = null;
 
 	document.addEventListener('DOMContentLoaded', function() {
 		// 페이지가 로딩될 때 로딩페이지 보여주기
@@ -322,13 +325,84 @@
 	    }
 	});
 
-	function showPopupReviewAllAdd() {
+	function showPopupReviewAllAdd(gameIdx, gameTitle, gameImg) {
     	const popup = document.querySelector('#popup-add');
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
         html.style.overflow = 'hidden';
-        console.log("Asfsdafsadfsdfsd");
+        
+		const cmBox = document.querySelector('.cm-box[data-game-idx="'+gameIdx+'"]');
+		if (cmBox) {
+			if(gameImg.indexOf('http') == -1) {
+				document.getElementById('gameImgPopup').innerHTML = '<img src="${ctp}/game/'+gameImg+'" width="50px" height="50px" style="border-radius: 8px; object-fit:cover;">';
+			}
+			else {
+				document.getElementById('gameImgPopup').innerHTML = '<img src="'+gameImg+'" width="50px" height="50px" style="border-radius: 8px; object-fit:cover;">';
+			}
+			
+			document.getElementById('gameTitlePopup').innerHTML = '<font color="#fff"><b>'+gameTitle+'</b></font>';
+			
+			// 별점 구하기
+		    const starElements = cmBox.querySelectorAll('.review-star-add');
+		    const filledStars = Array.from(starElements).filter(star => {
+		        return star.style.backgroundImage.includes('/javaclassS4/images/starpull.png');
+		    });
+		    
+		    let starText = '';
+		    
+		    for(let i=0; i<(filledStars.length/2); i++) {
+		    	starText += '<img src="${ctp}/images/starpull.png" width="40px" height="40px">&nbsp;';
+		    }
+		    for(let i=0; i<5-(filledStars.length/2); i++) {
+		    	starText += '<img src="${ctp}/images/star2.png" width="40px" height="40px">&nbsp;';
+		    }
+		
+		    const starCountElement = document.getElementById('popupstars-count');
+		    starCountElement.innerHTML = starText;
+		    
+		    // 상태 구하기
+		    const stateElement = cmBox.querySelector('.state-button.selected');
+		    const state = stateElement ? stateElement.getAttribute('data-state') || 'none' : 'none';
+		    
+		    let stateText = '';
+		    if(state == 'play') stateText = '<img src="${ctp}/images/playIcon.svg">&nbsp;&nbsp;<font color="#fff"><b>하고있어요</b></font>';
+		    else if(state == 'done') stateText = '<img src="${ctp}/images/doneIcon.png">&nbsp;&nbsp;<font color="#fff"><b>다했어요</b></font>';
+		    else if(state == 'stop') stateText = '<img src="${ctp}/images/stopIcon.svg">&nbsp;&nbsp;<font color="#fff"><b>그만뒀어요</b></font>';
+		    else if(state == 'folder') stateText = '<img src="${ctp}/images/folderIcon.svg">&nbsp;&nbsp;<font color="#fff"><b>모셔놨어요</b></font>';
+		    else if(state == 'pin') stateText = '<img src="${ctp}/images/pinIcon.svg">&nbsp;&nbsp;<font color="#fff"><b>관심있어요</b></font>';
+		    else stateText = '<img src="${ctp}/images/noneIcon.svg">&nbsp;&nbsp;<font color="#fff"><b>상태없음</b></font>';
+		    document.getElementById('popupstars-state').innerHTML = stateText;
+		    
+		    document.getElementById('gameIdx').value = gameIdx;
+		    document.getElementById('rating').value = filledStars.length/2;
+		    document.getElementById('state').value = state;
+		}
     }
+	
+	function reviewMoreInput() {
+		let content = $('#summernote').summernote('code').trim();
+        let gameIdx = $('#gameIdx').val();
+        let rating = $('#rating').val();
+        let state = $('#state').val();
+
+        if (content == '' || content == '<p><br></p>') {
+            alert("글 내용을 입력하세요!");
+            $('#summernote2').focus();
+            return false;
+        }
+        
+        $.ajax({
+        	url : "${ctp}/review/reviewMoreInput",
+        	type : "post",
+        	data : {cmContent: content, cmGameIdx: gameIdx, rating : rating, state : state, mid : mid},
+        	success : function() {
+        		closePopup('add');
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+        });
+	}
 	
  	function toggleContentMenu(gameIdx) {
  	   	const elements = document.querySelectorAll('[id^="contentMenu"]');
@@ -413,7 +487,7 @@
 												<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="5"></span>
 											</div>
 											<div id="startext${vo.gameIdx}">이 게임에 별점을 주세요!</div>
-											<div id="moreReviewInput${vo.gameIdx}" onclick="showPopupReviewAllAdd()"><i class="fa-solid fa-pencil"></i>&nbsp;&nbsp;평가도 남겨보세요</div>
+											<div id="moreReviewInput${vo.gameIdx}" style="display: ${vo.rating != 0 ? 'block' : 'none'}" onclick="showPopupReviewAllAdd(${vo.gameIdx}, '${vo.gameTitle}', '${vo.gameImg}')"><i class="fa-solid fa-pencil"></i>&nbsp;&nbsp;평가도 남겨보세요</div>
 											<hr/>
 											<div class="state-buttons" style="display: flex;">
 												<div class="state-button ${vo.state == 'play' ? 'selected' : ''}" data-state="play">
@@ -448,7 +522,7 @@
 												<c:if test="${vo.state == 'stop'}"><font color="#fff">그만뒀어요</font></c:if>
 												<c:if test="${vo.state == 'folder'}"><font color="#fff">모셔놨어요</font></c:if>
 												<c:if test="${vo.state == 'pin'}"><font color="#fff">관심있어요</font></c:if>
-												<c:if test="${vo.state == '' || vo.state == 'none'}">현재 게임 상태를 선택해주세요</c:if>
+												<c:if test="${vo.state == null || vo.state == 'none'}">현재 게임 상태를 선택해주세요</c:if>
 											</div>
 								    	</div>
 									</div>
@@ -477,174 +551,66 @@
 <div id="popup-add" class="hide">
   <div class="popup-add-content scrollbar">
 		<div class="popup-add-header">
-			<div class="e-header-text">게임 등록</div>
+			<div class="e-header-text">평가 등록</div>
     		<div style="cursor:pointer;" onclick="closePopup('add')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
-		<div class="popup-add-main">
-			<form name="gameaddform" method="post">
-				<table class="table table-borderless" style="color:#fff">
+		<div class="popup-add-main" style="text-align: left;">
+			<table class="table table-borderless" style="color:#fff">
 					<tr>
-						<th><font color="#ff5e5e">*</font> 이름</th>
-						<td><input type="text" name="gameTitle" id="gameTitle" placeholder="게임 한글 이름을 입력하세요" class="forminput" /></td>
+						<th><span id="gameImgPopup"></span></th>
+						<td><span style="font-size:20px;" id="gameTitlePopup"></span></td>
 					</tr>
 					<tr>
-						<th>외국어 이름</th>
-						<td><input type="text" name="gameSubTitle" id="gameSubTitle" placeholder="게임 외국어 이름을 입력하세요" class="forminput" /></td>
+						<th>별점</th>
+						<td><div id="popupstars-count"></div></td>
 					</tr>
 					<tr>
-						<th>장르</th>
-						<td><input type="text" name="jangre" id="jangre" placeholder="장르를 입력하세요" class="forminput" /></td>
+						<th>상태</th>
+						<td><div id="popupstars-state"></div></td>
 					</tr>
 					<tr>
-						<th>플랫폼</th>
-						<td>
-							<div class="g-buttons" style="margin: 0 auto;">
-			                    <span class="g-button" data-platform="PC">PC</span>
-			                    <span class="g-button" data-platform="PS4">PS4</span>
-			                    <span class="g-button" data-platform="PS5">PS5</span>
-			                    <span class="g-button" data-platform="XBO">XBO</span>
-			                    <span class="g-button" data-platform="XSX">XSX</span>
-			                    <span class="g-button" data-platform="XSS">XSS</span>
-			                    <span class="g-button" data-platform="Switch">Switch</span>
-			                    <span class="g-button" data-platform="Android">Android</span>
-			                    <span class="g-button" data-platform="iOS">iOS</span>
-							</div>
-						</td>
+						<th>평가</th>
+						<td><textarea id="summernote" name="content"></textarea></td>
 					</tr>
-					<tr>
-						<th>출시일</th>
-						<td><input type="date" name="showDate" id="showDate" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>가격</th>
-						<td><input type="number" name="price" id="price" placeholder="가격을 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>메타스코어</th>
-						<td><input type="number" name="metascore" id="metascore" placeholder="메타스코어를 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>스팀평가</th>
-						<td><input type="text" name="steamscore" id="steamscore" placeholder="스팀 평가(전체)를 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>스팀링크</th>
-						<td><input type="text" name="steamPage" id="steamPage" placeholder="스팀 스토어 링크를 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>개발사</th>
-						<td><input type="text" name="developer" id="developer" placeholder="개발사를 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th><font color="#ff5e5e">*</font> 이미지</th>
-						<td>
-							<div class="g-buttons" style="margin: 0 auto;">
-			                    <span class="i-button" onclick="imageUpload()">직접 등록</span>
-			                    <span style="display:none"><input type="file" name="file" id="inputImgs" accept=".jpg,.gif,.png,.jpeg" /></span>
-			                    <span class="i-button" onclick="gameImgFormOpen()">주소로 등록</span>
-							</div>
-							<div id="gameImgForm" style="display:none"><input type="text" name="gameImg" id="gameImg" placeholder="이미지 주소를 입력하세요" class="forminput" /></div>
-						</td>
-					</tr>
-					<tr>
-						<th>게임소개</th>
-						<td><textarea rows="3" name="gameInfo" id="gameInfo" placeholder="게임소개를 입력하세요" class="form-control textarea"></textarea></td>
-					</tr>
-					<tr>
-						<td colspan="2">
-							<input type="hidden" name="gameIdx" id="gameIdx" />
-							<input type="button" class="joinBtn-sm" value="추가" onclick="gameAdd()" />
-						</td>
-					</tr>
-				</table>
-			</form>
-		</div>
-  </div>
-</div>
-<div id="popup-gameedit" class="hide">
-  <div class="popup-gameedit-content scrollbar">
-		<div class="popup-add-header">
-			<div class="e-header-text">게임 수정</div>
-    		<div style="cursor:pointer;" onclick="closePopup('gameedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
-		</div>
-		<div class="popup-add-main">
-			<form name="egameaddform" method="post">
-				<table class="table table-borderless" style="color:#fff">
-					<tr>
-						<td colspan="2" id="imgView"></td>
-					</tr>
-					<tr>
-						<th><font color="#ff5e5e">*</font> 이름</th>
-						<td><input type="text" name="egameTitle" id="egameTitle" placeholder="게임 한글 이름을 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>외국어 이름</th>
-						<td><input type="text" name="egameSubTitle" id="egameSubTitle" placeholder="게임 외국어 이름을 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>장르</th>
-						<td><input type="text" name="ejangre" id="ejangre" placeholder="장르를 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>플랫폼</th>
-						<td>
-							<div class="g-buttons" style="margin: 0 auto;">
-			                    <span class="eg-button" data-platform="PC">PC</span>
-			                    <span class="eg-button" data-platform="PS4">PS4</span>
-			                    <span class="eg-button" data-platform="PS5">PS5</span>
-			                    <span class="eg-button" data-platform="XBO">XBO</span>
-			                    <span class="eg-button" data-platform="XSX">XSX</span>
-			                    <span class="eg-button" data-platform="XSS">XSS</span>
-			                    <span class="eg-button" data-platform="Switch">Switch</span>
-			                    <span class="eg-button" data-platform="Android">Android</span>
-			                    <span class="eg-button" data-platform="iOS">iOS</span>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<th>출시일</th>
-						<td><input type="date" name="eshowDate" id="eshowDate" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>가격</th>
-						<td><input type="number" name="eprice" id="eprice" placeholder="가격을 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>메타스코어</th>
-						<td><input type="number" name="emetascore" id="emetascore" placeholder="메타스코어를 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>스팀평가</th>
-						<td><input type="text" name="esteamscore" id="esteamscore" placeholder="스팀 평가(전체)를 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>스팀링크</th>
-						<td><input type="text" name="esteamPage" id="esteamPage" placeholder="스팀 스토어 링크를 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th>개발사</th>
-						<td><input type="text" name="edeveloper" id="edeveloper" placeholder="개발사를 입력하세요" class="forminput" /></td>
-					</tr>
-					<tr>
-						<th><font color="#ff5e5e">*</font> 이미지</th>
-						<td>
-							<div class="g-buttons" style="margin: 0 auto;">
-			                    <span class="i-button" onclick="eimageUpload()">직접 등록</span>
-			                    <span style="display:none"><input type="file" name="file" id="einputImgs" accept=".jpg,.gif,.png,.jpeg" /></span>
-			                    <span class="i-button" onclick="egameImgFormOpen()">주소로 등록</span>
-							</div>
-							<div id="egameImgForm" style="display:none"><input type="text" name="egameImg" id="egameImg" placeholder="이미지 주소를 입력하세요" class="forminput" /></div>
-						</td>
-					</tr>
-					<tr>
-						<th>게임소개</th>
-						<td><textarea rows="3" name="egameInfo" id="egameInfo" placeholder="게임소개를 입력하세요" class="form-control textarea"></textarea></td>
-					</tr>
-					<tr>
-						<td colspan="2"><input type="button" class="joinBtn-sm" value="수정" onclick="gameEdit()" /></td>
-					</tr>
-				</table>
-			</form>
+					
+			</table>
+			<div class="text-right mt-3"><button class="post-button" onclick="reviewMoreInput()">게시하기</button></div>
+			<input type="hidden" id="rating" name="rating" />
+			<input type="hidden" id="state" name="state" />
+			<input type="hidden" id="gameIdx" name="gameIdx" />
+
+			<!-- Summernote JS -->
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>
+		    
+		    <script>
+			// 썸머노트 기본설정
+			$(document).ready(function() {
+			    let fontList = ['SUITE-Regular'];
+			    $('#summernote').summernote({
+			        lang: 'ko-KR',
+			        tabsize: 2,
+			        height: 200,
+			        toolbar: [
+			            ['fontsize', ['fontsize']]
+			        ],
+			        fontNames: fontList,
+			        fontNamesIgnoreCheck: fontList,
+			        fontSizes: ['10', '11', '12', '14', '16', '18', '20', '22', '24'],
+			        callbacks: {
+			            onInit: function() {
+			                // 초기 내용 저장
+			                initialContent = $('#summernote').summernote('code');
+			                $('.note-editable').css({
+			                	'font-family':'SUITE-Regular',
+			                	'color':'#b2bdce',
+			                	'cursor':'text'
+			                });
+			            }
+			        }
+			    });
+			});
+			</script>
 		</div>
   </div>
 </div>

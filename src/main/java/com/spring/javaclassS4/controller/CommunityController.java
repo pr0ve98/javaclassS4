@@ -286,7 +286,7 @@ public class CommunityController {
 		    if (vo.getPart().equals("소식/정보")) str += "<span class=\"badge badge-secondary\">소식/정보</span>&nbsp;";
 		    else if (vo.getPart().equals("자유")) str += "<span class=\"badge badge-secondary\">자유글</span>&nbsp;";
 		    else if (vo.getPart().equals("세일")) str += "<span class=\"badge badge-secondary\">세일정보</span>&nbsp;";
-		    else str += "<div style=\"color:#b2bdce; font-size:12px;\"><i class=\"fa-solid fa-gamepad fa-xs\" style=\"color: #b2bdce;\"></i>&nbsp;" + vo.getGameTitle() + "</div>";
+		    else str += "<div style=\"color:#b2bdce; font-size:12px; cursor:pointer;\" onclick=\"location.href='"+request.getContextPath()+"/gameview/"+vo.getCmGameIdx()+"';\"><i class=\"fa-solid fa-gamepad fa-xs\" style=\"color: #b2bdce;\"></i>&nbsp;" + vo.getGameTitle() + "</div>";
 		    
 		    str += "</div></div></div>";
 		    

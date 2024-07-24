@@ -158,6 +158,11 @@ public class CommunityServiceImpl implements CommunityService {
 			vos.get(i).setParentsReply(parentsReply);
 			vos.get(i).setChildReply(childsReply);
 			vos.get(i).setReplyCount(replyCount);
+			
+			if(vos.get(i).getCmGameIdx() != 0) {
+				GameVO vo = communityDAO.getGameIdx(vos.get(i).getCmGameIdx());
+				vos.get(i).setGameImg(vo.getGameImg());
+			}
 		}
 		return vos;
 	}

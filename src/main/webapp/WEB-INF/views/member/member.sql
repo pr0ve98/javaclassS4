@@ -15,3 +15,10 @@ create table itMember (
 );
 
 drop table itMember;
+
+create table itFollow (
+	myMid varchar(30) not null,
+	youMid varchar(30) not null
+);
+
+ALTER TABLE itFollow CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

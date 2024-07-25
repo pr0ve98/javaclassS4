@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.spring.javaclassS4.vo.CommunityVO;
+import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
 
@@ -64,5 +65,11 @@ public interface CommunityDAO {
 	public ReplyVO getCommunityReplyIdx(@Param("replyIdx") int replyIdx);
 
 	public void setReviewDelete(@Param("mid") String mid, @Param("gameIdx") int gameIdx);
+
+	public FollowVO getFollow(@Param("myMid") String myMid, @Param("youMid") String youMid);
+
+	public void followInput(@Param("myMid") String myMid, @Param("youMid") String youMid);
+
+	public void followDelete(@Param("myMid") String myMid, @Param("youMid") String youMid);
 
 }

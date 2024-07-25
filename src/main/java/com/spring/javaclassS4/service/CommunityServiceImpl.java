@@ -21,6 +21,7 @@ import com.spring.javaclassS4.common.JavaclassProvide;
 import com.spring.javaclassS4.dao.CommunityDAO;
 import com.spring.javaclassS4.dao.MemberDAO;
 import com.spring.javaclassS4.vo.CommunityVO;
+import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
 
@@ -163,6 +164,10 @@ public class CommunityServiceImpl implements CommunityService {
 				GameVO vo = communityDAO.getGameIdx(vos.get(i).getCmGameIdx());
 				vos.get(i).setGameImg(vo.getGameImg());
 			}
+			
+			FollowVO fVO = communityDAO.getFollow(mid, vos.get(i).getMid());
+			if(fVO == null) vos.get(i).setFollow(0);
+			else vos.get(i).setFollow(1);
 		}
 		return vos;
 	}
@@ -580,6 +585,16 @@ public class CommunityServiceImpl implements CommunityService {
 	@Override
 	public void setReviewDelete(String mid, int cmGameIdx) {
 		communityDAO.setReviewDelete(mid, cmGameIdx);
+	}
+
+	@Override
+	public void followInput(String myMid, String youMid) {
+		communityDAO.followInput(myMid, youMid);
+	}
+
+	@Override
+	public void followDelete(String myMid, String youMid) {
+		communityDAO.followDelete(myMid, youMid);
 	}
 
 }

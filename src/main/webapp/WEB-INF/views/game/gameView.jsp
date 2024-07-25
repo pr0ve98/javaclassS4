@@ -59,13 +59,16 @@
 					<div class="score-info">
 						<div>
 							<div><img src="${ctp}/images/invenscore.png"></div>
-							<div class="score">4.9</div>
+							<div class="score">
+								<c:if test="${vo.invenscore == null || vo.invenscore == 0}">평점 부족</c:if>
+								<c:if test="${vo.invenscore != null && vo.invenscore != 0}">${vo.invenscore}</c:if>
+							</div>
 						</div>
-						<c:if test="${vo.metascore != null}"><div>
+						<c:if test="${vo.metascore != null && vo.metascore != 0}"><div>
 							<div><img src="https://djf7qc4xvps5h.cloudfront.net/resource/minimap/illust/LogoFullMetacriticDark.svg" alt="" class="score-logo"></div>
 							<div class="score">${vo.metascore}</div>
 						</div></c:if>
-						<c:if test="${vo.steamscore != null}"><div>
+						<c:if test="${vo.steamscore != null && vo.steamscore != '' && vo.steamscore != '사용자 평가 없음'}"><div>
 							<div><img src="https://djf7qc4xvps5h.cloudfront.net/resource/minimap/illust/LogoFullSteamDark.svg" alt="" class="score-logo"></div>
 							<div class="score">${vo.steamscore}</div>
 						</div></c:if>

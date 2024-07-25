@@ -497,7 +497,8 @@
 	}
 	
 	#popup-join .popup-join-content, #popup-login .popup-login-content, #popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
-	 #popup-edit .popup-edit-content, #popup-replyedit .popup-replyedit-content, #popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content {
+	 #popup-edit .popup-edit-content, #popup-replyedit .popup-replyedit-content, #popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content,
+	 #popup-report .popup-report-content {
 	  padding: 20px;
 	  background: #32373d;
 	  border-radius: 5px;
@@ -509,6 +510,7 @@
 	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
 	#popup-edit .popup-edit-content {width: 700px;}
 	#popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content {width:500px;}
+	#popup-report .popup-report-content {width: 330px;}
 	
 	.popup-open {
 		overflow: hidden;
@@ -1150,6 +1152,7 @@
 	.review-add-title {
 		color:#fff;
 		font-size: 20px;
+		cursor: pointer;
 	}
 	.review-viewflex {
 		display: flex;
@@ -1253,6 +1256,69 @@
 	}
 	.userReview {
 		flex-grow: 1;
+	}
+	.chart-container {
+	    background-color: #161d25;
+	    padding: 30px;
+	    border-radius: 10px;
+	    text-align: center;
+	    width: 300px;
+	    position: -webkit-sticky;
+	    position: sticky;
+	    top: 112px;
+	    margin: 0 auto;
+	}
+	.average-rating {
+	    font-size: 2em;
+	    color: #00c722;
+	}
+	.chart {
+	    display: flex;
+	    align-items: flex-end;
+	    justify-content: space-between;
+	    height: 150px;
+	    margin: 20px 0;
+	}
+	.bar {
+	    width: 10%;
+	    background-color: #00c722;
+	    position: relative;
+	    cursor: pointer;
+	}
+	.bar::before {
+	    content: attr(data-rating) '★';
+	    position: absolute;
+	    bottom: -20px;
+	    left: 50%;
+	    transform: translateX(-50%);
+	}
+	.bar::after {
+	    content: attr(data-count);
+	    position: absolute;
+	    top: -30px;
+	    left: 50%;
+	    transform: translateX(-50%);
+	    background-color: #ffffff;
+	    color: #000000;
+	    padding: 2px 5px;
+	    border-radius: 5px;
+	    display: none;
+	}
+	.bar:hover::after {
+	    display: block;
+	}
+	.my-games-btn {
+	    background-color: #00c722;
+	    border: none;
+	    padding: 10px;
+	    border-radius: 8px;
+	    color: #ffffff;
+	    cursor: pointer;
+	    font-size: 1em;
+	    min-width: 100px;
+	}
+	.my-games-btn:hover {
+	    background-color: #267abf;
 	}
 	@media screen and (min-width: 1200px) {
 		.game-item {

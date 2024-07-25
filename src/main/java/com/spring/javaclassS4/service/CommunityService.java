@@ -65,4 +65,8 @@ public interface CommunityService {
 
 	public void setReviewDelete(String mid, int cmGameIdx);
 
+	public void followInput(String myMid, String youMid);
+
+	public void followDelete(String myMid, String youMid);
+
 }

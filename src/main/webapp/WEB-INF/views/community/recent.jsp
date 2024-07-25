@@ -690,6 +690,57 @@
 	 		});
 		}
 	}
+ 	
+ 	function followAdd(youMid) {
+ 		$.ajax({
+ 			url : "${ctp}/community/followInput",
+ 			type : "post",
+ 			data : {youMid : youMid},
+ 			success : function() {
+				const elements = document.querySelectorAll('.fb'+youMid);
+				elements.forEach(element => {
+		 	   		element.style.display = "none";
+		 		});
+				
+				const elements2 = document.querySelectorAll('.ufb'+youMid);
+				elements2.forEach(element2 => {
+		 	   		element2.style.display = "block";
+		 		});
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
+	}
+ 	
+ 	function followDelete(youMid) {
+ 		$.ajax({
+ 			url : "${ctp}/community/followDelete",
+ 			type : "post",
+ 			data : {youMid : youMid},
+ 			success : function() {
+				const elements = document.querySelectorAll('.fb'+youMid);
+				elements.forEach(element => {
+		 	   		element.style.display = "block";
+		 		});
+				
+				const elements2 = document.querySelectorAll('.ufb'+youMid);
+				elements2.forEach(element2 => {
+		 	   		element2.style.display = "none";
+		 		});
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
+	}
+ 	
+ 	function reportPopup(cmIdx) {
+    	const popup = document.querySelector('#popup-report');
+    	const html = document.querySelector('html');
+        popup.classList.remove('hide');
+        html.style.overflow = 'hidden';
+	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
@@ -757,7 +808,7 @@
 							</div>
 							<c:if test="${sMid != null}">
 								<div style="display: flex; align-items: center;">
-									<c:if test="${sMid != cmVO.mid}"><div class="replyok-button mr-4" onclick="followAdd('${cmVO.mid}')"><i class="fa-solid fa-plus fa-sm"></i>&nbsp;팔로우</div></c:if>
+									<c:if test="${sMid != cmVO.mid && cmVO.follow == 0}"><div class="replyok-button mr-4 fb${cmVO.mid}" onclick="followAdd('${cmVO.mid}')"><i class="fa-solid fa-plus fa-sm"></i>&nbsp;팔로우</div></c:if>
 									<div style="position:relative;">
 										<i class="fa-solid fa-bars fa-xl" onclick="toggleContentMenu(${cmVO.cmIdx})" style="color: #D5D5D5;cursor:pointer;"></i>
 							 			<div id="contentMenu${cmVO.cmIdx}" class="content-menu">
@@ -765,8 +816,8 @@
 										    <c:if test="${sMid == cmVO.mid || sLevel == 0}"><div onclick="contentDelete(${cmVO.cmIdx})"><font color="red">삭제</font></div></c:if>
 									        <c:if test="${sLevel == 0}"><div>사용자 제재</div></c:if>
 									        <c:if test="${sMid != cmVO.mid && sLevel != 0}">
-									        	<div>팔로우</div>
-									        	<div>신고</div>
+									        	<div class="ufb${cmVO.mid}" style="display:${cmVO.follow == 1 ? 'block' : 'none'};" onclick="followDelete('${cmVO.mid}')">언팔로우</div>
+									        	<div onclick="reportPopup(${cmVO.cmIdx})">신고</div>
 									        </c:if>
 								    	</div>
 						 			</div>
@@ -1245,6 +1296,27 @@
  		<input type="hidden" id="replyIdx" name="replyIdx" />
  		<input type="hidden" id="replyMid" name="replyMid" value="${sMid}" />
 	 	<div class="text-right"><button class="edit-button" onclick="replyEdit()">수정하기</button></div>
+    </div>
+</div>
+<div id="popup-report" class="hide">
+  <div class="popup-report-content scrollbar">
+  		<div class="popup-replyedit-header mb-4">
+            <span class="e-header-text">신고하기</span>
+    		<div style="cursor:pointer;" onclick="closePopup('report')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+		</div>
+		<div class="mb-3">확실히 신고사유가 되는지 확인하고 신고하여 주십시오 무분별한 신고 시 <b style="color:red;">신고자가 제재</b>를 당할 수 있습니다</div>
+		<div class="text-center mb-4"><select class="dropdown-btn">
+			<option value="">신고사유 선택</option>
+			<option>스팸</option>
+			<option>스포일러</option>
+			<option>나체이미지 또는 성적행위</option>
+			<option>사기</option>
+			<option>욕설, 혐오 발언</option>
+			<option>지식재산권 침해</option>
+			<option>타인의 명예 훼손</option>
+		</select></div>
+ 		<input type="hidden" id="reportCmIdx" name="reportCmIdx" />
+	 	<div class="text-center"><button class="btn btn-danger" onclick="replyEdit()">신고하기</button></div>
     </div>
 </div>
 </body>

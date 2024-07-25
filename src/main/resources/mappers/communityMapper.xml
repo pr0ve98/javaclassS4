@@ -64,6 +64,9 @@
 	<select id="getCommunityReplyIdx" resultType="com.spring.javaclassS4.vo.ReplyVO">
 		SELECT * from itReply where replyIdx=#{replyIdx};
 	</select>
+	<select id="getFollow" resultType="com.spring.javaclassS4.vo.FollowVO">
+		SELECT * from itFollow where myMid=#{myMid} and youMid=#{youMid};
+	</select>
 	
 	<update id="setMemGameListEdit">
 		update itGamelist set gamelist=#{gamelist} where glMid=#{mid};
@@ -92,6 +95,9 @@
 	<insert id="rreplyInput">
 		insert into itReply values(default, #{vo.replyCmIdx}, #{vo.replyMid}, #{vo.replyParentIdx}, #{vo.replyContent}, #{vo.replyHostIp}, default, default);
 	</insert>
+	<insert id="followInput">
+		insert into itFollow values(#{myMid}, #{youMid});
+	</insert>
 	
 	<delete id="setlikeDelete">
 		delete from itLike where likeCmIdx=#{cmIdx} and likeMid=#{mid};
@@ -105,4 +111,7 @@
 	<delete id="setReviewDelete">
 		delete from itReview where revMid=#{mid} and revGameIdx=#{gameIdx};
 	</delete>
+	<insert id="followDelete">
+		delete from itFollow where myMid=#{myMid} and youMid=#{youMid};
+	</insert>
 </mapper>

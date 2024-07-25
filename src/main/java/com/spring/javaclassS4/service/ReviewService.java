@@ -7,9 +7,9 @@ import com.spring.javaclassS4.vo.ReviewVO;
 
 public interface ReviewService {
 
-	public int getGameTotRecCnt(String searchpart, String search, String mid);
+	public int getGameTotRecCnt(String search, String mid);
 
-	public ArrayList<CommunityVO> getGameList(int startIndexNo, int pageSize, String viewpart, String searchpart,
+	public ArrayList<CommunityVO> getGameList(int startIndexNo, int pageSize, String viewpart,
 			String search, String mid);
 
 	public ReviewVO getMidAndIdx(int gameIdx, String mid);
@@ -25,4 +25,6 @@ public interface ReviewService {
 	public void reviewMoreInput(CommunityVO vo);
 
 	public void reviewMoreEdit(CommunityVO vo);
+
+	public int getRatingCount(String mid, int rating);
 }

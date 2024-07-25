@@ -54,6 +54,7 @@
     	else if(flag == 'replyedit') popup = document.querySelector('#popup-replyedit');
     	else if(flag == 'add') popup = document.querySelector('#popup-add');
     	else if(flag == 'gameedit') popup = document.querySelector('#popup-gameedit');
+    	else if(flag == 'report') popup = document.querySelector('#popup-report');
     	const html = document.querySelector('html');
     	popup.classList.add('hide');
     	html.style.overflow = 'auto';

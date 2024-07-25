@@ -103,6 +103,12 @@
 	        });
 	    }
 	    
+	    if(document.getElementById('total-games')) {
+		    const ratingCounts = [${rating1},${rating2},${rating3},${rating4},${rating5}];
+		    const totalGames = ${totRatingCnt};
+		    ratingChart(ratingCounts,totalGames);
+	    }
+	    
 	    // 별점 및 상태 추가
 	    const gameContainers = document.querySelectorAll('.cm-box');
 	
@@ -300,8 +306,10 @@
 	        	url : "${ctp}/review/reviewAdd",
 	        	type : "post",
 	        	data : {gameIdx:gameIdx, rating:rating, state:state, mid:mid},
-	        	success : function() {
-					
+	        	success : function(response) {
+	        		let res = response.split("|");
+	        		let ratingCount = [res[0], res[1], res[2], res[3], res[4]];
+	        		ratingChart(ratingCount,res[5]);
 				},
 				error : function() {
 					alert("전송오류!");
@@ -315,8 +323,10 @@
 	        	url : "${ctp}/review/reviewDelete",
 	        	type : "post",
 	        	data : {gameIdx:gameIdx, mid:mid},
-	        	success : function() {
-					
+	        	success : function(response) {
+	        		let res = response.split("|");
+	        		let ratingCount = [res[0], res[1], res[2], res[3], res[4]];
+	        		ratingChart(ratingCount,res[5]);
 				},
 				error : function() {
 					alert("전송오류!");
@@ -433,6 +443,45 @@
  	       });
  	    }
  	}
+ 	
+ 	function ratingChart(ratingCounts,totalGames) {
+	    // 평균 별점 계산
+	    let averageRating = 0.0;
+	    const totalPoints = ratingCounts.reduce((sum, count, index) => sum + (count * (index + 1)), 0);
+	    if(ratingCounts.length > 0 && totalGames > 0) averageRating = (totalPoints / totalGames).toFixed(2); // 소수점 두자리까지
+
+	    if (isNaN(averageRating)) {
+	        averageRating = 0.0;
+	    }
+	    
+	    // HTML 요소 업데이트
+	    document.getElementById('total-games').textContent = totalGames;
+	    document.getElementById('average-rating').textContent = averageRating;
+
+	    // 차트 업데이트
+	    const chart = document.getElementById('chart');
+	    const bars = chart.getElementsByClassName('bar');
+	    for (let i = 0; i < bars.length; i++) {
+	        const bar = bars[i];
+	        const count = ratingCounts[i];
+	        let height = (count / totalGames) * 100;
+	        
+	        // 평가한 게임이 하나도 없을 때 막대 비우기
+	        if (totalGames == 0) {
+	            height = 0;
+	        }
+	        
+	        bar.style.height = height + '%';
+	        bar.setAttribute('data-count', count); // 데이터 개수를 속성으로 추가
+	    }
+	}
+ 	
+ 	function partchange() {
+		let viewpart = $("#viewpart").val();
+		let search = $("#search").val();
+		location.href = "${ctp}/review?page=${page}&viewpart="+viewpart+"&search="+search;
+	}
+      
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
@@ -457,9 +506,9 @@
 						<input type="text" name="search" id="search" value="${search}" placeholder="검색할 단어를 입력하세요" class="forminput mr-2" />
 					</div>
 					<select id="viewpart" name="part" class="dropdown-btn" onchange="partchange()" style="flex-shrink: 0">
-						<option value="gameIdx desc">많이 평가한순</option>
+						<option value="manyReview" ${viewpart == 'manyReview' ? 'selected' : ''}>많이 평가한순</option>
 						<option value="showDate desc" ${viewpart == 'showDate desc' ? 'selected' : ''}>최신 발매일순</option>
-						<option value="gameIdx desc">인겜스코어 높은순</option>
+						<option value="invenscore desc" ${viewpart == 'invenscore desc' ? 'selected' : ''}>인겜스코어 높은순</option>
 						<option value="metascore desc" ${viewpart == 'metascore desc' ? 'selected' : ''}>메타스코어 높은순</option>
 						<option value="random" ${viewpart == 'random' ? 'selected' : ''}>랜덤 게임들</option>
 					</select>
@@ -474,7 +523,7 @@
 							</div>
 							<div class="review-add">
 								<div style="display: flex; justify-content: space-between; align-items: center;">
-									<div class="review-add-title">${vo.gameTitle}</div>
+									<div class="review-add-title" onclick="location.href='${ctp}/gameview/${vo.gameIdx}';">${vo.gameTitle}</div>
 									<div style="position: relative;">
 										<img id="stateIcon" src="${ctp}/images/${vo.state == null ? 'none' : vo.state}Icon.svg" onclick="toggleContentMenu(${vo.gameIdx})">
 										<div id="contentMenu${vo.gameIdx}" class="review-menu">
@@ -542,7 +591,22 @@
 				</c:forEach>
 				<div id="root"></div>
 			</div>
-			<div class="userReview">유저가 평가한 게임수</div>
+			<c:if test="${sMid != null}">
+				<div class="userReview">
+					<div class="chart-container">
+				        <p style="color:#fff">${sNickname}님은 총 <span id="total-games">97</span>개의 게임을 평가했습니다.</p>
+				        <p>평균 별점 <span class="average-rating" id="average-rating">3.81</span></p>
+				        <div class="chart" id="chart">
+				            <div class="bar" data-rating="1"></div>
+				            <div class="bar" data-rating="2"></div>
+				            <div class="bar" data-rating="3"></div>
+				            <div class="bar" data-rating="4"></div>
+				            <div class="bar" data-rating="5"></div>
+				        </div>
+				        <button class="my-games-btn mt-3">내 게임</button>
+				    </div>
+				</div>
+			</c:if>
 		</div>
 	</div>
 </main>

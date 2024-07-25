@@ -26,26 +26,37 @@ public class ReviewController {
 	
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String settingGet(HttpSession session, Model model,
-			@RequestParam(name="viewpart", defaultValue = "gameIdx desc", required = false) String viewpart,
-			@RequestParam(name="searchpart", defaultValue = "제목", required = false) String searchpart,
+			@RequestParam(name="viewpart", defaultValue = "manyReview", required = false) String viewpart,
 			@RequestParam(name="search", defaultValue = "", required = false) String search,
 			@RequestParam(name="page", defaultValue = "1", required = false) int page,
 			@RequestParam(name="pageSize", defaultValue = "20", required = false) int pageSize) {
 		
 		String mid = session.getAttribute("sMid")==null ? "" : (String)session.getAttribute("sMid");
 		
-		int totRecCnt = reviewService.getGameTotRecCnt(searchpart, search, mid);
+		int totRecCnt = reviewService.getGameTotRecCnt(search, mid);
 		int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
 		int startIndexNo = (page - 1) * pageSize;
 		model.addAttribute("page", page);
 		model.addAttribute("totRecCnt", totRecCnt);
 		model.addAttribute("totPage", totPage);
 		
-		ArrayList<CommunityVO> vos = reviewService.getGameList(startIndexNo, pageSize, viewpart, searchpart, search, mid);
+		ArrayList<CommunityVO> vos = reviewService.getGameList(startIndexNo, pageSize, viewpart, search, mid);
+		
+		int rating1 = reviewService.getRatingCount(mid, 1);
+		int rating2 = reviewService.getRatingCount(mid, 2);
+		int rating3 = reviewService.getRatingCount(mid, 3);
+		int rating4 = reviewService.getRatingCount(mid, 4);
+		int rating5 = reviewService.getRatingCount(mid, 5);
+		model.addAttribute("rating1", rating1);
+		model.addAttribute("rating2", rating2);
+		model.addAttribute("rating3", rating3);
+		model.addAttribute("rating4", rating4);
+		model.addAttribute("rating5", rating5);
+		int totRatingCnt = rating1 + rating2 + rating3 + rating4 + rating5;
+		model.addAttribute("totRatingCnt", totRatingCnt);
 		
 		model.addAttribute("vos", vos);
 		model.addAttribute("viewpart", viewpart);
-		model.addAttribute("searchpart", searchpart);
 		model.addAttribute("search", search);
 		model.addAttribute("flag", "review");
 		
@@ -54,18 +65,33 @@ public class ReviewController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/reviewAdd", method = RequestMethod.POST)
-	public void reviewAdd(int gameIdx, int rating, String state, String mid) {
+	public String reviewAdd(int gameIdx, int rating, String state, String mid) {
 		ReviewVO testvo = reviewService.getMidAndIdx(gameIdx, mid);
 		
 		if(testvo != null) reviewService.setReviewEdit(mid, gameIdx, rating, state);
 		else reviewService.setReviewInput(mid, gameIdx, rating, state);
 		
+		int rating1 = reviewService.getRatingCount(mid, 1);
+		int rating2 = reviewService.getRatingCount(mid, 2);
+		int rating3 = reviewService.getRatingCount(mid, 3);
+		int rating4 = reviewService.getRatingCount(mid, 4);
+		int rating5 = reviewService.getRatingCount(mid, 5);
+		int ratingTotalCnt = rating1 + rating2 + rating3 + rating4 + rating5;
+		return rating1 + "|" + rating2 + "|" + rating3 + "|" + rating4 + "|" + rating5 + "|" + ratingTotalCnt;
 	}
 	
 	@ResponseBody
 	@RequestMapping(value = "/reviewDelete", method = RequestMethod.POST)
-	public void reviewDelete(int gameIdx, String mid) {
+	public String reviewDelete(int gameIdx, String mid) {
 		reviewService.setReviewDelete(mid, gameIdx);
+		
+		int rating1 = reviewService.getRatingCount(mid, 1);
+		int rating2 = reviewService.getRatingCount(mid, 2);
+		int rating3 = reviewService.getRatingCount(mid, 3);
+		int rating4 = reviewService.getRatingCount(mid, 4);
+		int rating5 = reviewService.getRatingCount(mid, 5);
+		int ratingTotalCnt = rating1 + rating2 + rating3 + rating4 + rating5;
+		return rating1 + "|" + rating2 + "|" + rating3 + "|" + rating4 + "|" + rating5 + "|" + ratingTotalCnt;
 	}
 	
 	@ResponseBody

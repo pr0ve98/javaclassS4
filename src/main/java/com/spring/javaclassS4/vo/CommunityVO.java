@@ -46,4 +46,7 @@ public class CommunityVO {
 	// 리뷰용
 	private int rating;
 	private String state;
+	
+	// 팔로우 여부
+	private int follow;
 }

@@ -292,7 +292,7 @@ public class CommunityController {
 		    
 		    if(!mid.equals("")) {
 			    str += "<div style=\"display: flex; align-items: center;\">";
-			    if(!mid.equals(vo.getMid())) str += "<div class=\"replyok-button mr-4\" onclick=\"followAdd('"+vo.getMid()+"')\"><i class=\"fa-solid fa-plus fa-sm\"></i>&nbsp;팔로우</div>";
+			    if(!mid.equals(vo.getMid()) && vo.getFollow() == 0) str += "<div class=\"replyok-button mr-4 fb"+vo.getMid()+"\" onclick=\"followAdd('"+vo.getMid()+"')\"><i class=\"fa-solid fa-plus fa-sm\"></i>&nbsp;팔로우</div>";
 			    str +="<div style=\"position:relative;\">"
 			        + "<i class=\"fa-solid fa-bars fa-xl\" onclick=\"toggleContentMenu(" + vo.getCmIdx() + ")\" style=\"color: #D5D5D5;cursor:pointer;\"></i>"
 			        + "<div id=\"contentMenu" + vo.getCmIdx() + "\" class=\"content-menu\">";
@@ -305,7 +305,10 @@ public class CommunityController {
 			        str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
 			        str += "<div>사용자 제재</div>";
 			    }
-			    else str += "<div>팔로우</div><div>신고</div>";
+			    else {
+			    	str += "<div class=\"ufb"+vo.getMid()+"\" onclick=\"followDelete('"+vo.getMid()+"')\">언팔로우</div>";
+			    	str += "<div>신고</div>";
+			    }
 			    
 			    str += "</div></div></div>";
 		    }
@@ -460,6 +463,20 @@ public class CommunityController {
 	@RequestMapping(value = "/replyDelete", method = RequestMethod.POST)
 	public String replyDelete(int replyIdx) {
 		return communityService.replyDelete(replyIdx)+"";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/followInput", method = RequestMethod.POST)
+	public void followInput(String youMid, HttpSession session) {
+		String myMid = session.getAttribute("sMid")==null ? "" : (String)session.getAttribute("sMid");
+		communityService.followInput(myMid, youMid);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/followDelete", method = RequestMethod.POST)
+	public void followDelete(String youMid, HttpSession session) {
+		String myMid = session.getAttribute("sMid")==null ? "" : (String)session.getAttribute("sMid");
+		communityService.followDelete(myMid, youMid);
 	}
 		
 	

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.javaclassS4.dao.ReviewDAO;
 import com.spring.javaclassS4.vo.CommunityVO;
@@ -16,14 +17,14 @@ public class ReviewServiceImpl implements ReviewService {
 	ReviewDAO reviewDAO;
 	
 	@Override
-	public int getGameTotRecCnt(String searchpart, String search, String mid) {
-		return reviewDAO.getGameTotRecCnt(searchpart, search, mid);
+	public int getGameTotRecCnt(String search, String mid) {
+		return reviewDAO.getGameTotRecCnt(search, mid);
 	}
 
 	@Override
-	public ArrayList<CommunityVO> getGameList(int startIndexNo, int pageSize, String viewpart, String searchpart,
+	public ArrayList<CommunityVO> getGameList(int startIndexNo, int pageSize, String viewpart,
 			String search, String mid) {
-		return reviewDAO.getGameList(startIndexNo, pageSize, viewpart, searchpart, search, mid);
+		return reviewDAO.getGameList(startIndexNo, pageSize, viewpart, search, mid);
 	}
 
 	@Override
@@ -36,14 +37,33 @@ public class ReviewServiceImpl implements ReviewService {
 		reviewDAO.setReviewEdit(mid, gameIdx, rating, state);
 	}
 
+	@Transactional
 	@Override
 	public void setReviewInput(String mid, int gameIdx, int rating, String state) {
 		reviewDAO.setReviewInput(mid, gameIdx, rating, state);
+		int reviewCount = reviewDAO.getGameReviewCount(gameIdx);
+		if(reviewCount >= 3) {
+			double reviewTotal = reviewDAO.getGameReviewTotal(gameIdx);
+			double invenscore = reviewTotal / reviewCount;
+			invenscore = Math.round(invenscore * 10) / 10.0;
+			reviewDAO.setInvenscore(invenscore, gameIdx);
+		}
 	}
 
+	@Transactional
 	@Override
 	public void setReviewDelete(String mid, int gameIdx) {
 		reviewDAO.setReviewDelete(mid, gameIdx);
+		int reviewCount = reviewDAO.getGameReviewCount(gameIdx);
+		if(reviewCount >= 3) {
+			double reviewTotal = reviewDAO.getGameReviewTotal(gameIdx);
+			double invenscore = reviewTotal / reviewCount;
+			invenscore = Math.round(invenscore * 10) / 10.0;
+			reviewDAO.setInvenscore(invenscore, gameIdx);
+		}
+		else {
+			reviewDAO.setInvenscore(0, gameIdx);
+		}
 	}
 
 	@Override
@@ -59,6 +79,11 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public void reviewMoreEdit(CommunityVO vo) {
 		reviewDAO.reviewMoreEdit(vo);
+	}
+
+	@Override
+	public int getRatingCount(String mid, int rating) {
+		return reviewDAO.getRatingCount(mid, rating);
 	}
 
 

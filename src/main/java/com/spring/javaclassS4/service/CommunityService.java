@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
+import com.spring.javaclassS4.vo.ReportVO;
 
 public interface CommunityService {
 
@@ -68,5 +69,7 @@ public interface CommunityService {
 	public void followInput(String myMid, String youMid);
 
 	public void followDelete(String myMid, String youMid);
+
+	public void reportInput(ReportVO vo);
 
 }

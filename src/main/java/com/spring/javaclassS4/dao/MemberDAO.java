@@ -22,4 +22,6 @@ public interface MemberDAO {
 
 	public String getMemberGamelist(@Param("mid") String mid);
 
+	public void unlockMember(@Param("day") int day);
+
 }

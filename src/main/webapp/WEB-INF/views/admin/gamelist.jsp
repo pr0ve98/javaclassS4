@@ -554,7 +554,7 @@
 					<td data-title="출시일">&nbsp;&nbsp;${fn:substring(vo.showDate, 0, 4)}</td>
 					<td data-title="인벤스코어">
 						<c:if test="${vo.invenscore == 0.0}">&nbsp;</c:if>
-						<c:if test="${vo.invenscore != 0.0}">&nbsp;&nbsp;${vo.invenscore}</c:if>
+						<c:if test="${vo.invenscore != 0.0}">&nbsp;&nbsp;<img src="${ctp}/images/starpull.png" width="16px" height="16px">&nbsp;${vo.invenscore}</c:if>
 					</td>
 					<td data-title="메타스코어">
 						<c:if test="${vo.metascore == 0.0}">&nbsp;</c:if>

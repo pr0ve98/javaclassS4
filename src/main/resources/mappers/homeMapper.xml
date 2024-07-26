@@ -7,4 +7,21 @@
 	<select id="getGame" resultType="com.spring.javaclassS4.vo.GameVO">
 		select * from itGame where gameIdx=#{gameIdx};
 	</select>
+	<select id="getMyGameCount" resultType="int">
+		select count(*) from itReview where revMid=#{mid};
+	</select>
+	<select id="getMyGameStar" resultType="int">
+		<if test="rating == 5">
+			select count(*) from itReview where revMid=#{mid} and rating = 5;
+		</if>
+		<if test="rating == 3">
+			select count(*) from itReview where revMid=#{mid} and <![CDATA[rating >= 3 and rating != 5]]>;
+		</if>
+		<if test="rating == 2">
+			select count(*) from itReview where revMid=#{mid} and <![CDATA[rating <= 2]]>;
+		</if>
+	</select>
+	<select id="getMyGameState" resultType="int">
+		select count(*) from itReview where revMid=#{mid} and state=#{state};
+	</select>
 </mapper>

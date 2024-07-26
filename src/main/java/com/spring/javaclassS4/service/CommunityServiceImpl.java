@@ -24,6 +24,7 @@ import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
+import com.spring.javaclassS4.vo.ReportVO;
 
 @Service
 public class CommunityServiceImpl implements CommunityService {
@@ -233,6 +234,15 @@ public class CommunityServiceImpl implements CommunityService {
 			vos.get(i).setParentsReply(parentsReply);
 			vos.get(i).setChildReply(childsReply);
 			vos.get(i).setReplyCount(replyCount);
+			
+			if(vos.get(i).getCmGameIdx() != 0) {
+				GameVO vo = communityDAO.getGameIdx(vos.get(i).getCmGameIdx());
+				vos.get(i).setGameImg(vo.getGameImg());
+			}
+			
+			FollowVO fVO = communityDAO.getFollow(mid, vos.get(i).getMid());
+			if(fVO == null) vos.get(i).setFollow(0);
+			else vos.get(i).setFollow(1);
 		}
 		return vos;
 	}
@@ -326,7 +336,8 @@ public class CommunityServiceImpl implements CommunityService {
 			if(!mid.equals("")) {
 				str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
 				if(mid.equals(p.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+p.getReplyIdx()+", '"+p.getReplyContent()+"')\">수정</span>";
-				if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+				if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span class=\"mr-2\" onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+				str += "<span class=\"mr-2\" onclick=\"reportPopup("+p.getReplyIdx()+", '댓글', '"+p.getReplyMid()+"')\">신고</span>";
 				str += "</div>";
 			}
 			str += "</div></div></div>"
@@ -347,7 +358,8 @@ public class CommunityServiceImpl implements CommunityService {
 					if(!mid.equals("")) {
 						str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
 						if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
-						if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+						if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span class=\"mr-2\" onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+						str += "<span class=\"mr-2\" onclick=\"reportPopup("+c.getReplyIdx()+", '댓글', '"+c.getReplyMid()+"')\">신고</span>";
 						str += "</div>";
 					}
 					str += "</div></div></div>";
@@ -392,7 +404,8 @@ public class CommunityServiceImpl implements CommunityService {
 			if(!mid.equals("")) {
 				str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
 				if(mid.equals(p.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+p.getReplyIdx()+", '"+p.getReplyContent()+"')\">수정</span>";
-				if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+				if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span class=\"mr-2\" onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+				str += "<span class=\"mr-2\" onclick=\"reportPopup("+p.getReplyIdx()+", '댓글', '"+p.getReplyMid()+"')\">신고</span>";
 				str += "</div>";
 			}
 			str += "</div></div></div>"
@@ -412,7 +425,8 @@ public class CommunityServiceImpl implements CommunityService {
 					if(!mid.equals("")) {
 						str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
 						if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
-						if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+						if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span class=\"mr-2\" onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+						str += "<span class=\"mr-2\" onclick=\"reportPopup("+c.getReplyIdx()+", '댓글', '"+c.getReplyMid()+"')\">신고</span>";
 						str += "</div>";
 					}
 					str += "</div></div></div>";
@@ -457,7 +471,8 @@ public class CommunityServiceImpl implements CommunityService {
 				if(!mid.equals("")) {
 					str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+vo.getReplyParentIdx()+")\">답글</span>";
 					if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
-					if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+					if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span class=\"mr-2\" onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+					str += "<span class=\"mr-2\" onclick=\"reportPopup("+c.getReplyIdx()+", '댓글', '"+c.getReplyMid()+"')\">신고</span>";
 					str += "</div>";
 				}
 				str += "</div></div></div>";
@@ -489,7 +504,8 @@ public class CommunityServiceImpl implements CommunityService {
 				if(!mid.equals("")) {
 					str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+replyParentIdx+")\">답글</span>";
 					if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
-					if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+					if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span class=\"mr-2\" onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+					str += "<span class=\"mr-2\" onclick=\"reportPopup("+c.getReplyIdx()+", '댓글', '"+c.getReplyMid()+"')\">신고</span>";
 					str += "</div>";
 				}
 				str += "</div></div></div>";
@@ -536,7 +552,8 @@ public class CommunityServiceImpl implements CommunityService {
 			if(!mid.equals("")) {
 				str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
 				if(mid.equals(p.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+p.getReplyIdx()+", '"+p.getReplyContent()+"')\">수정</span>";
-				if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+				if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span class=\"mr-2\" onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+				str += "<span class=\"mr-2\" onclick=\"reportPopup("+p.getReplyIdx()+", '댓글', '"+p.getReplyMid()+"')\">신고</span>";
 				str += "</div>";
 			}
 			str += "</div></div></div>"
@@ -557,7 +574,8 @@ public class CommunityServiceImpl implements CommunityService {
 					if(!mid.equals("")) {
 						str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
 						if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
-						if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+						if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span class=\"mr-2\" onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+						str += "<span class=\"mr-2\" onclick=\"reportPopup("+c.getReplyIdx()+", '댓글', '"+c.getReplyMid()+"')\">신고</span>";
 						str += "</div>";
 					}
 					str += "</div></div></div>";
@@ -595,6 +613,11 @@ public class CommunityServiceImpl implements CommunityService {
 	@Override
 	public void followDelete(String myMid, String youMid) {
 		communityDAO.followDelete(myMid, youMid);
+	}
+
+	@Override
+	public void reportInput(ReportVO vo) {
+		communityDAO.reportInput(vo);
 	}
 
 }

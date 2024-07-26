@@ -57,11 +57,10 @@
 							            <div class="profile-name">@${sMid}</div>
 						            </div>
 						        </div>
-						        <a href="#">회원 관리</a>
+						        <a href="${ctp}/admin/userlist">회원 관리</a>
 						        <a href="${ctp}/admin/gamelist">게임 관리</a>
-						        <a href="#">리뷰 관리</a>
 						        <a href="#">문의 목록</a>
-						        <a href="#">신고 목록</a>
+						        <a href="${ctp}/admin/reportlist">신고 목록</a>
 						        <a href="${ctp}/setting/profile">계정 설정</a>
 						        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>
 						        <c:if test="${sKakao == 'NO'}"><a href="${ctp}/member/memberLogout">로그아웃</a></c:if>
@@ -82,7 +81,6 @@
 				<span class="menu-item"><a href="${ctp}/main" ${flag == 'main' ? 'class="selected"' : ''}>홈</a></span>
 				<span class="menu-item"><a href="${ctp}/community/recent" ${flag == 'community' ? 'class="selected"' : ''}>커뮤니티</a></span>
 				<span class="menu-item"><a href="${ctp}/review" ${flag == 'review' ? 'class="selected"' : ''}>평가</a></span>
-				<span class="menu-item"><a href="#" ${flag == 'store' ? 'class="selected"' : ''}>스토어</a></span>
 			</div>
 			<div class="right-menu">
 				<div class="search-container">
@@ -123,11 +121,10 @@
 							            <div class="profile-name">@${sMid}</div>
 						            </div>
 						        </div>
-						        <a href="#">회원 관리</a>
+						        <a href="${ctp}/admin/userlist">회원 관리</a>
 						        <a href="${ctp}/admin/gamelist">게임 관리</a>
-						        <a href="#">리뷰 관리</a>
 						        <a href="#">문의 목록</a>
-						        <a href="#">신고 목록</a>
+						        <a href="${ctp}/admin/reportlist">신고 목록</a>
 						        <a href="${ctp}/setting/profile">계정 설정</a>
 						        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>
 						        <c:if test="${sKakao == 'NO'}"><a href="${ctp}/member/memberLogout">로그아웃</a></c:if>

@@ -56,7 +56,7 @@
 	}
 	.menu-item {
 		padding: 5px 10px;
-		font-size: 18px;
+		font-size: 24px;
 	}
 	.selected {
 		color: #00c722;
@@ -107,7 +107,6 @@
 	}
 	.banner img {
 		width: 100%;
-		height: 200px;
 		border-radius: 10px;
 		object-fit: cover;
 	}

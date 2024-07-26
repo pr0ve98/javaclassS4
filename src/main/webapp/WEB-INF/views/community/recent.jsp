@@ -735,11 +735,40 @@
  		});
 	}
  	
- 	function reportPopup(cmIdx) {
+ 	function reportPopup(contentIdx, contentPart, sufferMid) {
     	const popup = document.querySelector('#popup-report');
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
         html.style.overflow = 'hidden';
+        $("#contentIdx").val(contentIdx);
+        $("#contentPart").val(contentPart);
+        $("#sufferMid").val(sufferMid);
+	}
+ 	
+ 	function reportInput() {
+		let reason = $("select[name=reason]").val();
+		let contentIdx = $("#contentIdx").val();
+		let contentPart = $("#contentPart").val();
+		let sufferMid = $("#sufferMid").val();
+		
+		if(reason == '') {
+			alert("신고사유를 선택해주세요");
+			return false;
+		}
+		
+ 		$.ajax({
+ 			url : "${ctp}/community/reportInput",
+ 			type : "post",
+ 			data : {reportMid : '${sMid}', sufferMid:sufferMid, contentPart:contentPart, contentIdx:contentIdx, reason:reason},
+ 			success : function() {
+ 				alert("신고가 정상접수 되었습니다!");
+ 				closePopup('report');
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
+		
 	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
@@ -817,7 +846,7 @@
 									        <c:if test="${sLevel == 0}"><div>사용자 제재</div></c:if>
 									        <c:if test="${sMid != cmVO.mid && sLevel != 0}">
 									        	<div class="ufb${cmVO.mid}" style="display:${cmVO.follow == 1 ? 'block' : 'none'};" onclick="followDelete('${cmVO.mid}')">언팔로우</div>
-									        	<div onclick="reportPopup(${cmVO.cmIdx})">신고</div>
+									        	<div onclick="reportPopup(${cmVO.cmIdx}, '게시글', '${cmVO.mid}')">신고</div>
 									        </c:if>
 								    	</div>
 						 			</div>
@@ -862,7 +891,8 @@
 												<div class="replymenu">
 													<span class="mr-2" onclick="rreplyPreview(${parentReply.replyIdx})">답글</span>
 													<c:if test="${sMid == parentReply.replyMid}"><span class="mr-2" onclick="replyEditPopup(${parentReply.replyIdx}, '${parentReply.replyContent}')">수정</span></c:if>
-													<c:if test="${(sMid == parentReply.replyMid && sLevel != 0) || sLevel == 0}"><span onclick="replyDelete(${parentReply.replyIdx}, 0)">삭제</span></c:if>
+													<c:if test="${(sMid == parentReply.replyMid && sLevel != 0) || sLevel == 0}"><span class="mr-2" onclick="replyDelete(${parentReply.replyIdx}, 0)">삭제</span></c:if>
+													<span class="mr-2" onclick="reportPopup(${parentReply.replyIdx}, '댓글', '${parentReply.replyMid}')">신고</span>
 												</div>
 											</c:if>
 										</div>
@@ -886,7 +916,8 @@
 															<div class="replymenu">
 																<span class="mr-2" onclick="rreplyPreview(${parentReply.replyIdx})">답글</span>
 																<c:if test="${sMid == childReply.replyMid}"><span class="mr-2" onclick="replyEditPopup(${childReply.replyIdx}, '${childReply.replyContent}')">수정</span></c:if>
-																<c:if test="${(sMid == childReply.replyMid && sLevel != 0) || sLevel == 0}"><span onclick="replyDelete(${childReply.replyIdx}, 1)">삭제</span></c:if>
+																<c:if test="${(sMid == childReply.replyMid && sLevel != 0) || sLevel == 0}"><span class="mr-2" onclick="replyDelete(${childReply.replyIdx}, 1)">삭제</span></c:if>
+																<span class="mr-2" onclick="reportPopup(${childReply.replyIdx}, '댓글', '${childReply.replyMid}')">신고</span>
 															</div>
 														</c:if>
 													</div>
@@ -1305,18 +1336,20 @@
     		<div style="cursor:pointer;" onclick="closePopup('report')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
 		<div class="mb-3">확실히 신고사유가 되는지 확인하고 신고하여 주십시오 무분별한 신고 시 <b style="color:red;">신고자가 제재</b>를 당할 수 있습니다</div>
-		<div class="text-center mb-4"><select class="dropdown-btn">
+		<div class="text-center mb-4"><select class="dropdown-btn" name="reason">
 			<option value="">신고사유 선택</option>
 			<option>스팸</option>
 			<option>스포일러</option>
-			<option>나체이미지 또는 성적행위</option>
+			<option value="선정성">나체이미지 또는 성적행위</option>
 			<option>사기</option>
-			<option>욕설, 혐오 발언</option>
+			<option value="욕설혐오">욕설, 혐오 발언</option>
 			<option>지식재산권 침해</option>
-			<option>타인의 명예 훼손</option>
+			<option value="명예훼손">타인의 명예 훼손</option>
 		</select></div>
- 		<input type="hidden" id="reportCmIdx" name="reportCmIdx" />
-	 	<div class="text-center"><button class="btn btn-danger" onclick="replyEdit()">신고하기</button></div>
+ 		<input type="hidden" id="contentIdx" name="contentIdx" />
+ 		<input type="hidden" id="contentPart" name="contentPart" />
+ 		<input type="hidden" id="sufferMid" name="sufferMid" />
+	 	<div class="text-center"><button class="btn btn-danger" onclick="reportInput()">신고하기</button></div>
     </div>
 </div>
 </body>

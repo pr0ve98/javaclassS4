@@ -68,6 +68,10 @@
 		SELECT * from itFollow where myMid=#{myMid} and youMid=#{youMid};
 	</select>
 	
+	
+	
+	
+	
 	<update id="setMemGameListEdit">
 		update itGamelist set gamelist=#{gamelist} where glMid=#{mid};
 	</update>
@@ -82,6 +86,10 @@
 	<update id="replyEdit">
 		update itReply set replyContent=#{replyContent},replyMid=#{replyMid} where replyIdx=#{replyIdx};
 	</update>
+	
+	
+	
+	
 	
 	<insert id="communityInput">
 		insert into itCommunity values(default,#{vo.mid},#{vo.section},#{vo.part},<if test="vo.part == '자유'">default,</if><if test="vo.part != '자유'">#{vo.cmGameIdx},</if>#{vo.cmContent},default,#{vo.cmHostIp},#{vo.publicType},default,default);
@@ -98,6 +106,14 @@
 	<insert id="followInput">
 		insert into itFollow values(#{myMid}, #{youMid});
 	</insert>
+	<insert id="reportInput">
+		insert into itReport values(default, #{vo.reportMid}, #{vo.sufferMid}, #{vo.contentPart}, #{vo.contentIdx}, #{vo.reason}, default);
+	</insert>
+	
+	
+	
+	
+	
 	
 	<delete id="setlikeDelete">
 		delete from itLike where likeCmIdx=#{cmIdx} and likeMid=#{mid};
@@ -111,7 +127,7 @@
 	<delete id="setReviewDelete">
 		delete from itReview where revMid=#{mid} and revGameIdx=#{gameIdx};
 	</delete>
-	<insert id="followDelete">
+	<delete id="followDelete">
 		delete from itFollow where myMid=#{myMid} and youMid=#{youMid};
-	</insert>
+	</delete>
 </mapper>

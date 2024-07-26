@@ -24,4 +24,19 @@ public class HomeServiceImpl implements HomeService {
 		return homeDAO.getGame(gameIdx);
 	}
 
+	@Override
+	public int getMyGameCount(String mid) {
+		return homeDAO.getMyGameCount(mid);
+	}
+
+	@Override
+	public int getMyGameStar(String mid, int rating) {
+		return homeDAO.getMyGameStar(mid, rating);
+	}
+
+	@Override
+	public int getMyGameState(String mid, String state) {
+		return homeDAO.getMyGameState(mid, state);
+	}
+
 }

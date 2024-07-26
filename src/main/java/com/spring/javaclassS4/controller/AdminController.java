@@ -155,5 +155,87 @@ public class AdminController {
 		else return "0";
 	}
 	
+	@RequestMapping(value = "/userlist", method = RequestMethod.GET)
+	public String userlist(HttpSession session, Model model,
+			@RequestParam(name="viewpart", defaultValue = "all", required = false) String viewpart,
+			@RequestParam(name="searchpart", defaultValue = "아이디", required = false) String searchpart,
+			@RequestParam(name="search", defaultValue = "", required = false) String search,
+			@RequestParam(name="page", defaultValue = "1", required = false) int page,
+			@RequestParam(name="pageSize", defaultValue = "10", required = false) int pageSize) {
+		
+		int totRecCnt = 0;
+		ArrayList<GameVO> vos = null;
+		
+		if(viewpart.equals("all")) {
+			totRecCnt = adminService.getAllUserTotRecCnt(searchpart, search);
+			int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+			int startIndexNo = (page - 1) * pageSize;
+			model.addAttribute("page", page);
+			model.addAttribute("totRecCnt", totRecCnt);
+			model.addAttribute("totPage", totPage);
+			
+			vos = adminService.getAllUserList(startIndexNo, pageSize, searchpart, search);
+			model.addAttribute("vos", vos);
+		}
+		else if(viewpart.equals("0") || viewpart.equals("1") || viewpart.equals("2")) {
+			totRecCnt = adminService.getLevelUserTotRecCnt(viewpart, searchpart, search);
+			int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+			int startIndexNo = (page - 1) * pageSize;
+			model.addAttribute("page", page);
+			model.addAttribute("totRecCnt", totRecCnt);
+			model.addAttribute("totPage", totPage);
+			
+			vos = adminService.getLevelUserList(startIndexNo, pageSize, viewpart, searchpart, search);
+			model.addAttribute("vos", vos);
+		}
+		else if(viewpart.equals("NO") || viewpart.equals("OK") || viewpart.equals("BAN")|| viewpart.equals("OUT")) {
+			totRecCnt = adminService.getStateUserTotRecCnt(viewpart, searchpart, search);
+			int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+			int startIndexNo = (page - 1) * pageSize;
+			model.addAttribute("page", page);
+			model.addAttribute("totRecCnt", totRecCnt);
+			model.addAttribute("totPage", totPage);
+			
+			vos = adminService.getStateUserList(startIndexNo, pageSize, viewpart, searchpart, search);
+			model.addAttribute("vos", vos);
+		}
+		else {
+			totRecCnt = adminService.getKakaoUserTotRecCnt(viewpart, searchpart, search);
+			int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+			int startIndexNo = (page - 1) * pageSize;
+			model.addAttribute("page", page);
+			model.addAttribute("totRecCnt", totRecCnt);
+			model.addAttribute("totPage", totPage);
+			
+			vos = adminService.getKakaoUserList(startIndexNo, pageSize, viewpart, searchpart, search);
+			model.addAttribute("vos", vos);
+		}
+		
+		model.addAttribute("viewpart", viewpart);
+		model.addAttribute("searchpart", searchpart);
+		model.addAttribute("search", search);
+		
+		return "admin/userlist";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/levelChange", method = RequestMethod.POST)
+	public String levelChange(int level, int idx, String nickname) {
+		int res = adminService.levelChange(level, idx, nickname);
+		return res+"";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/banInput", method = RequestMethod.POST)
+	public void banInput(String banMid, String reason) {
+		adminService.banInput(banMid, reason);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/bannerChange", method = RequestMethod.POST)
+	public void bannerChange(HttpSession session, MultipartFile fName, HttpServletRequest request) {
+		adminService.bannerChange(fName, request, session);
+	}
+	
 	
 }

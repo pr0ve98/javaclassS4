@@ -63,6 +63,10 @@ public class MemberController {
 			
 		}
 		
+		if(vo.getLoginState().equals("BAN")) return "redirect:/message/userBAN";
+		if(vo.getLoginState().equals("OUT")) return "redirect:/message/userOUT";
+		if(vo.getLoginState().equals("NO")) return "redirect:/message/loginStateNO";
+		
 		session.setAttribute("sMid", vo.getMid());
 		session.setAttribute("sNickname", vo.getNickname());
 		session.setAttribute("sLevel", vo.getLevel());
@@ -77,6 +81,12 @@ public class MemberController {
 		MemberVO vo = memberService.getMemberEmailCheck(email);
 		
 		if(vo == null) return "redirect:/message/memberLoginNo";
+		else if(vo.getLoginState().equals("BAN")) return "redirect:/message/userBAN";
+		else if(vo.getLoginState().equals("OUT")) return "redirect:/message/userOUT";
+		else if(vo.getLoginState().equals("NO")) {
+			
+			return "redirect:/message/loginStateNO";
+		}
 		else if(!passwordEncoder.matches(pwd, vo.getPwd())) return "redirect:/message/memberLoginNo";
 		else {
 			session.setAttribute("sMid", vo.getMid());

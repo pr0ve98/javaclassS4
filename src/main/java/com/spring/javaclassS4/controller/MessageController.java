@@ -43,6 +43,18 @@ public class MessageController {
 			model.addAttribute("msg", "회원가입 실패...");
 			model.addAttribute("url", "main");
 		}
+		else if(msgFlag.equals("loginStateNO")) {
+			model.addAttribute("msg", "활동 정지 중인 유저입니다");
+			model.addAttribute("url", "main");
+		}
+		else if(msgFlag.equals("userOUT")) {
+			model.addAttribute("msg", "탈퇴한 유저입니다");
+			model.addAttribute("url", "main");
+		}
+		else if(msgFlag.equals("userBAN")) {
+			model.addAttribute("msg", "영구 정지된 유저입니다");
+			model.addAttribute("url", "main");
+		}
 		
 		return "include/message";
 	}

@@ -20,6 +20,7 @@ import com.spring.javaclassS4.service.CommunityService;
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
+import com.spring.javaclassS4.vo.ReportVO;
 
 @Controller
 @RequestMapping("/community")
@@ -307,7 +308,7 @@ public class CommunityController {
 			    }
 			    else {
 			    	str += "<div class=\"ufb"+vo.getMid()+"\" onclick=\"followDelete('"+vo.getMid()+"')\">언팔로우</div>";
-			    	str += "<div>신고</div>";
+			    	str += "<div onclick=\"reportPopup("+vo.getCmIdx()+", '게시글')\">신고</div>";
 			    }
 			    
 			    str += "</div></div></div>";
@@ -352,7 +353,8 @@ public class CommunityController {
 				if(!mid.equals("")) {
 					str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
 					if(mid.equals(p.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+p.getReplyIdx()+", '"+p.getReplyContent()+"')\">수정</span>";
-					if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+					if((mid.equals(p.getReplyMid()) && level != 0) || level == 0) str += "<span class=\"mr-2\" onclick=\"replyDelete("+p.getReplyIdx()+", 0)\">삭제</span>";
+					str += "<span class=\"mr-2\" onclick=\"reportPopup("+p.getReplyIdx()+", '댓글', '"+p.getReplyMid()+"')\">신고</span>";
 					str += "</div>";
 				}
 				str += "</div></div></div>"
@@ -372,7 +374,8 @@ public class CommunityController {
 						if(!mid.equals("")) {
 							str += "<div class=\"replymenu\"><span class=\"mr-2\" onclick=\"rreplyPreview("+p.getReplyIdx()+")\">답글</span>";
 							if(mid.equals(c.getReplyMid())) str += "<span class=\"mr-2\" onclick=\"replyEditPopup("+c.getReplyIdx()+", '"+c.getReplyContent()+"')\">수정</span>";
-							if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+							if((mid.equals(c.getReplyMid()) && level != 0) || level == 0) str += "<span class=\"mr-2\" onclick=\"replyDelete("+c.getReplyIdx()+", 1)\">삭제</span>";
+							str += "<span class=\"mr-2\" onclick=\"reportPopup("+c.getReplyIdx()+", '댓글', '"+c.getReplyMid()+"')\">신고</span>";
 							str += "</div>";
 						}
 						str += "</div></div></div>";
@@ -477,6 +480,12 @@ public class CommunityController {
 	public void followDelete(String youMid, HttpSession session) {
 		String myMid = session.getAttribute("sMid")==null ? "" : (String)session.getAttribute("sMid");
 		communityService.followDelete(myMid, youMid);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/reportInput", method = RequestMethod.POST)
+	public void reportInput(ReportVO vo) {
+		communityService.reportInput(vo);
 	}
 		
 	

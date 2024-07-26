@@ -18,11 +18,95 @@
 	<select id="gameTitleSearch" resultType="com.spring.javaclassS4.vo.GameVO">
 		select * from itGame where gameTitle=#{gameTitle};
 	</select>
+	<select id="getAllUserTotRecCnt" resultType="int">
+		<if test="search == ''">select count(*) as totRecCnt from itMember;</if>
+		<if test="search != ''">
+			<if test="searchpart == '아이디'">select count(*) as totRecCnt from itMember where mid like concat('%',#{search},'%');</if>
+			<if test="searchpart == '닉네임'">select count(*) as totRecCnt from itMember where nickname like concat('%',#{search},'%');</if>
+		</if>
+	</select>
+	<select id="getAllUserList" resultType="com.spring.javaclassS4.vo.MemberVO">
+		<if test="search == ''">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid order by idx desc limit #{startIndexNo},#{pageSize};</if>
+		<if test="search != ''">
+			<if test="searchpart == '아이디'">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.mid like concat('%',#{search},'%') order by idx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="searchpart == '닉네임'">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.nickname like concat('%',#{search},'%') order by idx desc limit #{startIndexNo},#{pageSize};</if>
+		</if>
+	</select>
+	<select id="getLevelUserTotRecCnt" resultType="int">
+		<if test="search == ''">select count(*) as totRecCnt from itMember where level=#{viewpart};</if>
+		<if test="search != ''">
+			<if test="searchpart == '아이디'">select count(*) as totRecCnt from itMember where mid like concat('%',#{search},'%') and level=#{viewpart};</if>
+			<if test="searchpart == '닉네임'">select count(*) as totRecCnt from itMember where nickname like concat('%',#{search},'%') and level=#{viewpart};</if>
+		</if>
+	</select>
+	<select id="getLevelUserList" resultType="com.spring.javaclassS4.vo.MemberVO">
+		<if test="search == ''">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.level=#{viewpart} order by idx desc limit #{startIndexNo},#{pageSize};</if>
+		<if test="search != ''">
+			<if test="searchpart == '아이디'">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.mid like concat('%',#{search},'%') and m.level=#{viewpart} order by idx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="searchpart == '닉네임'">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.nickname like concat('%',#{search},'%') and m.level=#{viewpart} order by idx desc limit #{startIndexNo},#{pageSize};</if>
+		</if>
+	</select>
+	<select id="getStateUserTotRecCnt" resultType="int">
+		<if test="search == ''">select count(*) as totRecCnt from itMember where loginState=#{viewpart};</if>
+		<if test="search != ''">
+			<if test="searchpart == '아이디'">select count(*) as totRecCnt from itMember where mid like concat('%',#{search},'%') and loginState=#{viewpart};</if>
+			<if test="searchpart == '닉네임'">select count(*) as totRecCnt from itMember where nickname like concat('%',#{search},'%') and loginState=#{viewpart};</if>
+		</if>
+	</select>
+	<select id="getStateUserList" resultType="com.spring.javaclassS4.vo.MemberVO">
+		<if test="search == ''">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.loginState=#{viewpart} order by idx desc limit #{startIndexNo},#{pageSize};</if>
+		<if test="search != ''">
+			<if test="searchpart == '아이디'">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.mid like concat('%',#{search},'%') and m.loginState=#{viewpart} order by idx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="searchpart == '닉네임'">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.nickname like concat('%',#{search},'%') and m.loginState=#{viewpart} order by idx desc limit #{startIndexNo},#{pageSize};</if>
+		</if>
+	</select>
+	<select id="getKakaoUserTotRecCnt" resultType="int">
+		<if test="viewpart == 'kakao'">
+			<if test="search == ''">select count(*) as totRecCnt from itMember where pwd = 'kakaoMember';</if>
+			<if test="search != ''">
+				<if test="searchpart == '아이디'">select count(*) as totRecCnt from itMember where mid like concat('%',#{search},'%') and pwd = 'kakaoMember';</if>
+				<if test="searchpart == '닉네임'">select count(*) as totRecCnt from itMember where nickname like concat('%',#{search},'%') and pwd = 'kakaoMember';</if>
+			</if>
+		</if>
+		<if test="viewpart != 'kakao'">
+			<if test="search == ''">select count(*) as totRecCnt from itMember where pwd != 'kakaoMember';</if>
+			<if test="search != ''">
+				<if test="searchpart == '아이디'">select count(*) as totRecCnt from itMember where mid like concat('%',#{search},'%') and pwd != 'kakaoMember';</if>
+				<if test="searchpart == '닉네임'">select count(*) as totRecCnt from itMember where nickname like concat('%',#{search},'%') and pwd != 'kakaoMember';</if>
+			</if>
+		</if>
+	</select>
+	<select id="getKakaoUserList" resultType="com.spring.javaclassS4.vo.MemberVO">
+		<if test="viewpart == 'kakao'">
+			<if test="search == ''">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.pwd = 'kakaoMember' order by idx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				<if test="searchpart == '아이디'">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.mid like concat('%',#{search},'%') and m.pwd = 'kakaoMember' order by idx desc limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '닉네임'">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.nickname like concat('%',#{search},'%') and m.pwd = 'kakaoMember' order by idx desc limit #{startIndexNo},#{pageSize};</if>
+			</if>
+		</if>
+		<if test="viewpart != 'kakao'">
+			<if test="search == ''">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.pwd != 'kakaoMember' order by idx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				<if test="searchpart == '아이디'">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.mid like concat('%',#{search},'%') and m.pwd != 'kakaoMember' order by idx desc limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '닉네임'">select m.*, b.banDay from itMember m LEFT JOIN itBan b ON m.mid=b.banMid where m.nickname like concat('%',#{search},'%') and m.pwd != 'kakaoMember' order by idx desc limit #{startIndexNo},#{pageSize};</if>
+			</if>
+		</if>
+	</select>
+	<select id="getBanMid" resultType="com.spring.javaclassS4.vo.BanVO">
+		select * from itBan where banMid=#{banMid};
+	</select>
+	
+	
 	
 	
 	<insert id="gameInput">
 		insert into itGame values(default, #{vo.gameTitle}, #{vo.gameSubTitle}, #{vo.jangre}, #{vo.platform}, <if test="vo.showDate == ''">default,</if><if test="vo.showDate != ''">#{vo.showDate},</if>#{vo.price}, default, #{vo.metascore}, #{vo.steamscore}, #{vo.steamPage}, #{vo.developer}, #{vo.gameImg}, #{vo.gameInfo});
 	</insert>
+	<insert id="setBanInput">
+		insert into itBan values(#{banMid}, default, default, #{reason});
+	</insert>
+	
+	
 	
 	
 	<update id="gameEdit">
@@ -39,6 +123,20 @@
 			update itGame set gameTitle=#{vo.gameTitle}, gameSubTitle=#{vo.gameSubTitle}, jangre=#{vo.jangre}, platform=#{vo.platform},showDate=<if test="vo.showDate == ''">default,</if><if test="vo.showDate != ''">#{vo.showDate},</if>price=#{vo.price}, metascore=#{vo.metascore}, steamscore=#{vo.steamscore}, steamPage=#{vo.steamPage}, developer=#{vo.developer}, gameImg=#{vo.gameImg}, gameInfo=#{vo.gameInfo} where gameIdx=#{vo.gameIdx};
 		</if>
 	</update>
+	<update id="levelChange">
+		update itMember set level=#{level}, nickname=#{nickname}, title=#{title} where idx=#{idx};
+	</update>
+	<update id="setBanEdit">
+		update itBan set banDay=#{day}, banTime=now(), banReason=#{reason} where banMid=#{banMid};
+	</update>
+	<update id="setMemberLoginState">
+		update itMember set loginState='NO' where mid=#{banMid};
+	</update>
+	<update id="setAlwaysBan">
+		update itMember set loginState='BAN' where mid=#{banMid};
+	</update>
+	
+	
 	
 	
 	<delete id="gameDelete">

@@ -26,6 +26,42 @@
 		});
  	});
  	
+ 	function bannerChange() {
+		$("#inputImgs").trigger('click');
+	}
+	
+	function bannerChangeImg() {
+		let fName = document.getElementById("inputImgs").value;
+		let ext = fName.substring(fName.lastIndexOf(".")+1).toLowerCase();
+		
+		if(fName.trim() == ""){
+			alert("업로드할 파일을 선택하세요");
+			return false;
+		}
+		
+		if(ext != 'jpg'){
+			alert("jpg 파일만 업로드해주세요");
+		}
+		else {
+			let formData = new FormData();
+			formData.append("fName", document.getElementById("inputImgs").files[0]);
+			
+			$.ajax({
+				url : "${ctp}/admin/bannerChange",
+				type : "post",
+				data : formData,
+				processData: false,
+				contentType: false,
+				success : function(res) {
+					alert("변경완료!");
+					location.reload();
+				},
+				error : function() {
+					alert("오류!!");
+				}
+			});
+		}
+	}
 
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
@@ -39,6 +75,10 @@
 	</div>
 	<div class="container">
 		<div class="banner"><img alt="배너" src="${ctp}/resources/images/banner1.jpg" width="100%"></div>
+		<c:if test="${sLevel == 0}">
+			<div class="text-right" style="cursor:pointer" onclick="bannerChange()"><i class="fa-solid fa-repeat fa-xs"></i></div>
+			<div style="display:none"><input type="file" name="fName" id="inputImgs" accept=".jpg" onchange="bannerChangeImg()" /></div>
+		</c:if>
 		<div class="content1">
 			<div class="news">
 				<div class="news-title">
@@ -80,12 +120,12 @@
 			        <div class="game-status">
 			            <div class="game-info">
 			                <div class="game-title">내 게임</div>
-			                <div class="game-count">${sMid != null ? '109' : '-'}</div>
+			                <div class="game-count">${sMid != null ? myGameAllCount : '-'}</div>
 			                <c:if test="${sMid != null}">
 				                <div class="game-details">
-				                    <div class="cnt-item"><span>5점 게임</span><span>16</span></div>
-				                    <div class="cnt-item"><span>3점이상 게임</span><span>93</span></div>
-				                    <div class="cnt-item"><span>2점이하 게임</span><span>28</span></div>
+				                    <div class="cnt-item"><span>5점 게임</span><span>${myGame5Star}</span></div>
+				                    <div class="cnt-item"><span>3점이상 게임</span><span>${myGame3Star}</span></div>
+				                    <div class="cnt-item"><span>2점이하 게임</span><span>${myGame2Star}</span></div>
 				                </div>
 			                </c:if>
 			            </div>
@@ -93,12 +133,12 @@
 			                <div class="status">
 			                    <div class="game-title">게임 상태</div>
 			                    <div class="status-detail">
-			                        <div class="cnt-item"><span><i class="fa-solid fa-play fa-sm" style="color: #0085eb;"></i>&nbsp;&nbsp;하고있어요</span><span>${sMid != null ? '3' : '-'}</span></div>
-			                        <div class="cnt-item"><span><i class="fa-solid fa-check" style="color: #00c722;"></i>&nbsp;&nbsp;다했어요</span><span>${sMid != null ? '42' : '-'}</span></div>
-			                        <div class="cnt-item"><span><i class="fa-solid fa-xmark" style="color: #f50000;"></i>&nbsp;&nbsp;그만뒀어요</span><span>${sMid != null ? '29' : '-'}</span></div>
-			                        <div class="cnt-item"><span><i class="fa-solid fa-folder fa-sm" style="color: #d9d9d9;"></i>&nbsp;&nbsp;모셔놨어요</span><span>${sMid != null ? '10' : '-'}</span></div>
-			                        <div class="cnt-item"><span><i class="fa-solid fa-thumbtack fa-sm" style="color: #fff700;"></i>&nbsp;&nbsp;관심있어요</span><span>${sMid != null ? '12' : '-'}</span></div>
-			                        <div class="cnt-item"><span><i class="fa-solid fa-ellipsis" style="color:#37414cd6;"></i>&nbsp;&nbsp;상태없음</span><span>${sMid != null ? '12' : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-play fa-sm" style="color: #0085eb;"></i>&nbsp;&nbsp;하고있어요</span><span>${sMid != null ? myGamePlay : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-check" style="color: #00c722;"></i>&nbsp;&nbsp;다했어요</span><span>${sMid != null ? myGameDone : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-xmark" style="color: #f50000;"></i>&nbsp;&nbsp;그만뒀어요</span><span>${sMid != null ? myGameStop : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-folder fa-sm" style="color: #d9d9d9;"></i>&nbsp;&nbsp;모셔놨어요</span><span>${sMid != null ? myGameFolder : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-thumbtack fa-sm" style="color: #fff700;"></i>&nbsp;&nbsp;관심있어요</span><span>${sMid != null ? myGamePin : '-'}</span></div>
+			                        <div class="cnt-item"><span><i class="fa-solid fa-ellipsis" style="color:#37414cd6;"></i>&nbsp;&nbsp;상태없음</span><span>${sMid != null ? myGameNone : '-'}</span></div>
 			                    </div>
 			                </div>
 			            </div>
@@ -240,38 +280,6 @@
 									<div class="review-more">더 보기</div>
 								</div>
 							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="content2">
-			<div class="newgame">
-				<div class="mygames-title">
-					<span>❤️ 인기 스토어 게임</span>
-					<span class="more">모두 보기</span>
-				</div>
-				<div class="content-box">
-					<div class="store-game">
-						<div class="s-game">
-							<img src="${ctp}/game/디제이맥스.jpg">
-							<div class="s-game-name">DJMAX RESPECT V</div>
-							<div>#리듬게임</div>
-							<div class="s-game-price">49,800원</div>
-						</div>
-						<hr class="mobile-line" />
-						<div class="s-game">
-							<img src="${ctp}/game/발더스게이트.jpg">
-							<div class="s-game-name">발더스 게이트 3</div>
-							<div>#턴제 #RPG</div>
-							<div class="s-game-price">66,000원</div>
-						</div>
-						<hr class="mobile-line" />
-						<div class="s-game">
-							<img src="${ctp}/game/팰월드.jpg">
-							<div class="s-game-name">Palworld / 팰월드</div>
-							<div>#액션 #어드벤처 #RPG</div>
-							<div class="s-game-price">32,000원</div>
 						</div>
 					</div>
 				</div>

@@ -27,4 +27,7 @@
 	<update id="setmemberEdit">
 		update itMember set nickname=#{nickname}, memInfo=#{memInfo} where mid=#{mid};
 	</update>
+	<update id="unlockMember">
+		UPDATE itMember m JOIN itBan b ON m.mid = b.banMid SET m.loginState = 'OK' WHERE m.loginState = 'NO' AND b.banDay = #{day} AND <![CDATA[TIMESTAMPDIFF(MINUTE, b.banTime, now()) >= #{day} * 1440]]>;
+	</update>
 </mapper>

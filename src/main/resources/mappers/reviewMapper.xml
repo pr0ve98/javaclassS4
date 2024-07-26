@@ -20,7 +20,7 @@
 				SELECT g.*, r.* FROM itGame g LEFT JOIN itReview r ON g.gameIdx = r.revGameIdx AND r.revMid = #{mid} LEFT JOIN (SELECT revGameIdx, COUNT(*) AS reviewCount FROM itReview GROUP BY revGameIdx) rc ON g.gameIdx = rc.revGameIdx WHERE g.gameTitle LIKE CONCAT('%', #{search}, '%') OR g.gameSubTitle LIKE CONCAT('%', #{search}, '%') ORDER BY rc.reviewCount DESC LIMIT #{startIndexNo}, #{pageSize};
 			</if>
 		</if>
-		<if test="viewpart != 'manyReview' and viewpart != 'random' and viewpart != 'invenscore desc'">
+		<if test="viewpart != 'manyReview' and viewpart != 'random'">
 			<if test="search == ''">SELECT g.* FROM itGame g LEFT JOIN itReview r ON g.gameIdx = r.revGameIdx AND r.revMid = #{mid} WHERE r.revMid IS NULL ORDER BY ${viewpart} LIMIT #{startIndexNo}, #{pageSize};</if>
 			<if test="search != ''">
 				select g.*, r.* from itGame g LEFT JOIN itReview r ON g.gameIdx = r.revGameIdx AND r.revMid = #{mid} where g.gameTitle like concat('%',#{search},'%') or g.gameSubTitle like concat('%',#{search},'%') order by ${viewpart} limit #{startIndexNo},#{pageSize};

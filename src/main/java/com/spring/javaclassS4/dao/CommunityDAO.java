@@ -9,6 +9,7 @@ import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
+import com.spring.javaclassS4.vo.ReportVO;
 
 public interface CommunityDAO {
 
@@ -71,5 +72,7 @@ public interface CommunityDAO {
 	public void followInput(@Param("myMid") String myMid, @Param("youMid") String youMid);
 
 	public void followDelete(@Param("myMid") String myMid, @Param("youMid") String youMid);
+
+	public void reportInput(@Param("vo") ReportVO vo);
 
 }

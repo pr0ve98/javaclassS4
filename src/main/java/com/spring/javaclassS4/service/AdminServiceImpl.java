@@ -16,8 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.spring.javaclassS4.common.JavaclassProvide;
 import com.spring.javaclassS4.dao.AdminDAO;
 import com.spring.javaclassS4.dao.CommunityDAO;
+import com.spring.javaclassS4.dao.MemberDAO;
 import com.spring.javaclassS4.vo.BanVO;
 import com.spring.javaclassS4.vo.GameVO;
+import com.spring.javaclassS4.vo.MemberVO;
+import com.spring.javaclassS4.vo.ReplyVO;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -27,6 +30,9 @@ public class AdminServiceImpl implements AdminService {
 	
 	@Autowired
 	CommunityDAO communityDAO;
+	
+	@Autowired
+	MemberDAO memberDAO;
 	
 	@Autowired
 	JavaclassProvide javaclassProvide;
@@ -242,6 +248,49 @@ public class AdminServiceImpl implements AdminService {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Transactional
+	@Override
+	public void reportDown(String banMid) {
+		BanVO vo = adminDAO.getBanMid(banMid);
+		MemberVO memVO = memberDAO.getMemberIdCheck(banMid);
+		
+		if(memVO.getLoginState().equals("BAN")) {
+			adminDAO.setAlwaysBanDelete(banMid);
+		}
+		else if(vo.getBanDay() == 30) {
+			adminDAO.setBanEdit(banMid, 7, "무혐의로제재X");
+			adminDAO.setAlwaysBanDelete(banMid);
+		}
+		else if(vo.getBanDay() == 7) {
+			adminDAO.setBanEdit(banMid, 3, "무혐의로제재X");
+			adminDAO.setAlwaysBanDelete(banMid);
+		}
+		else {
+			adminDAO.setBanDelete(banMid);
+			adminDAO.setAlwaysBanDelete(banMid);
+		}
+	}
+
+	@Override
+	public int getReportTotRecCnt(String viewpart, String searchpart, String search) {
+		return adminDAO.getReportTotRecCnt(viewpart, searchpart, search);
+	}
+
+	@Override
+	public ArrayList<GameVO> getReportList(int startIndexNo, int pageSize, String viewpart, String searchpart, String search) {
+		return adminDAO.getReportList(startIndexNo, pageSize, viewpart, searchpart, search);
+	}
+
+	@Override
+	public ReplyVO getReplyIdx(int contentIdx) {
+		return adminDAO.getReplyIdx(contentIdx);
+	}
+
+	@Override
+	public void reportRead(int reIdx) {
+		adminDAO.reportRead(reIdx);
 	}
 
 }

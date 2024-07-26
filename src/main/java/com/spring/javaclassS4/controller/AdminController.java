@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS4.service.AdminService;
+import com.spring.javaclassS4.service.CommunityService;
+import com.spring.javaclassS4.service.MemberService;
+import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
+import com.spring.javaclassS4.vo.MemberVO;
+import com.spring.javaclassS4.vo.ReplyVO;
 
 @Controller
 @RequestMapping("/admin")
@@ -24,6 +30,12 @@ public class AdminController {
 	
 	@Autowired
 	AdminService adminService;
+	
+	@Autowired
+	CommunityService communityService;
+	
+	@Autowired
+	MemberService memberService;
 	
 	@RequestMapping(value = "/gamelist", method = RequestMethod.GET)
 	public String settingGet(HttpSession session, Model model,
@@ -237,5 +249,60 @@ public class AdminController {
 		adminService.bannerChange(fName, request, session);
 	}
 	
+	@ResponseBody
+	@RequestMapping(value = "/reportDown", method = RequestMethod.POST)
+	public void reportDown(String banMid) {
+		adminService.reportDown(banMid);
+	}
 	
+	@RequestMapping(value = "/reportlist", method = RequestMethod.GET)
+	public String reportlist(HttpSession session, Model model,
+			@RequestParam(name="viewpart", defaultValue = "reIdx desc", required = false) String viewpart,
+			@RequestParam(name="searchpart", defaultValue = "신고자", required = false) String searchpart,
+			@RequestParam(name="search", defaultValue = "", required = false) String search,
+			@RequestParam(name="page", defaultValue = "1", required = false) int page,
+			@RequestParam(name="pageSize", defaultValue = "20", required = false) int pageSize) {
+		
+		int totRecCnt = adminService.getReportTotRecCnt(viewpart, searchpart, search);
+		int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+		int startIndexNo = (page - 1) * pageSize;
+		model.addAttribute("page", page);
+		model.addAttribute("totRecCnt", totRecCnt);
+		model.addAttribute("totPage", totPage);
+		
+		ArrayList<GameVO> vos = adminService.getReportList(startIndexNo, pageSize, viewpart, searchpart, search);
+		
+		model.addAttribute("vos", vos);
+		model.addAttribute("viewpart", viewpart);
+		model.addAttribute("searchpart", searchpart);
+		model.addAttribute("search", search);
+		
+		return "admin/reportlist";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/viewContent", method = RequestMethod.POST, produces = "application/text; charset=utf8")
+	public String viewContent(String contentPart, int contentIdx) {
+		
+		if(contentPart.equals("게시글")) {
+			CommunityVO cvo = communityService.getCommunityIdx(contentIdx);
+			return "<font color=\"#fff\"><b>"+cvo.getMid()+"</b></font>님이 남긴 "+contentPart+"|"+cvo.getCmContent();
+		}
+		else {
+			ReplyVO rvo = adminService.getReplyIdx(contentIdx);
+			return "<font color=\"#fff\"><b>"+rvo.getReplyMid()+"</b></font>님이 남긴 "+contentPart+"|"+rvo.getReplyContent();
+		}
+	}
+	
+	@Transactional
+	@ResponseBody
+	@RequestMapping(value = "/reportOk", method = RequestMethod.POST)
+	public void reportOk(int reIdx, String banMid, String banReason, String contentPart, int contentIdx, HttpServletRequest request) {
+		MemberVO vo = memberService.getMemberIdCheck(banMid);
+		if(contentPart.equals("게시글")) communityService.setCommunityDelete(contentIdx, request);
+		else communityService.replyDelete(contentIdx);
+		
+		if(vo.getLoginState().equals("OK")) adminService.banInput(banMid, banReason);
+		adminService.reportRead(reIdx);
+	}
 }

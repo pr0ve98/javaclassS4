@@ -95,6 +95,56 @@
 	<select id="getBanMid" resultType="com.spring.javaclassS4.vo.BanVO">
 		select * from itBan where banMid=#{banMid};
 	</select>
+	<select id="getReportTotRecCnt" resultType="int">
+		<if test="viewpart == 'notComplete'">
+			<if test="search == ''">select count(*) from itReport where complete=0;</if>
+			<if test="search != ''">
+				<if test="searchpart == '신고자'">select count(*) from itReport where complete=0 and reportMid like concat('%',#{search},'%');</if>
+				<if test="searchpart == '피신고자'">select count(*) from itReport where complete=0 and sufferMid like concat('%',#{search},'%');</if>
+			</if>
+		</if>
+		<if test="viewpart == 'complete'">
+			<if test="search == ''">select count(*) from itReport where complete=1;</if>
+			<if test="search != ''">
+				<if test="searchpart == '신고자'">select count(*) from itReport where complete=1 and reportMid like concat('%',#{search},'%');</if>
+				<if test="searchpart == '피신고자'">select count(*) from itReport where complete=1 and sufferMid like concat('%',#{search},'%');</if>
+			</if>
+		</if>
+		<if test="viewpart != 'complete' and viewpart != 'notComplete'">
+			<if test="search == ''">select count(*) from itReport;</if>
+			<if test="search != ''">
+				<if test="searchpart == '신고자'">select count(*) from itReport where reportMid like concat('%',#{search},'%');</if>
+				<if test="searchpart == '피신고자'">select count(*) from itReport where sufferMid like concat('%',#{search},'%');</if>
+			</if>
+		</if>
+	</select>
+	<select id="getReportList" resultType="com.spring.javaclassS4.vo.ReportVO">
+		<if test="viewpart == 'notComplete'">
+			<if test="search == ''">select * from itReport where complete=0 order by reIdx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				<if test="searchpart == '신고자'">select * from itReport where complete=0 and reportMid like concat('%',#{search},'%') order by reIdx desc limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '피신고자'">select * from itReport where complete=0 and sufferMid like concat('%',#{search},'%') order by reIdx desc limit #{startIndexNo},#{pageSize};</if>
+			</if>
+		</if>
+		<if test="viewpart == 'complete'">
+			<if test="search == ''">select * from itReport where complete=1 order by reIdx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				<if test="searchpart == '신고자'">select * from itReport where complete=1 and reportMid like concat('%',#{search},'%') order by reIdx desc limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '피신고자'">select * from itReport where complete=1 and sufferMid like concat('%',#{search},'%') order by reIdx desc limit #{startIndexNo},#{pageSize};</if>
+			</if>
+		</if>
+		<if test="viewpart != 'complete' and viewpart != 'notComplete'">
+			<if test="search == ''">select * from itReport order by #{viewpart} limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				<if test="searchpart == '신고자'">select * from itReport where reportMid like concat('%',#{search},'%') order by #{viewpart} limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '피신고자'">select * from itReport where sufferMid like concat('%',#{search},'%') order by #{viewpart} limit #{startIndexNo},#{pageSize};</if>
+			</if>
+		</if>
+	</select>
+	<select id="getReplyIdx" resultType="com.spring.javaclassS4.vo.ReplyVO">
+		select * from itReply where replyIdx=#{contentIdx};
+	</select>
+
 	
 	
 	
@@ -135,11 +185,20 @@
 	<update id="setAlwaysBan">
 		update itMember set loginState='BAN' where mid=#{banMid};
 	</update>
+	<update id="setAlwaysBanDelete">
+		update itMember set loginState='OK' where mid=#{banMid};
+	</update>
+	<update id="reportRead">
+		update itReport set complete=1 where reIdx=#{reIdx};
+	</update>
 	
 	
 	
 	
 	<delete id="gameDelete">
 		delete from itGame where gameIdx=#{gameIdx};
+	</delete>
+	<delete id="setBanDelete">
+		delete from itBan where banMid=#{banMid};
 	</delete>
 </mapper>

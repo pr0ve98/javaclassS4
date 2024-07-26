@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.spring.javaclassS4.vo.BanVO;
 import com.spring.javaclassS4.vo.GameVO;
+import com.spring.javaclassS4.vo.ReplyVO;
 
 public interface AdminDAO {
 
@@ -55,5 +56,19 @@ public interface AdminDAO {
 	public ArrayList<GameVO> getKakaoUserList(@Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize, 
 			@Param("viewpart") String viewpart, @Param("searchpart") String searchpart,
 			@Param("search") String search);
+
+	public void setBanDelete(@Param("banMid") String banMid);
+
+	public void setAlwaysBanDelete(@Param("banMid") String banMid);
+
+	public int getReportTotRecCnt(@Param("viewpart") String viewpart, @Param("searchpart") String searchpart, @Param("search") String search);
+
+	public ArrayList<GameVO> getReportList(@Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize, 
+			@Param("viewpart") String viewpart, @Param("searchpart") String searchpart,
+			@Param("search") String search);
+
+	public ReplyVO getReplyIdx(@Param("contentIdx") int contentIdx);
+
+	public void reportRead(@Param("reIdx") int reIdx);
 
 }

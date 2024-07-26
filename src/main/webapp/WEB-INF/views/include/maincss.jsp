@@ -1319,6 +1319,13 @@
 	.my-games-btn:hover {
 	    background-color: #267abf;
 	}
+	.viewContent {
+		cursor: pointer;
+	}
+	.viewContent:hover {
+		color:#00c722;
+		text-decoration: underline;
+	}
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;

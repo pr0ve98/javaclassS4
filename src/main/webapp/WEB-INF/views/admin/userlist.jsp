@@ -113,6 +113,24 @@
  		});
 		
 	}
+ 	
+ 	function reportDown(mid) {
+		let ans = confirm("정말 제재를 푸시겠습니까?");
+		if(ans) {
+	 		$.ajax({
+	 			url : "${ctp}/admin/reportDown",
+	 			type : "post",
+	 			data : {banMid:mid},
+	 			success : function() {
+	 				alert(mid+" 사용자 제재를 해제하였습니다");
+	 				location.reload();
+				},
+	 			error : function() {
+					alert("전송오류!");
+				}
+	 		});
+		}
+	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
@@ -197,7 +215,7 @@
 							<button id="levelBtn${vo.idx}" class="badge badge-warning" onclick="levelChange(${vo.idx})">등급변경</button>
 							<button id="levelOkBtn${vo.idx}" style="display: none" class="badge badge-primary" onclick="levelChangeOk(${vo.idx}, '${vo.nickname}')">적용</button>
 							<button id="levelCanBtn${vo.idx}" style="display: none" class="badge badge-secondary" onclick="levelChangeCancle(${vo.idx})">취소</button>
-							<c:if test="${vo.loginState == 'NO' && vo.level != 0}"><button class="badge badge-success" onclick="showGameEditPopup()">제재 풀기</button></c:if>
+							<c:if test="${vo.loginState == 'NO' && vo.level != 0}"><button class="badge badge-success" onclick="reportDown('${vo.mid}')">제재 풀기</button></c:if>
 							<c:if test="${vo.loginState == 'OK' && vo.level != 0}"><button class="badge badge-danger" onclick="reportPopup('${vo.mid}')">제재하기</button></c:if>
 						</td>
 					</tr>

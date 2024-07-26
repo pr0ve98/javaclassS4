@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS4.vo.GameVO;
+import com.spring.javaclassS4.vo.ReplyVO;
 
 public interface AdminService {
 
@@ -51,4 +52,14 @@ public interface AdminService {
 			String search);
 
 	public void bannerChange(MultipartFile fName, HttpServletRequest request, HttpSession session);
+
+	public void reportDown(String banMid);
+
+	public int getReportTotRecCnt(String viewpart, String searchpart, String search);
+
+	public ArrayList<GameVO> getReportList(int startIndexNo, int pageSize, String viewpart, String searchpart, String search);
+
+	public ReplyVO getReplyIdx(int contentIdx);
+
+	public void reportRead(int reIdx);
 }

@@ -78,18 +78,6 @@
 	        };
 	    }
 	    
-	    // 페이지 로드 로딩페이지 제거
-	    $(window).on('load', function() {
-	    	removeLoadingPage();
-	    });
-	    
-	    // 로딩페이지 제거 함수
-	    function removeLoadingPage() {
-	        $('.mask').hide();
-	        $('html').css('overflow', 'auto');
-	    }
-		
-        
         // 검색창 엔터로 검색
          let searchInput = document.getElementById('search');
 
@@ -117,7 +105,6 @@
 	        const zeroRatingArea1 = container.querySelector('#zero-rating-area1');
 	        const zeroRatingArea2 = container.querySelector('#zero-rating-area2');
 	        const gameIdx = parseInt(container.getAttribute('data-game-idx'));
-	        const state = container.querySelectorAll('.review-star-add');
 	        let currentRating = parseInt(container.getAttribute('data-rating')) || 0; // 초기 별점 값을 가져옴(이미 리뷰한 게임)
 	
 	        // 초기 별점 설정
@@ -233,6 +220,17 @@
 	            });
 	        });
 	    });
+	    
+	    // 페이지 로드 로딩페이지 제거
+	    $(window).on('load', function() {
+	    	removeLoadingPage();
+	    });
+	    
+	    // 로딩페이지 제거 함수
+	    function removeLoadingPage() {
+	        $('.mask').hide();
+	        $('html').css('overflow', 'auto');
+	    }
 	
 	 	// 별점 색 채우기 함수
 	    function highlightStars(stars, index) {

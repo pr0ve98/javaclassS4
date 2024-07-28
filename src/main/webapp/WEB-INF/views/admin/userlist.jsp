@@ -19,14 +19,6 @@
 		const mask = document.querySelector('.mask');
 		const html = document.querySelector('html');
 		html.style.overflow = 'hidden';
-
-		window.addEventListener('load', function() {
-			const mask = document.querySelector('.mask');
-	        const html = document.querySelector('html');
-	        
-			mask.style.display = 'none';
-			html.style.overflow = 'auto';
-		});
 		
 		// 검색창 엔터로 검색
         let searchInput = document.getElementById('search');
@@ -41,6 +33,14 @@
 	            }
 	        });
 	    }
+	});
+	
+	window.addEventListener('load', function() {
+		const mask = document.querySelector('.mask');
+        const html = document.querySelector('html');
+        
+		mask.style.display = 'none';
+		html.style.overflow = 'auto';
 	});
 	
 	function partchange() {
@@ -99,11 +99,18 @@
 			return false;
 		}
 		
+		const mask = document.querySelector('.mask');
+		const html = document.querySelector('html');
+		mask.style.display = 'block';
+		html.style.overflow = 'hidden';
+		
  		$.ajax({
  			url : "${ctp}/admin/banInput",
  			type : "post",
  			data : {banMid:banMid, reason:reason},
  			success : function() {
+ 				mask.style.display = 'none';
+ 				html.style.overflow = 'auto';
  				alert(banMid+" 사용자를 제재하였습니다");
  				location.reload();
 			},
@@ -117,11 +124,18 @@
  	function reportDown(mid) {
 		let ans = confirm("정말 제재를 푸시겠습니까?");
 		if(ans) {
+			const mask = document.querySelector('.mask');
+			const html = document.querySelector('html');
+			mask.style.display = 'block';
+			html.style.overflow = 'hidden';
+			
 	 		$.ajax({
 	 			url : "${ctp}/admin/reportDown",
 	 			type : "post",
 	 			data : {banMid:mid},
 	 			success : function() {
+	 				mask.style.display = 'none';
+	 				html.style.overflow = 'auto';
 	 				alert(mid+" 사용자 제재를 해제하였습니다");
 	 				location.reload();
 				},
@@ -222,9 +236,9 @@
 				</c:forEach>
 			</table>
 			<div class="news-page">
-				<c:if test="${page > 1}"><button class="prev" onclick="location.href='${ctp}/admin/gamelist?page=${page-1}&viewpart=${viewpart}&searchpart=${searchpart}&search=${search}';"><i class="fa-solid fa-chevron-left fa-2xs"></i></button></c:if>
+				<c:if test="${page > 1}"><button class="prev" onclick="location.href='${ctp}/admin/userlist?page=${page-1}&viewpart=${viewpart}&searchpart=${searchpart}&search=${search}';"><i class="fa-solid fa-chevron-left fa-2xs"></i></button></c:if>
 		        <span class="page-info">${page}/${totPage}</span>
-		        <c:if test="${page < totPage}"><button class="next" onclick="location.href='${ctp}/admin/gamelist?page=${page+1}&viewpart=${viewpart}&searchpart=${searchpart}&search=${search}';"><i class="fa-solid fa-chevron-right fa-2xs"></i></button></c:if>
+		        <c:if test="${page < totPage}"><button class="next" onclick="location.href='${ctp}/admin/userlist?page=${page+1}&viewpart=${viewpart}&searchpart=${searchpart}&search=${search}';"><i class="fa-solid fa-chevron-right fa-2xs"></i></button></c:if>
 			</div>
 		</c:if>
 	</div>

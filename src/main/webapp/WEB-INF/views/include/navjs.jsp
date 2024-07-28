@@ -117,10 +117,16 @@
  	    const pwd = document.getElementById('joinpwd');
 
         const emailReg = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-        const pwdReg = /^[a-zA-Z0-9!@#$%^&*]{4}$/;
+        const pwdReg = /^[a-zA-Z0-9!@#$%^&*]{4,}$/;
         
-        if (!emailReg.test(email.value)) return false;
-        else if (!pwdReg.test(pwd.value)) return false;
+        if (!emailReg.test(email.value)) {
+        	alert("이메일이 올바르지 않습니다");
+        	return false;
+        }
+        else if (!pwdReg.test(pwd.value)) {
+        	alert("비밀번호가 올바르지 않습니다");
+        	return false;
+        }
         else joinform.submit();
 	}
  	
@@ -192,5 +198,9 @@
 				window.location.href = "https://kauth.kakao.com/oauth/logout?client_id=f1fade264b3d07d67f8e358b3d68803e&logout_redirect_uri=http://localhost:9090/javaclassS4/member/kakaoLogout";
 			});
 		}
+	}
+  	
+  	function showPopupSupport() {
+		
 	}
 	</script>

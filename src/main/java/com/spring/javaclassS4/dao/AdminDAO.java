@@ -71,4 +71,6 @@ public interface AdminDAO {
 
 	public void reportRead(@Param("reIdx") int reIdx);
 
+	public void reportAcquittal(@Param("reIdx") int reIdx);
+
 }

@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -191,19 +192,37 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public void banInput(String banMid, String reason) {
 		BanVO vo = adminDAO.getBanMid(banMid);
+		MemberVO mvo = memberDAO.getMemberIdCheck(banMid);
+		String title = "[INGAMETORY] 커뮤니티 활동 가이드에 위반돼 계정이 활동중지 되었습니다.";
+		String text = reason + "의 사유로 해당 계정이 정지되었으므로<br/> 정지기간 후에 접속이 가능함을 알립니다.<br/><br/> 만약 의의가 있으시다면 홈페이지 문의를 넣어주세요.<br/> 감사합니다!";
+		
 		if(vo == null) {
 			adminDAO.setBanInput(banMid, reason);
 			adminDAO.setMemberLoginState(banMid);
+			try {
+				javaclassProvide.mailSend(mvo.getEmail(), title, mvo.getMid()+" 계정 3일 정지", text);
+			} catch (MessagingException e) {e.printStackTrace();}
 		}
 		else if(vo.getBanDay() == 3) {
 			adminDAO.setBanEdit(banMid, 7, reason);
 			adminDAO.setMemberLoginState(banMid);
+			try {
+				javaclassProvide.mailSend(mvo.getEmail(), title, mvo.getMid()+" 계정 7일 정지", text);
+			} catch (MessagingException e) {e.printStackTrace();}
 		}
 		else if(vo.getBanDay() == 7) {
 			adminDAO.setBanEdit(banMid, 30, reason);
 			adminDAO.setMemberLoginState(banMid);
+			try {
+				javaclassProvide.mailSend(mvo.getEmail(), title, mvo.getMid()+" 계정 30일 정지", text);
+			} catch (MessagingException e) {e.printStackTrace();}
 		}
-		else adminDAO.setAlwaysBan(banMid);
+		else {
+			adminDAO.setAlwaysBan(banMid);
+			try {
+				javaclassProvide.mailSend(mvo.getEmail(), title, mvo.getMid()+" 계정 영구 정지", text);
+			} catch (MessagingException e) {e.printStackTrace();}
+		}
 	}
 
 	@Override
@@ -255,21 +274,35 @@ public class AdminServiceImpl implements AdminService {
 	public void reportDown(String banMid) {
 		BanVO vo = adminDAO.getBanMid(banMid);
 		MemberVO memVO = memberDAO.getMemberIdCheck(banMid);
+		String title = "[INGAMETORY] 계정의 중지가 해제되었습니다.";
+		String text = "문의주신 "+vo.getBanTime().substring(0, 16) + "에 " + vo.getBanReason() + "의 사유로<br/> 정지되었던 계정을 해제했으므로 접속이 가능함을 알립니다.<br/><br/> 감사합니다!";
 		
 		if(memVO.getLoginState().equals("BAN")) {
 			adminDAO.setAlwaysBanDelete(banMid);
+			try {
+				javaclassProvide.mailSend(memVO.getEmail(), title, memVO.getMid()+" 계정 정지 해제", text);
+			} catch (MessagingException e) {e.printStackTrace();}
 		}
 		else if(vo.getBanDay() == 30) {
 			adminDAO.setBanEdit(banMid, 7, "무혐의로제재X");
 			adminDAO.setAlwaysBanDelete(banMid);
+			try {
+				javaclassProvide.mailSend(memVO.getEmail(), title, memVO.getMid()+" 계정 정지 해제", text);
+			} catch (MessagingException e) {e.printStackTrace();}
 		}
 		else if(vo.getBanDay() == 7) {
 			adminDAO.setBanEdit(banMid, 3, "무혐의로제재X");
 			adminDAO.setAlwaysBanDelete(banMid);
+			try {
+				javaclassProvide.mailSend(memVO.getEmail(), title, memVO.getMid()+" 계정 정지 해제", text);
+			} catch (MessagingException e) {e.printStackTrace();}
 		}
 		else {
 			adminDAO.setBanDelete(banMid);
 			adminDAO.setAlwaysBanDelete(banMid);
+			try {
+				javaclassProvide.mailSend(memVO.getEmail(), title, memVO.getMid()+" 계정 정지 해제", text);
+			} catch (MessagingException e) {e.printStackTrace();}
 		}
 	}
 
@@ -291,6 +324,11 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public void reportRead(int reIdx) {
 		adminDAO.reportRead(reIdx);
+	}
+
+	@Override
+	public void reportAcquittal(int reIdx) {
+		adminDAO.reportAcquittal(reIdx);
 	}
 
 }

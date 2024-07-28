@@ -62,4 +62,6 @@ public interface AdminService {
 	public ReplyVO getReplyIdx(int contentIdx);
 
 	public void reportRead(int reIdx);
+
+	public void reportAcquittal(int reIdx);
 }

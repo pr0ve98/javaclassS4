@@ -8,7 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
-<title>최신피드 | 인겜토리</title>
+<title>리뷰 | 인겜토리</title>
 <link rel="icon" type="image/x-icon" href="${ctp}/images/ingametory.ico">
 <jsp:include page="/WEB-INF/views/include/bs4.jsp" />
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
@@ -16,20 +16,21 @@
 <script>
 	'use strict';
 	
-	let isWriteButtonClicked = false;
-	
 	let isFetching = false;
 	let totPage = 1;
 	let editContent = '';
 	let editCmIdx;
 	let editCmGameIdx;
 	let editGameTitle = '';
+	let mid = '${sMid}';
 	
 	let initialContent = '';
 	let initialImages = [];
 	let currentImages = [];
 	let editInitialImages = [];
 	let editCurrentImages = [];
+	
+    let currentRating = 0;
 	
 	$(document).ready(function() {
 		// 페이지가 로딩될 때 로딩페이지 보여주기
@@ -42,9 +43,9 @@
 			isFetching = true;
 			
 			$.ajax({
-				url : "${ctp}/community/rootData",
+				url : "${ctp}/community/rootDataReview",
 				type : "post",
-				data : {page : ${page}+totPage, part : 'recent'},
+				data : {page : ${page}+totPage, part : 'review'},
 				success : function(res) {
 					if(res) {
 						isFetching = false;
@@ -86,24 +87,14 @@
 	            timeout = setTimeout(() => func.apply(this, args), wait);
 	        };
 	    }
-
-		// 처음 창 뜰 때 첫번째 게임 선택
-        const firstGameButton = $('.game-button').first();
-        firstGameButton.addClass('active');
-        const firstGameButton2 = $('.gameedit-button').first();
-        firstGameButton2.addClass('active');
-        
-        const initialGame = firstGameButton.data('game');
-        let initialHtml = '<font color="#00c722"><b>' + initialGame + '</b></font>에 대한 일지';
-        $(".header-text").html(initialHtml);
-        
+	    
         const game = document.getElementById('gamesearch');
         
         // 게임 검색
         function gameSearchForm() {
         	if(game.value.length >= 2) {
 	        	$.ajax({
-	        		url : "${ctp}/community/gameSearch",
+	        		url : "${ctp}/community/reviewGameSearch",
 	        		type : "post",
 	        		data : {game : gamesearch.value},
 	        		success : function(res) {
@@ -118,116 +109,144 @@
         }
         gamesearch.addEventListener('input', gameSearchForm);
         
-        // 이벤트 델리게이션을 사용하여 동적으로 추가된 요소에 이벤트 핸들러 설정
-        $(document).on('click', '.game-button', function() {
-            $('.game-button').removeClass('active');
-            $(this).addClass('active');
+     	// 별점 및 상태 추가
+        const stars = document.querySelectorAll('.review-star-add2');
+        const zeroRatingArea2 = document.querySelector('#zero-rating-area2');
+        
+     	// 각 별에 마우스를 올렸을 때 별점과 임시 텍스트를 업데이트
+        stars.forEach(star => {
+            star.addEventListener('mouseover', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                highlightStars(stars, index);
+            });
+			
+         	// 마우스가 별에서 벗어났을 때 별점과 텍스트를 초기화
+            star.addEventListener('mouseout', function() {
+                resetStars(stars, currentRating); // 별점을 현재 고정된 값으로 초기화
+            });
 
-            let html = '';
-            const game = $(this).data('game');
-            const category = $('.community-category.active').data('category');
-            if (category == '일지') html = '<font color="#00c722"><b>' + game + '</b></font>에 대한 일지';
-            else if (category == '소식/정보') html = '<font color="#00c722"><b>' + game + '</b></font>에 대한 소식/정보';
-            else html = '<font color="#00c722"><b>' + game + '</b></font>에 대한 세일 정보';
-            $(".header-text").html(html);
+         	// 별을 클릭했을 때 별점을 고정하고 텍스트를 업데이트
+            star.addEventListener('click', function() {
+            	if(mid == '') {
+            		showPopupLogin();
+            		return false;
+            	}
+                const index = parseInt(this.getAttribute('data-index'));
+                currentRating = index;
+                lockStars(stars, currentRating);
+            });
         });
-        // 수정 이벤트 델리게이션을 사용하여 동적으로 추가된 요소에 이벤트 핸들러 설정
-        $(document).on('click', '.gameedit-button', function() {
-            $('.gameedit-button').removeClass('active');
-            $(this).addClass('active');
-
-            let html = '';
-            const game = $(this).data('game');
-            const category = $('.community-editcategory.active').data('category');
-            if (category == '일지') html = '<font color="#00c722"><b>' + game + '</b></font>에 대한 일지';
-            else if (category == '소식/정보') html = '<font color="#00c722"><b>' + game + '</b></font>에 대한 소식/정보';
-            else html = '<font color="#00c722"><b>' + game + '</b></font>에 대한 세일 정보';
-            $(".header-edittext").html(html);
+		
+     	// 별점 삭제 영역을 클릭했을 때 별점을 0으로 설정하고 텍스트를 초기화
+        const zeroRatingAreas = [zeroRatingArea2];
+        zeroRatingAreas.forEach(zeroRatingArea => {
+            zeroRatingArea.addEventListener('click', function() {
+            	if(mid == '') {
+            		showPopupLogin();
+            		return false;
+            	}
+                currentRating = 0;
+                lockStars(stars, currentRating);
+            });
         });
         
-        // 카테고리 버튼 클릭 이벤트
-        $('.community-category').click(function() {
-            $('.community-category').removeClass('active');
-            $(this).addClass('active');
-            
-            let html = '';
-            const category = $(this).data('category');
-            if(category == '자유'){
-            	$(".game-selection").hide();
-            	html = '<font color="#00c722"><b>자유 주제</b></font>';
-	            $(".header-text").html(html);
-            }
-            else {
-            	$(".game-selection").show();
-	            const game = $('.game-button.active').data('game');
-	            if(category == '일지') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 일지';
-	            else if(category == '소식/정보') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 소식/정보';
-	            else html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 세일 정보';
-	            $(".header-text").html(html);
-            }
-            
-        });
-        
-        // 수정 카테고리 버튼 클릭 이벤트
-        $('.community-editcategory').click(function() {
-            $('.community-editcategory').removeClass('active');
-            $(this).addClass('active');
-            
-            let html = '';
-            const category = $(this).data('category');
-            if(category == '자유'){
-            	$("#game-selection2").hide();
-            	html = '<font color="#00c722"><b>자유 주제</b></font>';
-	            $(".header-edittext").html(html);
-            }
-            else {
-            	$("#game-selection2").show();
-	            let game = $('.gameedit-button.active').data('game');
-	            if(game === undefined) game = editGameTitle;
-	            if(category == '일지') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 일지';
-	            else if(category == '소식/정보') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 소식/정보';
-	            else html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 세일 정보';
-	            $(".header-edittext").html(html);
-            }
-            
-        });
+     	// 상태 버튼
+        const buttons = document.querySelectorAll('.state-button');
 
-        // 게임 버튼 클릭 이벤트
-        $('.game-button').click(function() {
-            $('.game-button').removeClass('active');
-            $(this).addClass('active');
-            
-            let html = '';
-            const game = $(this).data('game');
-            const category = $('.community-category.active').data('category');
-            if(category == '일지') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 일지';
-            else if(category == '소식/정보') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 소식/정보';
-            else html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 세일 정보';
-            $(".header-text").html(html);
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                // 모든 버튼에서 selected 클래스를 제거
+                buttons.forEach(btn => {
+                    if (btn !== button) {
+                        btn.classList.remove('selected');
+                    }
+                });
+                
+                // 클릭된 버튼의 selected 클래스를 토글
+                const isSelected = button.classList.toggle('selected');
+            });
         });
-        
-        // 수정 게임 버튼 클릭 이벤트
-        $('.gameedit-button').click(function() {
-            $('.gameedit-button').removeClass('active');
-            $(this).addClass('active');
-            
-            let html = '';
-            const game = $(this).data('game');
-            const category = $('.community-editcategory.active').data('category');
-            if(category == '일지') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 일지';
-            else if(category == '소식/정보') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 소식/정보';
-            else html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 세일 정보';
-            $(".header-edittext").html(html);
-        });
+	
+	 	// 별점 색 채우기 함수
+	    function highlightStars(stars, index) {
+	        stars.forEach(star => {
+	            const starIndex = parseInt(star.getAttribute('data-index'));
+	            if (starIndex <= index) {
+	                star.style.backgroundImage = 'url("${ctp}/images/starpull.png")';
+	            } else {
+	                star.style.backgroundImage = 'url("${ctp}/images/star2.png")';
+	            }
+	        });
+	    }
+	
+	 	// 별점 초기화 함수
+	    function resetStars(stars, currentRating) {
+	        stars.forEach(star => {
+	            const starIndex = parseInt(star.getAttribute('data-index'));
+	            if (currentRating && starIndex <= currentRating) {
+	                star.style.backgroundImage = 'url("${ctp}/images/starpull.png")';
+	            } else {
+	                star.style.backgroundImage = 'url("${ctp}/images/star2.png")';
+	            }
+	        });
+	    }
+	
+	    function lockStars(stars, index) {
+	        stars.forEach(star => {
+	            const starIndex = parseInt(star.getAttribute('data-index'));
+	            if (index === 0) {
+	                star.style.backgroundImage = 'url("${ctp}/images/star2.png")';
+	            } else {
+	                if (starIndex <= index) {
+	                    star.style.backgroundImage = 'url("${ctp}/images/starpull.png")';
+	                } else {
+	                    star.style.backgroundImage = 'url("${ctp}/images/star2.png")';
+	                }
+	            }
+	        });
+	    }
+	
+	    // 리뷰 추가 및 수정
+	    function inputReview(gameIdx, rating, state) {
+	        $.ajax({
+	        	url : "${ctp}/review/reviewAdd",
+	        	type : "post",
+	        	data : {gameIdx:gameIdx, rating:rating, state:state, mid:mid},
+	        	success : function(response) {
+	        		let res = response.split("|");
+	        		let ratingCount = [res[0], res[1], res[2], res[3], res[4]];
+	        		ratingChart(ratingCount,res[5]);
+				},
+				error : function() {
+					alert("전송오류!");
+				}
+	        });
+	    }
+	    
+	    // 리뷰 삭제
+	    function deleteReview(gameIdx) {
+	        $.ajax({
+	        	url : "${ctp}/review/reviewDelete",
+	        	type : "post",
+	        	data : {gameIdx:gameIdx, mid:mid},
+	        	success : function(response) {
+	        		let res = response.split("|");
+	        		let ratingCount = [res[0], res[1], res[2], res[3], res[4]];
+	        		ratingChart(ratingCount,res[5]);
+				},
+				error : function() {
+					alert("전송오류!");
+				}
+	        });
+	    }
         
         let fontList = ['SUITE-Regular'];
 	    $('#summernote').summernote({
 	        lang: 'ko-KR',
 	        tabsize: 2,
-	        height: 350,
+	        height: 150,
 	        toolbar: [
-	            ['fontsize', ['fontsize']],
-	            ['insert', ['picture', 'link', 'video']]
+	            ['fontsize', ['fontsize']]
 	        ],
 	        fontNames: fontList,
 	        fontNamesIgnoreCheck: fontList,
@@ -241,55 +260,12 @@
 	                	'color':'#b2bdce',
 	                	'cursor':'text'
 	                });
-	            },
-	            onImageUpload: function(files) {
-	                if (files.length > 0) {
-	                    for (let i = 0; i < files.length; i++) {
-	                        uploadImage(files[i]);
-	                    }
-	                }
-	            },
-	            onChange: function(contents, $editable) {
-	                currentImages = getCurrentImages();
-	                detectDeletedImages(initialImages, currentImages);
-	                initialImages = currentImages;
-	            }
-	        }
-	    });
-        
-        $('#summernote2').summernote({
-	        lang: 'ko-KR',
-	        tabsize: 2,
-	        height: 350,
-	        toolbar: [
-	            ['fontsize', ['fontsize']],
-	            ['insert', ['picture', 'link', 'video']]
-	        ],
-	        fontNames: fontList,
-	        fontNamesIgnoreCheck: fontList,
-	        fontSizes: ['10', '11', '12', '14', '16', '18', '20', '22', '24'],
-	        callbacks: {
-	            onInit: function() {
-	                // 초기 내용 저장
-	                initialContent = $('#summernote2').summernote('code');
-	                $('.note-editable').css({
-	                	'font-family':'SUITE-Regular',
-	                	'color':'#b2bdce',
-	                	'cursor':'text'
-	                });
-	            },
-	            onImageUpload: function(files) {
-	                if (files.length > 0) {
-	                    for (let i = 0; i < files.length; i++) {
-	                        uploadImage2(files[i]);
-	                    }
-	                }
 	            }
 	        }
 	    });
     });
 	
-    // 페이지 로드 로딩페이지 제거
+	// 페이지 로드 로딩페이지 제거
     $(window).on('load', function() {
     	removeLoadingPage();
     });
@@ -299,143 +275,32 @@
         $('.mask').hide();
         $('html').css('overflow', 'auto');
     }
-    
-    // 페이지 떠날 때 이미지 제거
-    window.onbeforeunload = function() {
-        if (!isWriteButtonClicked) {
-            if ($('#summernote').is(':visible')) {
-                // Summernote에 대한 로직
-                if (initialImages.length > 0) {
-                    initialImages.forEach(function(src) {
-                        deleteImage(src);
-                    });
-                }
-            } else if ($('#summernote2').is(':visible')) {
-                // Summernote2에 대한 로직
-                editCurrentImages = getCurrentImages('#summernote2');
-                detectDeletedImages(editInitialImages, editCurrentImages);
-            }
-        }
-    };
 	
 	function showPopupWrite() {
+ 		document.getElementById("writeGameIdx").value = '';
+	 	document.getElementById("reviewWriteImg").src = "${ctp}/images/nomygameimage.jpg";
+ 		document.getElementById("reviewWriteTitle").innerHTML = "게임을 선택해주세요";
+ 		$('#summernote').summernote('code', '');
+ 		
+ 		const stars = document.querySelectorAll('.review-star-add2');
+ 		stars.forEach(star => {
+        	star.style.backgroundImage = 'url("${ctp}/images/star2.png")';
+        });
+ 		
+ 		const buttons = document.querySelectorAll('.state-button');
+        buttons.forEach(button => {
+           buttons.forEach(btn => {
+               if (btn !== button) {
+                   btn.classList.remove('selected');
+               }
+           });
+        });
+ 		
     	const popup = document.querySelector('#popup-write');
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
         html.style.overflow = 'hidden';
     }
-	
-	async function showPopupEdit(voString) {
-		isWriteButtonClicked = false;
-    	const popup = document.querySelector('#popup-edit');
-    	const html = document.querySelector('html');
-    	
-    	const vo = parseCommunityVO(voString);
-    	
-        popup.classList.remove('hide');
-        html.style.overflow = 'hidden';
-        $("#contentMenu"+vo.cmIdx).hide();
-        
-        let headertext = '';
-        $('.community-editcategory').removeClass('active');
-        $('.community-editcategory').each(function() {
-            if ($(this).data('category') === vo.part) {
-                $(this).addClass('active');
-            }
-        });
-        
-        if(vo.part == '일지') headertext = '<font color="#00c722"><b>'+ vo.gameTitle + '</font></b>에 대한 일지';
-        else if(vo.part == '소식/정보') headertext = '<font color="#00c722"><b>'+ vo.gameTitle + '</font></b>에 대한 소식/정보';
-        else if(vo.part == '세일') headertext = '<font color="#00c722"><b>'+ vo.gameTitle + '</font></b>에 대한 세일 정보';
-        else {
-        	headertext = '<font color="#00c722"><b>자유 주제</font></b>';
-        	$("#game-selection2").hide();
-        }
-        document.querySelector('.popup-edit-header .header-edittext').innerHTML = headertext;
-        
-        // 게임 선택
-        $('.gameedit-button').each(function() {
-            if ($(this).data('editidx') === vo.gameIdx) {
-                $(this).addClass('active');
-            }
-        });
-        
-       	editCmIdx = vo.cmIdx;
-       	editCmGameIdx = vo.cmGameIdx;
-       	editGameTitle = vo.gameTitle;
-       	
-        const buttons = document.querySelectorAll('.gameedit-button');
-        buttons.forEach(button => {
-            const editIdx = button.getAttribute('data-editidx');
-            
-            if (editIdx == editCmGameIdx) button.classList.add('active');
-       	});
-        
-        $('select[name="publicType2"]').val(vo.publicType);
-        
-        try {
-            const res = await new Promise((resolve, reject) => { // await로 요청이 완료될 때까지 대기
-                $.ajax({
-                    url: "${ctp}/community/getCmContent",
-                    type: "post",
-                    data: { cmIdx: vo.cmIdx },
-                    success: function(res) {
-                        resolve(res);
-                    },
-                    error: function() {
-                        reject("전송오류!");
-                    }
-                });
-            });
-            editContent = res;
-            $('#summernote2').summernote('code', editContent);
-            $('#summernote2').next('.note-editor').find('.note-editable img').each(function() {
-                let src = $(this).attr('src');
-                if (src.indexOf('http') === -1) {
-                    editInitialImages.push(src);
-                }
-            });
-
-        } catch (error) {
-            alert(error);
-        }
-    }
-	
-	
-	// CommunityVO 형식의 문자열을 파싱하여 객체로 변환하는 함수
-    function parseCommunityVO(voString) {
-    	voString = voString.replace(/^CommunityVO\((.*)\)$/, '$1'); // 마지막 괄호 제거
-       const regex = /(\w+)=([^,]+)(?=,|$)/g;
-       const vo = {};
-       let match;
-
-       while ((match = regex.exec(voString)) !== null) {
-           const key = match[1];
-           let value = match[2];
-
-           // 숫자 변환
-           if (!isNaN(value) && value.trim() !== '') {
-               value = Number(value);
-           }
-
-           // Boolean 변환
-           if (value === 'true') {
-               value = true;
-           } else if (value === 'false') {
-               value = false;
-           }
-
-           // 특수문자 복원 (문자열에 대해서만)
-           if (typeof value === 'string') {
-               value = value.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-           }
-
-           vo[key] = value;
-       }
-
-       return vo;
-   }
-
 	
 	function showPopupGameSearch() {
 		document.getElementById("gamesearch").value = "";
@@ -445,48 +310,6 @@
         popup.classList.remove('hide');
         html.style.overflow = 'hidden';
     }
-	
-	function gamelistAdd(gameIdx) {
-		$.ajax({
-            url: '${ctp}/community/memGameListEdit',
-            type: 'POST',
-            data: {gameIdx : gameIdx},
-            success: function(res) {
-            	let r = res.split("|");
-           		let str = '<button class="gamesearch-button" onclick="showPopupGameSearch()">'
-                   		+ '<img src="${ctp}/images/plus.jpg" alt="">'
-               			+ '<div class="game-name">게임 선택</div></button>';
-               	str = str + r[0] + '</div>';
-           		let str2 = '<button class="gamesearch-button" onclick="showPopupGameSearch()">'
-                   		+ '<img src="${ctp}/images/plus.jpg" alt="">'
-               			+ '<div class="game-name">게임 선택</div></button>';
-               	str2 = str2 + r[1] + '</div>';
-           		$("#game-selection").html(str);
-           		$("#game-selection2").html(str2);
-           		
-           		let html = '';
-   	            const game = $('.game-button.active').data('game');
-   	            const category = $('.community-category.active').data('category');
-   	            if(category == '일지') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 일지';
-   	            else if(category == '소식/정보') html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 소식/정보';
-   	            else html = '<font color="#00c722"><b>'+game+'</b></font>에 대한 세일 정보';
-   	            $(".header-text").html(html);
-   	            
-           		let html2 = '';
-   	            const game2 = $('.gameedit-button.active').data('game');
-   	            const category2 = $('.community-editcategory.active').data('category');
-   	            if(category2 == '일지') html2 = '<font color="#00c722"><b>'+game2+'</b></font>에 대한 일지';
-   	            else if(category2 == '소식/정보') html2 = '<font color="#00c722"><b>'+game2+'</b></font>에 대한 소식/정보';
-   	            else html2 = '<font color="#00c722"><b>'+game2+'</b></font>에 대한 세일 정보';
-   	            $(".header-edittext").html(html2);
-   	            
-           		document.querySelector('#popup-gamesearch').classList.add('hide');
-            },
-            error: function(error) {
-                alert("전송오류!");
-            }
-		});
-	}
 	
 	function showAllContent(cmIdx) {
 		$.ajax({
@@ -814,6 +637,70 @@
  		});
 		
 	}
+ 	
+ 	function reviewGameAdd(gameIdx, gameImg, gameTitle) {
+ 		closePopup('search');
+		const html = document.querySelector('html');
+		html.style.overflow = 'hidden';
+		
+ 		document.getElementById("writeGameIdx").value = gameIdx;
+ 		if(gameImg.indexOf('http') == -1) {
+	 		document.getElementById("reviewWriteImg").src = "${ctp}/game/"+gameImg;
+ 		}
+ 		else document.getElementById("reviewWriteImg").src = gameImg;
+ 		document.getElementById("reviewWriteTitle").innerHTML = "<font color='#fff' size='5'><b>"+gameTitle+"</b></font>";
+ 		
+ 		const stars = document.querySelectorAll('.review-star-add2');
+ 		stars.forEach(star => {
+            const starIndex = parseInt(star.getAttribute('data-index'));
+            if (starIndex <= 0) {
+                star.style.backgroundImage = 'url("${ctp}/images/starpull.png")';
+            } else {
+                star.style.backgroundImage = 'url("${ctp}/images/star2.png")';
+            }
+        });
+ 		
+ 		const buttons = document.querySelectorAll('.state-button');
+ 	    buttons.forEach(function(button) {
+ 	        button.classList.remove('selected');
+ 	    });
+ 		
+ 		$('#summernote').summernote('code', '');
+	}
+ 	
+ 	function reviewGameEdit(gameIdx, gameImg, gameTitle, rating, state, cmContent) {
+ 		currentRating = rating;
+ 		showPopupWrite();
+ 		closePopup('search');
+		const html = document.querySelector('html');
+		html.style.overflow = 'hidden';
+		
+ 		document.getElementById("writeGameIdx").value = gameIdx;
+ 		if(gameImg.indexOf('http') == -1) {
+	 		document.getElementById("reviewWriteImg").src = "${ctp}/game/"+gameImg;
+ 		}
+ 		else document.getElementById("reviewWriteImg").src = gameImg;
+ 		document.getElementById("reviewWriteTitle").innerHTML = "<font color='#fff' size='5'><b>"+gameTitle+"</b></font>";
+ 		
+ 		const stars = document.querySelectorAll('.review-star-add2');
+ 		stars.forEach(star => {
+            const starIndex = parseInt(star.getAttribute('data-index'));
+            if (starIndex <= rating) {
+                star.style.backgroundImage = 'url("${ctp}/images/starpull.png")';
+            } else {
+                star.style.backgroundImage = 'url("${ctp}/images/star2.png")';
+            }
+        });
+ 		
+ 		const buttons = document.querySelectorAll('.state-button');
+ 	    buttons.forEach(function(button) {
+ 	        if (button.getAttribute('data-state') == state) {
+ 	            button.classList.add('selected');
+ 	        }
+ 	    });
+ 		
+ 		$('#summernote').summernote('code', cmContent);
+	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
@@ -844,8 +731,8 @@
 			<div style="width:100%;">
 				<div class="c-buttons">
 					<span class="c-button" onclick="location.href='${ctp}/community/follow';">팔로우</span>
-					<span class="c-button c-button-active" onclick="location.href='${ctp}/community/recent';">최신</span>
-					<span class="c-button" onclick="location.href='${ctp}/community/review';">리뷰</span>
+					<span class="c-button" onclick="location.href='${ctp}/community/recent';">최신</span>
+					<span class="c-button c-button-active" onclick="location.href='${ctp}/community/review';">리뷰</span>
 					<span class="c-button" onclick="location.href='${ctp}/community/info';">소식/정보</span>
 					<span class="c-button" onclick="location.href='${ctp}/community/sale';">세일</span>
 					<c:if test="${sMid != null}"><span class="c-button" onclick="location.href='${ctp}/community/my';">내글</span></c:if>
@@ -854,48 +741,50 @@
 					<div class="cm-box">
 						<div style="display:flex; align-items: center; justify-content: center;">
 							<img src="${ctp}/member/${sMemImg}" alt="프로필" class="text-pic">
-							<div class="text-input" onclick="showPopupWrite()">요즘 관심있는 게임은 무엇인가요?</div>
+							<div class="text-input" onclick="showPopupWrite()">요즘 하고있는 게임은 무엇인가요?</div>
 						</div>
 					</div>
 				</c:if>
 				<c:forEach var="cmVO" items="${cmVOS}">
 					<div class="cm-box" id="cmbox${cmVO.cmIdx}">
 						<div style="display:flex;justify-content: space-between;">
-							<div style="display:flex; align-items:center;">
-								<img src="${ctp}/member/${cmVO.memImg}" alt="프로필" class="text-pic">
-								<div>
-									<c:if test="${cmVO.title != '없음'}"><div style="font-size:12px;">${cmVO.title}</div></c:if>
-									<div style="font-weight:bold;">${cmVO.nickname}</div>
-									<div>
-										<c:if test="${cmVO.part == '소식/정보'}"><span class="badge badge-secondary">소식/정보</span>&nbsp;</c:if>
-										<c:if test="${cmVO.part == '자유'}"><span class="badge badge-secondary">자유글</span>&nbsp;</c:if>
-										<c:if test="${cmVO.part == '세일'}"><span class="badge badge-secondary">세일정보</span>&nbsp;</c:if>
-										<c:if test="${cmVO.part != '자유'}">
-										<div style="color:#b2bdce; font-size:12px; cursor:pointer;" onclick="location.href='${ctp}/gameview/${cmVO.cmGameIdx}';">
-											<i class="fa-solid fa-gamepad fa-xs" style="color: #b2bdce;"></i>&nbsp;
-											${cmVO.gameTitle}
-										</div>
-										</c:if>
-									</div>
-								</div>
+							<div>
+								<img src="${ctp}/member/${cmVO.memImg}" alt="프로필" class="text-pic" style="width:20px; height:20px;"><b>${cmVO.nickname}</b>님이 평가를 남기셨습니다
 							</div>
 							<c:if test="${sMid != null}">
 								<div style="display: flex; align-items: center;">
-									<c:if test="${sMid != cmVO.mid && cmVO.follow == 0}"><div class="replyok-button mr-4 fb${cmVO.mid}" onclick="followAdd('${cmVO.mid}')"><i class="fa-solid fa-plus fa-sm"></i>&nbsp;팔로우</div></c:if>
 									<div style="position:relative;">
 										<i class="fa-solid fa-bars fa-xl" onclick="toggleContentMenu(${cmVO.cmIdx})" style="color: #D5D5D5;cursor:pointer;"></i>
 							 			<div id="contentMenu${cmVO.cmIdx}" class="content-menu">
-									        <c:if test="${sMid == cmVO.mid}"><div onclick="showPopupEdit('${fn:replace(fn:replace(cmVO, newLine, '<br>'), '\"', '&quot;')}')">수정</div></c:if>
+									        <c:if test="${sMid == cmVO.mid}"><div onclick="reviewGameEdit(${cmVO.cmGameIdx}, '${cmVO.gameImg}', '${cmVO.gameTitle}', ${cmVO.rating}, '${cmVO.state}','${cmVO.cmContent}')">수정</div></c:if>
 										    <c:if test="${sMid == cmVO.mid || sLevel == 0}"><div onclick="contentDelete(${cmVO.cmIdx})"><font color="red">삭제</font></div></c:if>
 									        <c:if test="${sLevel == 0}"><div onclick="location.href='${ctp}/admin/userlist?page=1&viewpart=all&searchpart=아이디&search=${cmVO.mid}';">사용자 제재</div></c:if>
-									        <c:if test="${sMid != cmVO.mid && sLevel != 0}">
-									        	<div class="ufb${cmVO.mid}" style="display:${cmVO.follow == 1 ? 'block' : 'none'};" onclick="followDelete('${cmVO.mid}')">언팔로우</div>
-									        	<div onclick="reportPopup(${cmVO.cmIdx}, '게시글', '${cmVO.mid}')">신고</div>
-									        </c:if>
+									        <c:if test="${sMid != cmVO.mid && sLevel != 0}"><div onclick="reportPopup(${cmVO.cmIdx}, '게시글', '${cmVO.mid}')">신고</div></c:if>
 								    	</div>
 						 			</div>
 						 		</div>
 					 		</c:if>
+						</div>
+						<hr/>
+						<div style="display:flex; margin: 0 20px; align-items:center; gap:20px;">
+							<div>
+								<c:if test="${fn:indexOf(cmVO.gameImg, 'http') == -1}"><img src="${ctp}/game/${cmVO.gameImg}" alt="${vo.gameTitle}" class="re-gameImg"></c:if>
+	            				<c:if test="${fn:indexOf(cmVO.gameImg, 'http') != -1}"><img src="${cmVO.gameImg}" alt="${vo.gameTitle}" class="re-gameImg"></c:if>
+							</div>
+							<div class="review-info">
+								<div class="game-title">${cmVO.gameTitle}</div>
+								<div class="review-game-info">
+									<span class="review-star"><i class="fa-solid fa-star" style="color: #FFD43B;"></i>&nbsp;${cmVO.rating}</span>
+									<span class="review-state-${cmVO.state}">
+										<c:if test="${cmVO.state == 'play'}"><i class="fa-solid fa-play"></i>&nbsp;하고있어요</c:if>
+										<c:if test="${cmVO.state == 'stop'}"><i class="fa-solid fa-xmark"></i>&nbsp;그만뒀어요</c:if>
+										<c:if test="${cmVO.state == 'done'}"><i class="fa-solid fa-check"></i>&nbsp;다했어요</c:if>
+										<c:if test="${cmVO.state == 'folder'}"><i class="fa-solid fa-folder"></i>&nbsp;모셔놨어요</c:if>
+										<c:if test="${cmVO.state == 'pin'}"><i class="fa-solid fa-thumbtack"></i>&nbsp;관심있어요</c:if>
+										<c:if test="${cmVO.state == 'none'}"><i class="fa-solid fa-ellipsis"></i>&nbsp;상태없음</c:if>
+									</span>
+								</div>
+							</div>
 						</div>
 						<div class="community-content">
 							<div class="cm-content ${cmVO.longContent == 1 ? 'moreGra' : ''}" id="cmContent${cmVO.cmIdx}">${cmVO.cmContent}</div>
@@ -1014,32 +903,76 @@
             <span class="header-text"></span>
     		<div style="cursor:pointer;" onclick="closePopup('write')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
-        <div class="category-selection">
-            <button class="community-category active" data-category="일지">일지</button>
-            <button class="community-category" data-category="소식/정보">소식/정보</button>
-            <button class="community-category" data-category="자유">자유 주제</button>
-            <button class="community-category" data-category="세일">세일 글</button>
+        <button class="gamesearch-button ml-3" onclick="showPopupGameSearch()">
+        	<img src="${ctp}/images/plus.jpg" alt="">
+        	<div class="game-name">게임 선택</div>
+        </button>
+        <hr/>
+        <div style="display: flex; align-items: center;">
+        	<div style="width:100px; font-weight: bold; color: #fff; text-align: center;">게임</div>
+        	<div style="flex-grow: 1">
+        		<div style="display: flex; gap: 30px; align-items: center;">
+        			<img src="${ctp}/images/nomygameimage.jpg" id="reviewWriteImg" width="50px" height="50px" style="border-radius: 8px; object-fit: cover;"/>
+        			<div id="reviewWriteTitle">게임을 선택하세요</div>
+        			<input type="hidden" id="writeGameIdx" name="writeGameIdx" />
+        		</div>
+        	</div>
         </div>
-        <div class="game-selection scrollbar" id="game-selection">
-            <button class="gamesearch-button" onclick="showPopupGameSearch()">
-            	<img src="${ctp}/images/plus.jpg" alt="">
-            	<div class="game-name">게임 선택</div>
-            </button>
-            <c:forEach var="vo" items="${vos}">
-                <button class="game-button" data-game="${vo.gameTitle}" data-idx="${vo.gameIdx}">
-	            	<c:if test="${fn:indexOf(vo.gameImg, 'http') == -1}"><img src="${ctp}/game/${vo.gameImg}" alt="${vo.gameTitle}"></c:if>
-	            	<c:if test="${fn:indexOf(vo.gameImg, 'http') != -1}"><img src="${vo.gameImg}" alt="${vo.gameTitle}"></c:if>
-	            	<div class="game-name">${vo.gameTitle}</div>
-	            </button>
-            </c:forEach>
-        </div>
+        <hr/>
+        <div style="display: flex; align-items: center;">
+        	<div style="width:100px; font-weight: bold; color: #fff; text-align: center;">별점</div>
+        	<div style="flex-grow: 1">
+				<div style="display: flex; position: relative;">
+					<div id="zero-rating-area2" style="position: absolute; left: -20px; width: 20px; height: 60px; cursor: pointer;"></div>
+					<span class="review-star-add2 mr-1" data-index="1"></span>
+					<span class="review-star-add2 mr-1" data-index="2"></span>
+					<span class="review-star-add2 mr-1" data-index="3"></span>
+					<span class="review-star-add2 mr-1" data-index="4"></span>
+					<span class="review-star-add2 mr-1" data-index="5"></span>
+				</div>
+			</div>
+		</div>
+		<hr/>
+		<div style="display: flex; align-items: center;">
+        	<div style="width:100px; font-weight: bold; color: #fff; text-align: center;">상태</div>
+        	<div style="flex-grow: 1">
+				<div class="state-buttons" style="display: flex;">
+					<div class="state-button ${vo.state == 'play' ? 'selected' : ''}" data-state="play" style="width: 60px; height: 55px;">
+						<div class="button-background" style="align-items: center;">
+							<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Play.svg&quot;);
+							width: 30px; height: 30px; margin-top: 0;"></span>
+						</div>
+					</div>
+					<div class="state-button ${vo.state == 'done' ? 'selected' : ''}" data-state="done" style="width: 60px; height: 55px;">
+						<div class="button-background" style="align-items: center;">
+							<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Check.svg&quot;);
+							width: 30px; height: 30px; margin-top: 0;"></span>
+						</div>
+					</div>
+					<div class="state-button ${vo.state == 'stop' ? 'selected' : ''}" data-state="stop" style="width: 60px; height: 55px;">
+						<div class="button-background" style="align-items: center;">
+							<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Cancel.svg&quot;);
+							width: 30px; height: 30px; margin-top: 0;"></span>
+						</div>
+					</div>
+					<div class="state-button ${vo.state == 'folder' ? 'selected' : ''}" data-state="folder" style="width: 60px; height: 55px;">
+						<div class="button-background" style="align-items: center;">
+							<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Folder.svg&quot;);
+							width: 30px; height: 30px; margin-top: 0;"></span>
+						</div>
+					</div>
+					<div class="state-button ${vo.state == 'pin' ? 'selected' : ''}" data-state="pin" style="width: 60px; height: 55px;">
+						<div class="button-background" style="align-items: center;">
+							<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Pin.svg&quot;);
+							width: 30px; height: 30px; margin-top: 0;"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<hr/>
         <textarea id="summernote" name="content"></textarea>
-        <div class="footer">
-            <select class="dropdown-btn" id="publicType" name="publicType">
-                <option value="전체">전체 공개</option>
-                <option value="친구">친구만 공개</option>
-                <option value="비공개">비공개</option>
-            </select>
+        <div class="footer text-right" style="display: block;">
             <button class="post-button">게시하기</button>
         </div>
         <!-- Summernote JS -->
@@ -1047,79 +980,17 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>
 	    
 	    <script>
-			// 이미지 업로드
-		    function uploadImage(file) {
-				let fileSize = file.size;
-				let maxSize = 1024 * 1024 * 15;
-				
-				const imgType = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
-				if(imgType.indexOf(file.type) == -1){
-					alert("이미지 파일만 업로드 해주세요!");
-	                return;
-				}
-				if(fileSize > maxSize) {
-					alert("파일의 최대 크기는 15MB입니다");
-	                return;
-				}
-				
-		        let data = new FormData();
-		        data.append("file", file);
-	
-		        $.ajax({
-		            url: '${ctp}/community/imageUpload',
-		            cache: false,
-		            contentType: false,
-		            processData: false,
-		            data: data,
-		            type: "POST",
-		            success: function(response) {
-	                    $('#summernote').summernote('insertImage', response, function($image) {
-	                        initialImages.push(response);
-	                    });
-		            },
-		            error: function() {
-		                alert("전송오류!");
-		            }
-		        });
-		    }
-	
-		    // 현재 창에 있는 이미지 가져오기
-		    function getCurrentImages() {
-		        return $('#summernote').next('.note-editor').find('.note-editable img').map(function() {
-		            return $(this).attr('src');
-		        }).get();
-		    }
-	
-		    // 이미지 삭제 실행함수
-		    function detectDeletedImages(initialImages, currentImages) {
-		        initialImages.forEach(function(src) {
-		            if (!currentImages.includes(src)) {
-		                deleteImage(src);
-		            }
-		        });
-		    }
-	
-		    // 이미지 삭제 ajax
-		    function deleteImage(src) {
-		        $.ajax({
-		            url: '${ctp}/community/deleteImage',
-		            type: 'POST',
-		            data: { src: src },
-		            error: function() {
-		                console.log('이미지 삭제 실패');
-		            }
-		        });
-		    }
-		    
 	        // 게시하기 버튼 클릭 이벤트
 	        $('.post-button').click(function(event) {
 	            event.preventDefault();
 
 		        let mid = '${sMid}';
 		        let content = $('#summernote').summernote('code').trim();
-		        let category = $('.community-category.active').data('category');
-		        let gameIdx = $('.game-button.active').data('idx');
-		        let publicType = $('select[name="publicType"]').val();
+		        let gameIdx = $('#writeGameIdx').val();
+		        let rating = $('.review-star-add2').filter(function() {
+	                return $(this).css('background-image').includes('/javaclassS4/images/starpull.png');
+	            }).length;
+		        let state = $('.state-button.selected').data('state') || 'none';
 
 		        if (content == '' || content == '<p><br></p>') {
 		            alert("글 내용을 입력하세요!");
@@ -1127,27 +998,12 @@
 		            return false;
 		        }
 
-		        let query = {
-		            mid: mid,
-		            cmContent: content,
-		            section: '피드',
-		            part: category,
-		            cmGameIdx: gameIdx,
-		            publicType: publicType
-		        };
-
 		        $.ajax({
-		            url: "${ctp}/community/communityInput",
+		            url: "${ctp}/review/reviewInput",
 		            type: "post",
-		            data: query,
+		            data: {mid: mid, cmContent: content, cmGameIdx: gameIdx, rating : rating, state : state},
 		            success: function(res) {
-		                if (res != "0") {
-		                	isWriteButtonClicked = true;
-		                    location.reload();
-		                }
-		                else {
-							alert("작성 실패...");
-		                }
+		            	location.reload();
 		            },
 		            error: function() {
 		               alert("전송오류!");
@@ -1167,145 +1023,6 @@
 	 		<input type="text" id="gamesearch" name="gamesearch" class="search-bar gamesearch-bar" placeholder="Search...">
 	 	</div>
         <div class="results-container scrollbar mt-4" id="results-container"></div>
-    </div>
-</div>
-<div id="popup-edit" style="z-index:999;" class="hide">
-  <div class="popup-edit-content scrollbar">
-  		<div class="popup-edit-header">
-            <span class="header-edittext"></span>
-    		<div style="cursor:pointer;" onclick="closePopup('edit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
-		</div>
-        <div class="category-selection">
-            <button class="community-editcategory active" data-category="일지">일지</button>
-            <button class="community-editcategory" data-category="소식/정보">소식/정보</button>
-            <button class="community-editcategory" data-category="자유">자유 주제</button>
-            <button class="community-editcategory" data-category="세일">세일 글</button>
-        </div>
-        <div class="game-selection scrollbar" id="game-selection2">
-            <button class="gamesearch-button" onclick="showPopupGameSearch()">
-            	<img src="${ctp}/images/plus.jpg" alt="">
-            	<div class="game-name">게임 선택</div>
-            </button>
-            <c:forEach var="vo" items="${vos}">
-                <button class="gameedit-button" data-game="${vo.gameTitle}" data-editidx="${vo.gameIdx}">
-	            	<c:if test="${fn:indexOf(vo.gameImg, 'http') == -1}"><img src="${ctp}/game/${vo.gameImg}" alt="${vo.gameTitle}"></c:if>
-	            	<c:if test="${fn:indexOf(vo.gameImg, 'http') != -1}"><img src="${vo.gameImg}" alt="${vo.gameTitle}"></c:if>
-	            	<div class="game-name">${vo.gameTitle}</div>
-	            </button>
-            </c:forEach>
-        </div>
-        <textarea id="summernote2" name="content"></textarea>
-        <div class="footer">
-            <select class="dropdown-btn" id="publicType2" name="publicType2">
-                <option value="전체">전체 공개</option>
-                <option value="친구">친구만 공개</option>
-                <option value="비공개">비공개</option>
-            </select>
-            <button class="edit-button" onclick="editCommunity()">수정하기</button>
-        </div>
-        <!-- Summernote JS -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>
-	    
-	    <script>
-	
-			// 이미지 업로드
-		    function uploadImage2(file) {
-				let fileSize = file.size;
-				let maxSize = 1024 * 1024 * 15;
-				
-				const imgType = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
-				if(imgType.indexOf(file.type) == -1){
-					alert("이미지 파일만 업로드 해주세요!");
-	                return;
-				}
-				if(fileSize > maxSize) {
-					alert("파일의 최대 크기는 15MB입니다");
-	                return;
-				}
-				
-		        let data = new FormData();
-		        data.append("file", file);
-	
-		        $.ajax({
-		            url: '${ctp}/community/imageUpload',
-		            cache: false,
-		            contentType: false,
-		            processData: false,
-		            data: data,
-		            type: "POST",
-		            success: function(res) {
-	                    $('#summernote2').summernote('insertImage', res, function($image) {});
-		            },
-		            error: function() {
-		                alert("전송오류!");
-		            }
-		        });
-		    }
-	
-		    // 현재 창에 있는 이미지 가져오기
-		    function getCurrentImages2() {
-		        return $('#summernote2').next('.note-editor').find('.note-editable img').map(function() {
-		            return $(this).attr('src');
-		        }).get();
-		    }
-	
-		    // 이미지 삭제 실행함수
-		    function detectDeletedImages2(editInitialImages, editCurrentImages) {
-		    	editInitialImages.forEach(function(src) {
-		            if (!editCurrentImages.includes(src)) {
-		                deleteImage(src);
-		            }
-		        });
-		    }
-		    
-		 	// 수정하기 버튼 클릭
-	        function editCommunity() {
-		        let content = $('#summernote2').summernote('code').trim();
-		        let category = $('.community-editcategory.active').data('category');
-		        let gameIdx = $('.gameedit-button.active').data('editidx');
-		        let publicType = $('select[name="publicType2"]').val();
-		        
-		        if(gameIdx === undefined) {
-		        	gameIdx = editCmGameIdx;
-		        }
-
-		        if (content == '' || content == '<p><br></p>') {
-		            alert("글 내용을 입력하세요!");
-		            $('#summernote2').focus();
-		            return false;
-		        }
-
-		        let query = {
-		            cmContent: content,
-		            part: category,
-		            cmGameIdx: gameIdx,
-		            publicType: publicType,
-		            cmIdx : editCmIdx
-		        };
-
-		        $.ajax({
-		            url: "${ctp}/community/communityEdit",
-		            type: "post",
-		            data: query,
-		            success: function(res) {
-		                if (res != "0") {
-		                	isWriteButtonClicked = true;
-		                    editCurrentImages = getCurrentImages2();
-		                    detectDeletedImages2(editInitialImages, editCurrentImages);
-		                    editInitialImages = [...editCurrentImages];
-		                    location.reload();
-		                }
-		                else {
-							alert("작성 실패...");
-		                }
-		            },
-		            error: function() {
-		               alert("전송오류!");
-		            }
-		        });
-		 	}
-		</script>
     </div>
 </div>
 <div id="popup-replyedit" class="hide">

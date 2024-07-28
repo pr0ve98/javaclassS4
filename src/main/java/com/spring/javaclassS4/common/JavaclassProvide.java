@@ -64,7 +64,7 @@ public class JavaclassProvide {
 	}
 	
 	// 메일 전송
-	public String mailSend(String email, String title, String pwd) throws MessagingException {
+	public String mailSend(String email, String title, String subtitle, String text) throws MessagingException {
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		String content = "";
 		
@@ -79,10 +79,26 @@ public class JavaclassProvide {
 		
 		// 메세지 보관함의 내용(content)에, 발신자의 필요한 정보를 추가로 담아서 전송처리한다.
 		content = content.replace("\n", "<br>");
-		content += "<br><hr><h3>임시비밀번호: "+pwd+"</h3><hr><br>";
-		content += "<p><img src=\"cid:la.jpg\" width='500px'></p>";
-		content += "<p>방문하기: <a href='http://49.142.157.251:9090/javaclassJ4/Main'>javaclass</a></p>";
-		content += "<hr>";
+        content += "<body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #32373d; color: #b2bdce;\">"
+                + "<table role=\"presentation\" style=\"width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; background-color: #32373d;\">"
+                + "<tr>"
+                + "<td style=\"padding: 20px;\">"
+                + "<img src=\"cid:logo.png\" alt=\"로고\" style=\"height: 50px;\">"
+                + "</td>"
+                + "</tr>"
+                + "<tr>"
+                + "<td style=\"background-color: #3a3f45; padding: 50px 20px; text-align: center; color: #b2bdce;\">"
+                + "<h2 style=\"color: #00c722; margin-top: 0;\">"+subtitle+"</h2>"
+                + "<p style=\"margin: 0; margin-top: 10px;\">"+text+"</p>"
+                + "</td>"
+                + "</tr>"
+                + "<tr>"
+                + "<td style=\"background-color: #3a3f45; text-align: center; padding: 50px 20px; color: #b2bdce;\">"
+                + "<p style=\"margin: 0;\"><a href=\"http://192.168.0.15:9090/javaclassS4/\" style=\"display: inline-block; border-radius: 15px; padding: 5px 10px; background-color: #00c722; color: #fff; border: 1px solid #00c722; min-width: 120px; text-align: center; text-decoration: none;\">인겜토리로 이동하기</a></p>"
+                + "</td>"
+                + "</tr>"
+                + "</table>"
+                + "</body>";
 		messageHelper.setText(content, true); // 기존거 무시하고 새로 갈기
 		
 		// 본문에 기재될 그림파일의 경로를 별도로 표시시켜준다. 그런 후 다시 보관함에 저장한다.
@@ -90,8 +106,8 @@ public class JavaclassProvide {
 		
 		// cid:에 넣을 그림 생성
 		//request.getSession().getServletContext().getRealPath("/resources/images/la.jpg");
-		FileSystemResource file = new FileSystemResource(request.getSession().getServletContext().getRealPath("/resources/images/la.jpg"));
-		messageHelper.addInline("la.jpg", file);
+		FileSystemResource file = new FileSystemResource(request.getSession().getServletContext().getRealPath("/resources/images/logo.png"));
+		messageHelper.addInline("logo.png", file);
 		
 		// 메일 전송하기
 		mailSender.send(message);

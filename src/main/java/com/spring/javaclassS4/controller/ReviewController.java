@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -71,6 +72,11 @@ public class ReviewController {
 		if(testvo != null) reviewService.setReviewEdit(mid, gameIdx, rating, state);
 		else reviewService.setReviewInput(mid, gameIdx, rating, state);
 		
+		CommunityVO testvo2 = reviewService.getReviewMore(gameIdx, mid);
+		testvo2.setState(state);
+		testvo2.setRating(rating);
+		if(testvo2 != null) reviewService.reviewMoreEdit(testvo2);
+		
 		int rating1 = reviewService.getRatingCount(mid, 1);
 		int rating2 = reviewService.getRatingCount(mid, 2);
 		int rating3 = reviewService.getRatingCount(mid, 3);
@@ -103,8 +109,38 @@ public class ReviewController {
 		vo.setPart("리뷰");
 		vo.setPublicType("전체");
 		vo.setCmHostIp(request.getRemoteAddr());
+		reviewService.setReviewEdit(vo.getMid(), vo.getGameIdx(), vo.getRating(), vo.getState());
 		if(testvo != null) reviewService.reviewMoreEdit(vo);
 		else reviewService.reviewMoreInput(vo);
 	}
 	
+	@Transactional
+	@ResponseBody
+	@RequestMapping(value = "/reviewInput", method = RequestMethod.POST)
+	public void reviewInput(CommunityVO vo, HttpServletRequest request) {
+		ReviewVO testvo = reviewService.getMidAndIdx(vo.getCmGameIdx(), vo.getMid());
+		CommunityVO cvo = reviewService.getReviewMore(vo.getCmGameIdx(), vo.getMid());
+		
+		vo.setSection("피드");
+		vo.setPart("리뷰");
+		vo.setPublicType("전체");
+		vo.setCmHostIp(request.getRemoteAddr());
+		
+		if(testvo == null && cvo == null) {
+			reviewService.setReviewInput(vo.getMid(), vo.getCmGameIdx(), vo.getRating(), vo.getState());
+			reviewService.reviewMoreInput(vo);
+		}
+		else if(testvo != null && cvo == null) {
+			reviewService.setReviewEdit(vo.getMid(), vo.getCmGameIdx(), vo.getRating(), vo.getState());
+			reviewService.reviewMoreInput(vo);
+		}
+		else if(testvo == null && cvo != null) {
+			reviewService.setReviewInput(vo.getMid(), vo.getCmGameIdx(), vo.getRating(), vo.getState());
+			reviewService.reviewMoreEdit(vo);
+		}
+		else {
+			reviewService.setReviewEdit(vo.getMid(), vo.getCmGameIdx(), vo.getRating(), vo.getState());
+			reviewService.reviewMoreEdit(vo);
+		}
+	}
 }

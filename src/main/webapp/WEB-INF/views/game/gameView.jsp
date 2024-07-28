@@ -19,14 +19,14 @@
 		const mask = document.querySelector('.mask');
 		const html = document.querySelector('html');
 		html.style.overflow = 'hidden';
-
-		window.addEventListener('load', function() {
-			const mask = document.querySelector('.mask');
-	        const html = document.querySelector('html');
-	        
-			mask.style.display = 'none';
-			html.style.overflow = 'auto';
-		});
+	});
+	
+	window.addEventListener('load', function() {
+		const mask = document.querySelector('.mask');
+        const html = document.querySelector('html');
+        
+		mask.style.display = 'none';
+		html.style.overflow = 'auto';
 	});
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />

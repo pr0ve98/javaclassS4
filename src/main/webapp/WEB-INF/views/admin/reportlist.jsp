@@ -19,14 +19,6 @@
 		const mask = document.querySelector('.mask');
 		const html = document.querySelector('html');
 		html.style.overflow = 'hidden';
-
-		window.addEventListener('load', function() {
-			const mask = document.querySelector('.mask');
-	        const html = document.querySelector('html');
-	        
-			mask.style.display = 'none';
-			html.style.overflow = 'auto';
-		});
 		
 		// 검색창 엔터로 검색
         let searchInput = document.getElementById('search');
@@ -41,6 +33,14 @@
 	            }
 	        });
 	    }
+	});
+	
+	window.addEventListener('load', function() {
+		const mask = document.querySelector('.mask');
+        const html = document.querySelector('html');
+        
+		mask.style.display = 'none';
+		html.style.overflow = 'auto';
 	});
 	
 	function partchange() {
@@ -74,10 +74,35 @@
  	function reportOk(reIdx, banMid, banReason, contentPart, contentIdx) {
  		let ans = confirm("게시글/댓글이 삭제되며 유저는 활동 중지 처리됩니다 처리하겠습니까?");
  		if(ans) {
+ 			const mask = document.querySelector('.mask');
+ 			const html = document.querySelector('html');
+ 			mask.style.display = 'block';
+ 			html.style.overflow = 'hidden';
+
 	 		$.ajax({
 	 			url : "${ctp}/admin/reportOk",
 	 			type : "post",
 	 			data : {reIdx:reIdx, banMid:banMid, banReason:banReason, contentPart:contentPart, contentIdx:contentIdx},
+	 			success : function() {
+	 				mask.style.display = 'none';
+	 				html.style.overflow = 'auto';
+	 				alert("처리 완료!");
+					location.reload();
+				},
+	 			error : function() {
+					alert("전송오류!");
+				}
+	 		});
+ 		}
+	}
+ 	
+ 	function reportDel(reIdx, contentPart, contentIdx) {
+ 		let ans = confirm("게시글/댓글이 삭제됩니다 처리하겠습니까?");
+ 		if(ans) {
+	 		$.ajax({
+	 			url : "${ctp}/admin/reportDel",
+	 			type : "post",
+	 			data : {reIdx:reIdx, contentPart:contentPart, contentIdx:contentIdx},
 	 			success : function() {
 	 				alert("처리 완료!");
 					location.reload();
@@ -87,6 +112,21 @@
 				}
 	 		});
  		}
+	}
+ 	
+ 	function reportNo(reIdx) {
+ 		$.ajax({
+ 			url : "${ctp}/admin/reportNo",
+ 			type : "post",
+ 			data : {reIdx:reIdx},
+ 			success : function() {
+ 				alert("처리 완료!");
+				location.reload();
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
 	}
 	
 </script>
@@ -124,6 +164,7 @@
 				<option value="reIdx" ${viewpart == 'reIdx' ? 'selected' : ''}>오래된순</option>
 				<option value="notComplete" ${viewpart == 'notComplete' ? 'selected' : ''}>미처리 신고만</option>
 				<option value="complete" ${viewpart == 'complete' ? 'selected' : ''}>처리완료 신고만</option>
+				<option value="acquittal" ${viewpart == 'complete' ? 'selected' : ''}>무혐의 신고만</option>
 			</select>
 		</div>
 		<p><br/></p>
@@ -146,14 +187,16 @@
 						<td data-title="신고한 글/댓글">&nbsp;&nbsp;
 							<c:if test="${vo.complete == 0}"><span onclick="viewContent('${vo.contentPart}',${vo.contentIdx})" class="viewContent">내용 확인</span></c:if>
 							<c:if test="${vo.complete == 1}">삭제됨</c:if>
+							<c:if test="${vo.complete == 2}"><span onclick="viewContent('${vo.contentPart}',${vo.contentIdx})" class="viewContent">내용 확인(무혐의)</span></c:if>
 						</td>
 						<td data-title="사유">&nbsp;&nbsp;${vo.reason}</td>
 						<td>
 							<c:if test="${vo.complete == 0}">
 								<button id="levelBtn${vo.reIdx}" class="badge badge-danger" onclick="reportOk(${vo.reIdx},'${vo.sufferMid}','${vo.reason}', '${vo.contentPart}', ${vo.contentIdx})">처리하기</button>
+								<button id="levelDelBtn${vo.reIdx}" class="badge badge-warning" onclick="reportDel(${vo.reIdx},'${vo.contentPart}', ${vo.contentIdx})">글만 삭제</button>
 								<button id="levelOkBtn${vo.reIdx}" class="badge badge-secondary" onclick="reportNo(${vo.reIdx})">대상아님</button>
 							</c:if>
-							<c:if test="${vo.complete == 1}">
+							<c:if test="${vo.complete == 1 || vo.complete == 2}">
 								<font color="#00c722"><b>처리 완료</b></font>
 							</c:if>
 						</td>
@@ -161,9 +204,9 @@
 				</c:forEach>
 			</table>
 			<div class="news-page">
-				<c:if test="${page > 1}"><button class="prev" onclick="location.href='${ctp}/admin/gamelist?page=${page-1}&viewpart=${viewpart}&searchpart=${searchpart}&search=${search}';"><i class="fa-solid fa-chevron-left fa-2xs"></i></button></c:if>
+				<c:if test="${page > 1}"><button class="prev" onclick="location.href='${ctp}/admin/reportlist?page=${page-1}&viewpart=${viewpart}&searchpart=${searchpart}&search=${search}';"><i class="fa-solid fa-chevron-left fa-2xs"></i></button></c:if>
 		        <span class="page-info">${page}/${totPage}</span>
-		        <c:if test="${page < totPage}"><button class="next" onclick="location.href='${ctp}/admin/gamelist?page=${page+1}&viewpart=${viewpart}&searchpart=${searchpart}&search=${search}';"><i class="fa-solid fa-chevron-right fa-2xs"></i></button></c:if>
+		        <c:if test="${page < totPage}"><button class="next" onclick="location.href='${ctp}/admin/reportlist?page=${page+1}&viewpart=${viewpart}&searchpart=${searchpart}&search=${search}';"><i class="fa-solid fa-chevron-right fa-2xs"></i></button></c:if>
 			</div>
 		</c:if>
 	</div>

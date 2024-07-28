@@ -10,6 +10,7 @@ import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
 import com.spring.javaclassS4.vo.ReportVO;
+import com.spring.javaclassS4.vo.ReviewVO;
 
 public interface CommunityDAO {
 
@@ -74,5 +75,15 @@ public interface CommunityDAO {
 	public void followDelete(@Param("myMid") String myMid, @Param("youMid") String youMid);
 
 	public void reportInput(@Param("vo") ReportVO vo);
+
+	public List<String> getFollowMids(@Param("mid") String mid);
+
+	public ArrayList<CommunityVO> getCommunityFollowList(@Param("midsStr") String midsStr, @Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize);
+
+	public int getFollowTotRecCnt(@Param("midsStr") String midsStr);
+
+	public List<ReviewVO> getReviewIdx(@Param("mid") String mid);
+
+	public String getCMReview(@Param("revGameIdx") int revGameIdx, @Param("mid") String mid);
 
 }

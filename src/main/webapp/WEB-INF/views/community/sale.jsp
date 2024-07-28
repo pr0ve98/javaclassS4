@@ -8,7 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
-<title>최신피드 | 인겜토리</title>
+<title>세일정보 | 인겜토리</title>
 <link rel="icon" type="image/x-icon" href="${ctp}/images/ingametory.ico">
 <jsp:include page="/WEB-INF/views/include/bs4.jsp" />
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
@@ -44,7 +44,7 @@
 			$.ajax({
 				url : "${ctp}/community/rootData",
 				type : "post",
-				data : {page : ${page}+totPage, part : 'recent'},
+				data : {page : ${page}+totPage, part : 'sale'},
 				success : function(res) {
 					if(res) {
 						isFetching = false;
@@ -86,7 +86,7 @@
 	            timeout = setTimeout(() => func.apply(this, args), wait);
 	        };
 	    }
-
+		
 		// 처음 창 뜰 때 첫번째 게임 선택
         const firstGameButton = $('.game-button').first();
         firstGameButton.addClass('active');
@@ -94,7 +94,7 @@
         firstGameButton2.addClass('active');
         
         const initialGame = firstGameButton.data('game');
-        let initialHtml = '<font color="#00c722"><b>' + initialGame + '</b></font>에 대한 일지';
+        let initialHtml = '<font color="#00c722"><b>' + initialGame + '</b></font>에 대한 세일 정보';
         $(".header-text").html(initialHtml);
         
         const game = document.getElementById('gamesearch');
@@ -289,7 +289,7 @@
 	    });
     });
 	
-    // 페이지 로드 로딩페이지 제거
+	 // 페이지 로드 로딩페이지 제거
     $(window).on('load', function() {
     	removeLoadingPage();
     });
@@ -299,7 +299,7 @@
         $('.mask').hide();
         $('html').css('overflow', 'auto');
     }
-    
+
     // 페이지 떠날 때 이미지 제거
     window.onbeforeunload = function() {
         if (!isWriteButtonClicked) {
@@ -844,10 +844,10 @@
 			<div style="width:100%;">
 				<div class="c-buttons">
 					<span class="c-button" onclick="location.href='${ctp}/community/follow';">팔로우</span>
-					<span class="c-button c-button-active" onclick="location.href='${ctp}/community/recent';">최신</span>
+					<span class="c-button" onclick="location.href='${ctp}/community/recent';">최신</span>
 					<span class="c-button" onclick="location.href='${ctp}/community/review';">리뷰</span>
 					<span class="c-button" onclick="location.href='${ctp}/community/info';">소식/정보</span>
-					<span class="c-button" onclick="location.href='${ctp}/community/sale';">세일</span>
+					<span class="c-button c-button-active" onclick="location.href='${ctp}/community/sale';">세일</span>
 					<c:if test="${sMid != null}"><span class="c-button" onclick="location.href='${ctp}/community/my';">내글</span></c:if>
 				</div>
 				<c:if test="${sMid != null}">
@@ -1015,10 +1015,10 @@
     		<div style="cursor:pointer;" onclick="closePopup('write')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
         <div class="category-selection">
-            <button class="community-category active" data-category="일지">일지</button>
+            <button class="community-category" data-category="일지">일지</button>
             <button class="community-category" data-category="소식/정보">소식/정보</button>
             <button class="community-category" data-category="자유">자유 주제</button>
-            <button class="community-category" data-category="세일">세일 글</button>
+            <button class="community-category active" data-category="세일">세일 글</button>
         </div>
         <div class="game-selection scrollbar" id="game-selection">
             <button class="gamesearch-button" onclick="showPopupGameSearch()">
@@ -1208,7 +1208,6 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>
 	    
 	    <script>
-	
 			// 이미지 업로드
 		    function uploadImage2(file) {
 				let fileSize = file.size;

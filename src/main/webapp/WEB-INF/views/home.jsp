@@ -223,7 +223,7 @@
 										<div class="game-title">발더스 게이트 3</div>
 										<div class="review-game-info">
 											<span class="review-star"><i class="fa-solid fa-star" style="color: #FFD43B;"></i>&nbsp;5.0</span>
-											<span class="review-state-none"><i class="fa-solid fa-ellipsis"></i></i>&nbsp;상태없음</span>
+											<span class="review-state-none"><i class="fa-solid fa-ellipsis"></i>&nbsp;상태없음</span>
 										</div>
 									</div>
 								</div>

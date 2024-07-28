@@ -411,6 +411,7 @@
 	    color: #9b9b9bb5;
 	    padding: 2px 5px;
 	    font-size: 12px;
+	    text-wrap: nowrap;
 	}
 	.review-state-play {
 	    border: 2px solid #0085eb;
@@ -418,6 +419,15 @@
 	    color: #0085eb;
 	    padding: 2px 5px;
 	    font-size: 12px;
+	    text-wrap: nowrap;
+	}
+	.review-state-stop {
+	    border: 2px solid #ff4f4f;
+	    border-radius: 5px;
+	    color: #ff4f4f;
+	    padding: 2px 5px;
+	    font-size: 12px;
+	    text-wrap: nowrap;
 	}
 	.review-state-done {
 	    border: 2px solid #00c722;
@@ -425,6 +435,23 @@
 	    color: #00c722;
 	    padding: 2px 5px;
 	    font-size: 12px;
+	    text-wrap: nowrap;
+	}
+	.review-state-folder {
+	    border: 2px solid #d9d9d9;
+	    border-radius: 5px;
+	    color: #d9d9d9;
+	    padding: 2px 5px;
+	    font-size: 12px;
+	    text-wrap: nowrap;
+	}
+	.review-state-pin {
+	    border: 2px solid #fff700;
+	    border-radius: 5px;
+	    color: #fff700;
+	    padding: 2px 5px;
+	    font-size: 12px;
+	    text-wrap: nowrap;
 	}
 	.review-text {
 		overflow: hidden;
@@ -1007,6 +1034,7 @@
 	    height: 40px;
 	    border-radius: 5px;
 	    margin-right: 10px;
+	    object-fit: cover;
 	}
 	.result-item span {
 	    flex: 1;
@@ -1143,6 +1171,14 @@
 	    cursor: pointer;
 	    transition: transform 0.2s, background-image 0.2s;
 	}
+	.review-star-add2 {
+		width: 60px;
+		height: 60px;
+		background-image: url('${ctp}/images/star2.png');
+	    background-size: cover;
+	    cursor: pointer;
+	    transition: transform 0.2s, background-image 0.2s;
+	}
 	#resetmobile {display: none;}
 	.review-add {
 		width: 100%;
@@ -1238,7 +1274,7 @@
 	    background-color: #fab400;
 	}
 	.state-button:hover .state-icon, .state-button.selected .state-icon {
-	    background-color: #fff; /* 아이콘 색상을 하얀색으로 변경 */
+	    background-color: #fff;
 	}
 	[id^="moreReviewInput"] {
 		display: none;
@@ -1325,6 +1361,11 @@
 	.viewContent:hover {
 		color:#00c722;
 		text-decoration: underline;
+	}
+	.re-gameImg {
+		height: 80px;
+		border-radius: 8px;
+		object-fit:cover;
 	}
 	@media screen and (min-width: 1200px) {
 		.game-item {
@@ -1531,6 +1572,10 @@
 		.review-viewflex {display: block;}
 		.review-game-i {width: 100%;}
 		.userReview {display: none;}
+		.re-gameImg {
+			width: 50px;
+			height: 50px;
+		}
 	}
 	@media screen and (max-width: 567px) {
 		.game-selection {justify-content: start;}

@@ -21,14 +21,6 @@
 		const html = document.querySelector('html');
 		html.style.overflow = 'hidden';
 		
-		window.addEventListener('load', function() {
-			const mask = document.querySelector('.mask');
-	        const html = document.querySelector('html');
-	        
-			mask.style.display = 'none';
-			html.style.overflow = 'auto';
-		});
-		
 		// 플랫폼 버튼 클릭 이벤트
 		const buttons = document.querySelectorAll('.g-button');
         
@@ -60,6 +52,14 @@
 	            }
 	        });
 	    }
+	});
+	
+	window.addEventListener('load', function() {
+		const mask = document.querySelector('.mask');
+        const html = document.querySelector('html');
+        
+		mask.style.display = 'none';
+		html.style.overflow = 'auto';
 	});
 
 	function showPopupAdd() {

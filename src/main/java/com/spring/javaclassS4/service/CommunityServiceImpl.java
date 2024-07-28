@@ -15,6 +15,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS4.common.JavaclassProvide;
@@ -25,6 +27,7 @@ import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
 import com.spring.javaclassS4.vo.ReportVO;
+import com.spring.javaclassS4.vo.ReviewVO;
 
 @Service
 public class CommunityServiceImpl implements CommunityService {
@@ -77,14 +80,50 @@ public class CommunityServiceImpl implements CommunityService {
 
 	@Override
 	public String gameSearch(String game) {
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		String str = "";
 		ArrayList<GameVO> vos = communityDAO.gameSearch(game);
-		if(vos.isEmpty()) return str = "검색한 게임이 없습니다";
+		if(vos.isEmpty()) return str = "<div class=\"text-center\" style=\"margin: 30px 0;\">검색한 게임이 없습니다</div>";
 		for(GameVO vo : vos) {
 			String gamename = vo.getGameTitle() + " ("+vo.getShowDate().split("-")[0]+")";
-			str += "<div class=\"result-item\" data-gamesearchidx=\""+vo.getGameIdx()+"\" onclick=\"gamelistAdd("+vo.getGameIdx()+")\">"
-				+ "<img src=\""+vo.getGameImg()+"\" alt=\""+gamename+"\">"
-				+ "<span>"+gamename+"</span></div>";
+			str += "<div class=\"result-item\" data-gamesearchidx=\""+vo.getGameIdx()+"\" onclick=\"gamelistAdd("+vo.getGameIdx()+")\">";
+			if(vo.getGameImg() != null && !vo.getGameImg().equals("")) {
+				if(vo.getGameImg().indexOf("http") == -1) str += "<img src=\""+request.getContextPath()+"/game/"+vo.getGameImg()+"\" alt=\""+gamename+"\">";
+				else str += "<img src=\""+vo.getGameImg()+"\" alt=\""+gamename+"\">";
+			}
+			str	+= "<span>"+gamename+"</span></div>";
+		}
+		return str;
+	}
+	
+	@Override
+	public String reviewGameSearch(String game) {
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+		HttpSession session = request.getSession();
+		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
+		List<ReviewVO> reviewList = communityDAO.getReviewIdx(mid);
+		
+		String str = "";
+		ArrayList<GameVO> vos = communityDAO.gameSearch(game);
+		if(vos.isEmpty()) return str = "<div class=\"text-center\" style=\"margin: 30px 0;\">검색한 게임이 없습니다</div>";
+		for(GameVO vo : vos) {
+			String gamename = vo.getGameTitle() + " ("+vo.getShowDate().split("-")[0]+")";
+			boolean reviewFound = false;
+			for(ReviewVO review : reviewList) {
+		        if(review.getRevGameIdx() == vo.getGameIdx()) {
+		        	reviewFound = true;
+		        	String cmContent = communityDAO.getCMReview(review.getRevGameIdx(), review.getRevMid());
+		        	if(cmContent == null) str += "<div class=\"result-item\" data-gamesearchidx=\""+vo.getGameIdx()+"\" onclick=\"reviewGameEdit("+vo.getGameIdx()+", '"+vo.getGameImg()+"', '"+vo.getGameTitle()+"', "+review.getRating()+", '"+review.getState()+"','')\">";
+		        	else str += "<div class=\"result-item\" data-gamesearchidx=\""+vo.getGameIdx()+"\" onclick=\"reviewGameEdit("+vo.getGameIdx()+", '"+vo.getGameImg()+"', '"+vo.getGameTitle()+"', "+review.getRating()+", '"+review.getState()+"','"+cmContent+"')\">";
+		        	break;
+		        }
+			}
+			if(reviewFound == false) str += "<div class=\"result-item\" data-gamesearchidx=\""+vo.getGameIdx()+"\" onclick=\"reviewGameAdd("+vo.getGameIdx()+", '"+vo.getGameImg()+"', '"+vo.getGameTitle()+"')\">";
+		    if(vo.getGameImg() != null && !vo.getGameImg().equals("")) {
+				if(vo.getGameImg().indexOf("http") == -1) str += "<img src=\""+request.getContextPath()+"/game/"+vo.getGameImg()+"\" alt=\""+gamename+"\">";
+				else str += "<img src=\""+vo.getGameImg()+"\" alt=\""+gamename+"\">";
+			}
+			str	+= "<span>"+gamename+"</span></div>";
 		}
 		return str;
 	}
@@ -134,7 +173,10 @@ public class CommunityServiceImpl implements CommunityService {
 			List<String> likeMember = communityDAO.getLikeMember(vos.get(i).getCmIdx());
 			if(mid != null && likeMember.size() > 0) {
 				for(int j=0; j<likeMember.size(); j++) {
-					if(mid.equals(likeMember.get(j))) vos.get(i).setLikeSW(1);
+					if(mid.equals(likeMember.get(j))) {
+						vos.get(i).setLikeSW(1);
+						break;
+					}
 					else vos.get(i).setLikeSW(0);
 				}
 			}
@@ -618,6 +660,107 @@ public class CommunityServiceImpl implements CommunityService {
 	@Override
 	public void reportInput(ReportVO vo) {
 		communityDAO.reportInput(vo);
+	}
+
+	@Override
+	public ArrayList<CommunityVO> getCommunityFollowList(String mid, int startIndexNo, int pageSize) {
+		List<String> mids = communityDAO.getFollowMids(mid);
+		ArrayList<CommunityVO> vos = null;
+		
+		if(mids.size() > 0) {
+			String midsStr = "";
+			for(int i=0; i<mids.size(); i++) {
+				midsStr += "'" + mids.get(i) + "', ";
+			}
+			midsStr = midsStr.substring(0, midsStr.length()-2);
+			
+			vos = communityDAO.getCommunityFollowList(midsStr, startIndexNo, pageSize);
+			// 글 내용이 길다면 조금만 보여주기
+			for(int i=0; i<vos.size(); i++) {
+				Document doc = Jsoup.parse(vos.get(i).getCmContent());
+				Elements ptag = doc.select("p");
+				Elements img = doc.select("img");
+				
+				StringBuilder reContent = new StringBuilder();
+				
+				if(!img.isEmpty()) {
+					Element firstImg = img.first();
+					for (Element e : ptag) {
+						reContent.append(e.outerHtml());
+						if(e.equals(firstImg.parent())) {
+							vos.get(i).setLongContent(1);
+							break;
+						}
+					}
+				}
+				else {
+					if(ptag.size() < 7) {
+						ptag.forEach(p -> reContent.append(p.outerHtml()));
+						vos.get(i).setLongContent(0);
+					}
+					else {
+						ptag.stream().limit(7).forEach(p -> reContent.append(p.outerHtml()));
+						vos.get(i).setLongContent(1);
+					}
+				}
+				vos.get(i).setCmContent(reContent.toString());
+				List<String> likeMember = communityDAO.getLikeMember(vos.get(i).getCmIdx());
+				if(mid != null && likeMember.size() > 0) {
+					for(int j=0; j<likeMember.size(); j++) {
+						if(mid.equals(likeMember.get(j))) vos.get(i).setLikeSW(1);
+						else vos.get(i).setLikeSW(0);
+					}
+				}
+				vos.get(i).setLikeMember(likeMember);
+				vos.get(i).setLikeCnt(likeMember.size());
+				
+		        ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vos.get(i).getCmIdx());
+		        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
+	
+		        for (ReplyVO k : parentsReply) {
+		            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
+		            k.setChildReplyCount(childReplyCount);
+	
+		            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vos.get(i).getCmIdx(), k.getReplyIdx());
+		            
+		            // 자식 댓글을 추가
+		            if (childReplies != null) {
+		                childsReply.addAll(childReplies);
+		            }
+		        }
+			        
+				int replyCount = communityDAO.getReplyCount(vos.get(i).getCmIdx());
+				vos.get(i).setParentsReply(parentsReply);
+				vos.get(i).setChildReply(childsReply);
+				vos.get(i).setReplyCount(replyCount);
+				
+				if(vos.get(i).getCmGameIdx() != 0) {
+					GameVO vo = communityDAO.getGameIdx(vos.get(i).getCmGameIdx());
+					vos.get(i).setGameImg(vo.getGameImg());
+				}
+				
+				FollowVO fVO = communityDAO.getFollow(mid, vos.get(i).getMid());
+				if(fVO == null) vos.get(i).setFollow(0);
+				else vos.get(i).setFollow(1);
+			}
+			return vos;
+		}
+		return vos;
+	}
+
+	@Override
+	public int getFollowTotRecCnt(String mid, String string) {
+		List<String> mids = communityDAO.getFollowMids(mid);
+		
+		if(mids.size() > 0) {
+			String midsStr = "";
+			for(int i=0; i<mids.size(); i++) {
+				midsStr += "'" + mids.get(i) + "', ";
+			}
+			midsStr = midsStr.substring(0, midsStr.length()-2);
+			return communityDAO.getFollowTotRecCnt(midsStr);
+		}
+		return 0;
 	}
 
 }

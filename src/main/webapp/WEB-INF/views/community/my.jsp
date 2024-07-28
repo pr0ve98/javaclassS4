@@ -8,7 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
-<title>최신피드 | 인겜토리</title>
+<title>내 글 | 인겜토리</title>
 <link rel="icon" type="image/x-icon" href="${ctp}/images/ingametory.ico">
 <jsp:include page="/WEB-INF/views/include/bs4.jsp" />
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
@@ -44,7 +44,7 @@
 			$.ajax({
 				url : "${ctp}/community/rootData",
 				type : "post",
-				data : {page : ${page}+totPage, part : 'recent'},
+				data : {page : ${page}+totPage, part : 'my'},
 				success : function(res) {
 					if(res) {
 						isFetching = false;
@@ -86,7 +86,7 @@
 	            timeout = setTimeout(() => func.apply(this, args), wait);
 	        };
 	    }
-
+		
 		// 처음 창 뜰 때 첫번째 게임 선택
         const firstGameButton = $('.game-button').first();
         firstGameButton.addClass('active');
@@ -299,7 +299,7 @@
         $('.mask').hide();
         $('html').css('overflow', 'auto');
     }
-    
+
     // 페이지 떠날 때 이미지 제거
     window.onbeforeunload = function() {
         if (!isWriteButtonClicked) {
@@ -844,11 +844,11 @@
 			<div style="width:100%;">
 				<div class="c-buttons">
 					<span class="c-button" onclick="location.href='${ctp}/community/follow';">팔로우</span>
-					<span class="c-button c-button-active" onclick="location.href='${ctp}/community/recent';">최신</span>
+					<span class="c-button" onclick="location.href='${ctp}/community/recent';">최신</span>
 					<span class="c-button" onclick="location.href='${ctp}/community/review';">리뷰</span>
 					<span class="c-button" onclick="location.href='${ctp}/community/info';">소식/정보</span>
 					<span class="c-button" onclick="location.href='${ctp}/community/sale';">세일</span>
-					<c:if test="${sMid != null}"><span class="c-button" onclick="location.href='${ctp}/community/my';">내글</span></c:if>
+					<c:if test="${sMid != null}"><span class="c-button c-button-active" onclick="location.href='${ctp}/community/my';">내글</span></c:if>
 				</div>
 				<c:if test="${sMid != null}">
 					<div class="cm-box">
@@ -857,6 +857,9 @@
 							<div class="text-input" onclick="showPopupWrite()">요즘 관심있는 게임은 무엇인가요?</div>
 						</div>
 					</div>
+				</c:if>
+				<c:if test="${fn:length(cmVOS) == 0}">
+					<div class="text-center" style="margin: 200px 0; font-size: 32px; color:#b2bdce;">내가 쓴 글이 없습니다!</div>
 				</c:if>
 				<c:forEach var="cmVO" items="${cmVOS}">
 					<div class="cm-box" id="cmbox${cmVO.cmIdx}">
@@ -1111,6 +1114,7 @@
 		        });
 		    }
 		    
+
 	        // 게시하기 버튼 클릭 이벤트
 	        $('.post-button').click(function(event) {
 	            event.preventDefault();
@@ -1208,7 +1212,6 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>
 	    
 	    <script>
-	
 			// 이미지 업로드
 		    function uploadImage2(file) {
 				let fileSize = file.size;

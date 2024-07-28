@@ -110,6 +110,13 @@
 				<if test="searchpart == '피신고자'">select count(*) from itReport where complete=1 and sufferMid like concat('%',#{search},'%');</if>
 			</if>
 		</if>
+		<if test="viewpart == 'acquittal'">
+			<if test="search == ''">select count(*) from itReport where complete=2;</if>
+			<if test="search != ''">
+				<if test="searchpart == '신고자'">select count(*) from itReport where complete=2 and reportMid like concat('%',#{search},'%');</if>
+				<if test="searchpart == '피신고자'">select count(*) from itReport where complete=2 and sufferMid like concat('%',#{search},'%');</if>
+			</if>
+		</if>
 		<if test="viewpart != 'complete' and viewpart != 'notComplete'">
 			<if test="search == ''">select count(*) from itReport;</if>
 			<if test="search != ''">
@@ -134,10 +141,10 @@
 			</if>
 		</if>
 		<if test="viewpart != 'complete' and viewpart != 'notComplete'">
-			<if test="search == ''">select * from itReport order by #{viewpart} limit #{startIndexNo},#{pageSize};</if>
+			<if test="search == ''">select * from itReport order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
 			<if test="search != ''">
-				<if test="searchpart == '신고자'">select * from itReport where reportMid like concat('%',#{search},'%') order by #{viewpart} limit #{startIndexNo},#{pageSize};</if>
-				<if test="searchpart == '피신고자'">select * from itReport where sufferMid like concat('%',#{search},'%') order by #{viewpart} limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '신고자'">select * from itReport where reportMid like concat('%',#{search},'%') order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '피신고자'">select * from itReport where sufferMid like concat('%',#{search},'%') order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
 			</if>
 		</if>
 	</select>
@@ -190,6 +197,9 @@
 	</update>
 	<update id="reportRead">
 		update itReport set complete=1 where reIdx=#{reIdx};
+	</update>
+	<update id="reportAcquittal">
+		update itReport set complete=2 where reIdx=#{reIdx};
 	</update>
 	
 	

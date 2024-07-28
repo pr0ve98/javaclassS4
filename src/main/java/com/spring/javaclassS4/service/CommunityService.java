@@ -72,4 +72,10 @@ public interface CommunityService {
 
 	public void reportInput(ReportVO vo);
 
+	public ArrayList<CommunityVO> getCommunityFollowList(String mid, int startIndexNo, int pageSize);
+
+	public int getFollowTotRecCnt(String mid, String string);
+
+	public String reviewGameSearch(String game);
+
 }

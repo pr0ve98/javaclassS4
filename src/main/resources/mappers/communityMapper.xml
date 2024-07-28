@@ -17,6 +17,9 @@
 		<if test="part == 'sale'">
 			SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.part='세일' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
 		</if>
+		<if test="part == 'review'">
+			SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.part='리뷰' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
+		</if>
 		<if test="part == 'my'">
 			SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid=#{mid} and c.part!='리뷰' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
 		</if>
@@ -31,9 +34,10 @@
 		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.cmIdx=#{cmIdx} ORDER BY c.cmIdx desc;
 	</select>
 	<select id="getTotRecCnt" resultType="int">
-		<if test="part == 'recent'">SELECT count(*) as totRecCnt from itCommunity;</if>
+		<if test="part == 'recent'">SELECT count(*) as totRecCnt from itCommunity where part!='리뷰';</if>
 		<if test="part == 'info'">SELECT count(*) as totRecCnt from itCommunity where part='소식/정보';</if>
 		<if test="part == 'sale'">SELECT count(*) as totRecCnt from itCommunity where part='세일';</if>
+		<if test="part == 'review'">SELECT count(*) as totRecCnt from itCommunity where part='리뷰';</if>
 	</select>
 	<select id="getMyTotRecCnt" resultType="int">
 		SELECT count(*) as totRecCnt from itCommunity where mid=#{mid};
@@ -67,6 +71,21 @@
 	<select id="getFollow" resultType="com.spring.javaclassS4.vo.FollowVO">
 		SELECT * from itFollow where myMid=#{myMid} and youMid=#{youMid};
 	</select>
+	<select id="getFollowMids" resultType="String">
+		SELECT youMid from itFollow where myMid=#{mid};
+	</select>
+	<select id="getCommunityFollowList" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid in (${midsStr}) and c.part!='리뷰' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
+	</select>
+	<select id="getFollowTotRecCnt" resultType="int">
+		SELECT count(*) FROM itCommunity WHERE mid in (${midsStr}) and part!='리뷰';
+	</select>
+	<select id="getReviewIdx" resultType="com.spring.javaclassS4.vo.ReviewVO">
+		SELECT * FROM itReview WHERE revMid=#{mid};
+	</select>
+	<select id="getCMReview" resultType="String">
+		SELECT cmContent FROM itCommunity WHERE mid=#{mid} and cmGameIdx=#{revGameIdx} and part='리뷰';
+	</select>
 	
 	
 	
@@ -95,7 +114,7 @@
 		insert into itCommunity values(default,#{vo.mid},#{vo.section},#{vo.part},<if test="vo.part == '자유'">default,</if><if test="vo.part != '자유'">#{vo.cmGameIdx},</if>#{vo.cmContent},default,#{vo.cmHostIp},#{vo.publicType},default,default);
 	</insert>
 	<insert id="setLikeAdd">
-		insert into itLike values(default, #{cmIdx}, #{mid});
+		insert into itLike values(default, #{cmIdx}, #{mid}, default);
 	</insert>
 	<insert id="replyInput">
 		insert into itReply values(default, #{vo.replyCmIdx}, #{vo.replyMid}, null, #{vo.replyContent}, #{vo.replyHostIp}, default, default);
@@ -104,7 +123,7 @@
 		insert into itReply values(default, #{vo.replyCmIdx}, #{vo.replyMid}, #{vo.replyParentIdx}, #{vo.replyContent}, #{vo.replyHostIp}, default, default);
 	</insert>
 	<insert id="followInput">
-		insert into itFollow values(#{myMid}, #{youMid});
+		insert into itFollow values(#{myMid}, #{youMid}, default);
 	</insert>
 	<insert id="reportInput">
 		insert into itReport values(default, #{vo.reportMid}, #{vo.sufferMid}, #{vo.contentPart}, #{vo.contentIdx}, #{vo.reason}, default);

@@ -20,7 +20,7 @@
 		</div>
 		<div class="header darkmode">
 			<button class="w3-button w3-xxlarge" onclick="w3_open()">&#9776;</button>
-			<img src="${ctp}/resources/images/logo.png" alt="로고" height="70px" class="p-2 ml-4">
+			<img src="${ctp}/resources/images/logo.png" alt="로고" height="70px" class="p-2 ml-4" onclick="location.href='${ctp}/'">
 			<div class="right-menu">
 								<c:if test="${sMid != null}">
 					<i class="fa-solid fa-bell fa"></i>
@@ -77,7 +77,7 @@
 	<div id="pc-menu" class="darkmode pt-1 pb-1">
 		<div class="container p-menu">
 			<div>
-				<img src="${ctp}/resources/images/logo.png" alt="로고" height="80px" class="p-2 ml-2">
+				<img src="${ctp}/resources/images/logo.png" alt="로고" height="80px" class="p-2 ml-2" onclick="location.href='${ctp}/'">
 				<span class="menu-item"><a href="${ctp}/main" ${flag == 'main' ? 'class="selected"' : ''}>홈</a></span>
 				<span class="menu-item"><a href="${ctp}/community/recent" ${flag == 'community' ? 'class="selected"' : ''}>커뮤니티</a></span>
 				<span class="menu-item"><a href="${ctp}/review" ${flag == 'review' ? 'class="selected"' : ''}>평가</a></span>

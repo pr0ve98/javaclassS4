@@ -305,4 +305,19 @@ public class AdminController {
 		if(vo.getLoginState().equals("OK")) adminService.banInput(banMid, banReason);
 		adminService.reportRead(reIdx);
 	}
+	
+	@Transactional
+	@ResponseBody
+	@RequestMapping(value = "/reportDel", method = RequestMethod.POST)
+	public void reportDel(int reIdx, String contentPart, int contentIdx, HttpServletRequest request) {
+		if(contentPart.equals("게시글")) communityService.setCommunityDelete(contentIdx, request);
+		else communityService.replyDelete(contentIdx);
+		adminService.reportRead(reIdx);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/reportNo", method = RequestMethod.POST)
+	public void reportDel(int reIdx) {
+		adminService.reportAcquittal(reIdx);
+	}
 }

@@ -59,7 +59,7 @@
 						        </div>
 						        <a href="${ctp}/admin/userlist">회원 관리</a>
 						        <a href="${ctp}/admin/gamelist">게임 관리</a>
-						        <a href="#">문의 목록</a>
+						        <a href="${ctp}/admin/supportlist">문의 목록</a>
 						        <a href="${ctp}/admin/reportlist">신고 목록</a>
 						        <a href="${ctp}/setting/profile">계정 설정</a>
 						        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>
@@ -123,7 +123,7 @@
 						        </div>
 						        <a href="${ctp}/admin/userlist">회원 관리</a>
 						        <a href="${ctp}/admin/gamelist">게임 관리</a>
-						        <a href="#">문의 목록</a>
+						        <a href="${ctp}/admin/supportlist">문의 목록</a>
 						        <a href="${ctp}/admin/reportlist">신고 목록</a>
 						        <a href="${ctp}/setting/profile">계정 설정</a>
 						        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>

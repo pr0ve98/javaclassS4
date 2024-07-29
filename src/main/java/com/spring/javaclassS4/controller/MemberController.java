@@ -71,6 +71,7 @@ public class MemberController {
 		session.setAttribute("sNickname", vo.getNickname());
 		session.setAttribute("sLevel", vo.getLevel());
 		session.setAttribute("sMemImg", vo.getMemImg());
+		session.setAttribute("sEmail", vo.getEmail());
 		session.setAttribute("sKakao", "OK");
 		
 		return "redirect:/message/memberLoginOk?mid="+vo.getMid()+"&flag="+flag;
@@ -93,6 +94,7 @@ public class MemberController {
 			session.setAttribute("sNickname", vo.getNickname());
 			session.setAttribute("sLevel", vo.getLevel());
 			session.setAttribute("sMemImg", vo.getMemImg());
+			session.setAttribute("sEmail", vo.getEmail());
 			session.setAttribute("sKakao", "NO");
 			return "redirect:/message/memberLoginOk?mid="+vo.getMid()+"&flag="+flag;
 		}

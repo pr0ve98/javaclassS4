@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
+import com.spring.javaclassS4.vo.SupportVO;
 
 public interface AdminService {
 
@@ -64,4 +65,12 @@ public interface AdminService {
 	public void reportRead(int reIdx);
 
 	public void reportAcquittal(int reIdx);
+
+	public int supportInput(SupportVO vo, MultipartFile supImg, HttpServletRequest request);
+
+	public int getSupportTotRecCnt(String viewpart, String search);
+
+	public ArrayList<GameVO> getSupportList(int startIndexNo, int pageSize, String viewpart, String search);
+
+	public void reSupport(SupportVO vo);
 }

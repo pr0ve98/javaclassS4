@@ -22,6 +22,7 @@ import com.spring.javaclassS4.vo.BanVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.MemberVO;
 import com.spring.javaclassS4.vo.ReplyVO;
+import com.spring.javaclassS4.vo.SupportVO;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -329,6 +330,52 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public void reportAcquittal(int reIdx) {
 		adminDAO.reportAcquittal(reIdx);
+	}
+
+	@Override
+	public int supportInput(SupportVO vo, MultipartFile supImg, HttpServletRequest request) {
+		if(supImg != null) {
+			UUID uid = UUID.randomUUID();
+			String oFileName = supImg.getOriginalFilename();
+			String sFileName = "support_" + uid.toString().substring(0,4) + "_" + oFileName;
+			
+			// 서버에 파일 올리기
+			try {
+				javaclassProvide.writeFile(supImg, sFileName, "support");
+				vo.setSupImg(sFileName);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			return adminDAO.supportInput(vo);
+		}
+		return adminDAO.supportInput(vo);
+	}
+
+	@Override
+	public int getSupportTotRecCnt(String viewpart, String search) {
+		return adminDAO.getSupportTotRecCnt(viewpart, search);
+	}
+
+	@Override
+	public ArrayList<GameVO> getSupportList(int startIndexNo, int pageSize, String viewpart, String search) {
+		return adminDAO.getSupportList(startIndexNo, pageSize, viewpart, search);
+	}
+	
+	@Transactional
+	@Override
+	public void reSupport(SupportVO vo) {
+		vo.setReContent(vo.getReContent().replace("\n", "<br/>"));
+		String title = "[INGAMETORY] 문의에 대한 답변 메일입니다.";
+		String text = vo.getSupContent() + "<hr/>";
+		text += "문의주신 "+vo.getMain() + "에 대한 답변입니다<br/><br/>"
+			+ vo.getReContent();
+			
+		try {
+			javaclassProvide.mailSend(vo.getSupEmail(), title, vo.getMain()+" 문의 답변", text);
+		} catch (MessagingException e) {e.printStackTrace();}
+		
+		adminDAO.setSupportComplete(vo.getSupIdx());
 	}
 
 }

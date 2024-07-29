@@ -117,7 +117,7 @@
 				<if test="searchpart == '피신고자'">select count(*) from itReport where complete=2 and sufferMid like concat('%',#{search},'%');</if>
 			</if>
 		</if>
-		<if test="viewpart != 'complete' and viewpart != 'notComplete'">
+		<if test="viewpart != 'complete' and viewpart != 'notComplete' and viewpart != 'acquittal'">
 			<if test="search == ''">select count(*) from itReport;</if>
 			<if test="search != ''">
 				<if test="searchpart == '신고자'">select count(*) from itReport where reportMid like concat('%',#{search},'%');</if>
@@ -140,7 +140,14 @@
 				<if test="searchpart == '피신고자'">select * from itReport where complete=1 and sufferMid like concat('%',#{search},'%') order by reIdx desc limit #{startIndexNo},#{pageSize};</if>
 			</if>
 		</if>
-		<if test="viewpart != 'complete' and viewpart != 'notComplete'">
+		<if test="viewpart == 'acquittal'">
+			<if test="search == ''">select * from itReport where complete=2 order by reIdx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				<if test="searchpart == '신고자'">select * from itReport where complete=2 and reportMid like concat('%',#{search},'%') order by reIdx desc limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '피신고자'">select * from itReport where complete=2 and sufferMid like concat('%',#{search},'%') order by reIdx desc limit #{startIndexNo},#{pageSize};</if>
+			</if>
+		</if>
+		<if test="viewpart != 'complete' and viewpart != 'notComplete' and viewpart != 'acquittal'">
 			<if test="search == ''">select * from itReport order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
 			<if test="search != ''">
 				<if test="searchpart == '신고자'">select * from itReport where reportMid like concat('%',#{search},'%') order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
@@ -150,6 +157,46 @@
 	</select>
 	<select id="getReplyIdx" resultType="com.spring.javaclassS4.vo.ReplyVO">
 		select * from itReply where replyIdx=#{contentIdx};
+	</select>
+		<select id="getSupportTotRecCnt" resultType="int">
+		<if test="viewpart == 'notComplete'">
+			<if test="search == ''">select count(*) from itSupport where supComplete=0;</if>
+			<if test="search != ''">
+				select count(*) from itSupport where supComplete=0 and supEmail like concat('%',#{search},'%');
+			</if>
+		</if>
+		<if test="viewpart == 'complete'">
+			<if test="search == ''">select count(*) from itSupport where supComplete=1;</if>
+			<if test="search != ''">
+				select count(*) from itSupport where supComplete=1 and supEmail like concat('%',#{search},'%');
+			</if>
+		</if>
+		<if test="viewpart != 'complete' and viewpart != 'notComplete'">
+			<if test="search == ''">select count(*) from itSupport;</if>
+			<if test="search != ''">
+				select count(*) from itSupport where supEmail like concat('%',#{search},'%');
+			</if>
+		</if>
+	</select>
+	<select id="getSupportList" resultType="com.spring.javaclassS4.vo.SupportVO">
+		<if test="viewpart == 'notComplete'">
+			<if test="search == ''">select * from itSupport where supComplete=0 order by supIdx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				select * from itSupport where supComplete=0 and supEmail like concat('%',#{search},'%') order by supIdx desc limit #{startIndexNo},#{pageSize};
+			</if>
+		</if>
+		<if test="viewpart == 'complete'">
+			<if test="search == ''">select * from itSupport where supComplete=1 order by supIdx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				select * from itSupport where supComplete=1 and supEmail like concat('%',#{search},'%') order by supIdx desc limit #{startIndexNo},#{pageSize};
+			</if>
+		</if>
+		<if test="viewpart != 'complete' and viewpart != 'notComplete'">
+			<if test="search == ''">select * from itSupport order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				select * from itSupport where supEmail like concat('%',#{search},'%') order by ${viewpart} limit #{startIndexNo},#{pageSize};
+			</if>
+		</if>
 	</select>
 
 	
@@ -161,6 +208,9 @@
 	</insert>
 	<insert id="setBanInput">
 		insert into itBan values(#{banMid}, default, default, #{reason});
+	</insert>
+	<insert id="supportInput">
+		insert into itSupport values(default, #{vo.supEmail}, #{vo.main}, #{vo.sub}, #{vo.supContent}, #{vo.supImg}, default);
 	</insert>
 	
 	
@@ -200,6 +250,9 @@
 	</update>
 	<update id="reportAcquittal">
 		update itReport set complete=2 where reIdx=#{reIdx};
+	</update>
+	<update id="setSupportComplete">
+		update itSupport set supComplete=1 where supIdx=#{supIdx};
 	</update>
 	
 	

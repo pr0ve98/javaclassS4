@@ -336,13 +336,13 @@
 			</div>
 		</div>
 		<div class="content3">
-			<div class="content-box" style="width: 33.3%;">
+			<div class="content-box" style="width: 33.3%; cursor: pointer;">
 				<div class="sub-menu"><span>❔</span> 자주 묻는 질문</div>
 			</div>
-			<div class="content-box" style="width: 33.3%;">
+			<div class="content-box" style="width: 33.3%; cursor: pointer;">
 				<div class="sub-menu"><span>🕹️</span> 게임 등록 요청</div>
 			</div>
-			<div class="content-box" style="width: 33.3%;">
+			<div class="content-box" style="width: 33.3%; cursor: pointer;" onclick="showPopupSupport()">
 				<div class="sub-menu"><span>🙋‍♀️</span> 1:1 문의하기</div>
 			</div>
 		</div>

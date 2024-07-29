@@ -131,6 +131,7 @@
 		color: #b2bdce;
 		font-family: 'SUITE-Regular';
 		font-size: 16px;
+		cursor: pointer;
 	}
 	.content-box {
 		flex-wrap: wrap;
@@ -524,7 +525,7 @@
 	
 	#popup-join .popup-join-content, #popup-login .popup-login-content, #popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
 	 #popup-edit .popup-edit-content, #popup-replyedit .popup-replyedit-content, #popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content,
-	 #popup-report .popup-report-content {
+	 #popup-report .popup-report-content, #popup-support .popup-support-content {
 	  padding: 20px;
 	  background: #32373d;
 	  border-radius: 5px;
@@ -536,7 +537,7 @@
 	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
 	#popup-edit .popup-edit-content {width: 700px;}
 	#popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content {width:500px;}
-	#popup-report .popup-report-content {width: 330px;}
+	#popup-report .popup-report-content, #popup-support .popup-support-content {width: 330px;}
 	
 	.popup-open {
 		overflow: hidden;
@@ -558,6 +559,46 @@
 	.popup-join-main, .popup-login-main, .popup-add-main {
 		text-align: center;
 		padding: 0 20px 20px;
+	}
+	.popup-support-main {
+		padding: 0 20px 20px;
+	}
+	.support-title {
+		font-weight: bold;
+		font-size: 13px;
+	}
+	.warning-info {
+		background-color: #ff5c5c70;
+		border-radius: 8px;
+		padding: 10px;
+		color:#fff;
+		margin: 10px 0 0;
+	}
+	.imgInputBtn {
+		border-radius: 14px;
+	    padding: 5px 10px;
+	    font-size: 14px;
+	    background-color: #00c722c7;
+	    color: #fff;
+	    cursor: pointer;
+	    display: inline-block;
+	}
+	.imgInputBtn:disabled {
+		border-radius: 14px;
+	    padding: 5px 10px;
+	    font-size: 14px;
+	    background-color: #8e8e8ec7;
+	    color: #aca8a8;
+	    cursor: pointer;
+	    display: inline-block;
+	}
+	.imgNameStyle {
+		border-radius: 14px;
+	    padding: 5px 10px;
+	    font-size: 14px;
+	    background-color: #fff;
+	    color: #00c722;
+	    display: inline-block;
 	}
 	.popup-login-footer {
 		margin: 15px 0;
@@ -614,6 +655,7 @@
 		border-radius: 8px;
 		margin: 0 auto;
 		color: #b2bdce;
+		padding: 10px;
 	}
 	.textarea:focus {
 		background-color: #161d25;

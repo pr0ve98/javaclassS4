@@ -35,4 +35,4 @@ create table itReply (
 	foreign key(replyParantIdx) references itReply(replyIdx) on delete cascade
 );
 
-ALTER TABLE itReview CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE itSupport CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

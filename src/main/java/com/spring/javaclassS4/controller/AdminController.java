@@ -23,6 +23,7 @@ import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.MemberVO;
 import com.spring.javaclassS4.vo.ReplyVO;
+import com.spring.javaclassS4.vo.SupportVO;
 
 @Controller
 @RequestMapping("/admin")
@@ -319,5 +320,52 @@ public class AdminController {
 	@RequestMapping(value = "/reportNo", method = RequestMethod.POST)
 	public void reportDel(int reIdx) {
 		adminService.reportAcquittal(reIdx);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/supportInput", method = RequestMethod.POST)
+	public String supportInput(@RequestParam(value = "supImg", required = false) MultipartFile supImg, @RequestParam("supEmail") String supEmail,
+        @RequestParam("main") String main, @RequestParam(value = "sub", required = false) String sub,
+        @RequestParam("supContent") String supContent, HttpServletRequest request) {
+		
+		SupportVO vo = new SupportVO();
+		vo.setSupEmail(supEmail);
+		vo.setMain(main);
+		vo.setSub(sub);
+		vo.setSupContent(supContent);
+			
+		int res = adminService.supportInput(vo, supImg, request);
+		if(res != 0) return "1";
+		else return "0";
+	}
+	
+	@RequestMapping(value = "/supportlist", method = RequestMethod.GET)
+	public String supportlist(HttpSession session, Model model,
+			@RequestParam(name="viewpart", defaultValue = "supIdx desc", required = false) String viewpart,
+			@RequestParam(name="search", defaultValue = "", required = false) String search,
+			@RequestParam(name="page", defaultValue = "1", required = false) int page,
+			@RequestParam(name="pageSize", defaultValue = "20", required = false) int pageSize) {
+		
+		int totRecCnt = adminService.getSupportTotRecCnt(viewpart, search);
+		int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+		int startIndexNo = (page - 1) * pageSize;
+		model.addAttribute("page", page);
+		model.addAttribute("totRecCnt", totRecCnt);
+		model.addAttribute("totPage", totPage);
+		
+		ArrayList<GameVO> vos = adminService.getSupportList(startIndexNo, pageSize, viewpart, search);
+		
+		model.addAttribute("vos", vos);
+		model.addAttribute("viewpart", viewpart);
+		model.addAttribute("search", search);
+		
+		return "admin/supportlist";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/reSupport", method = RequestMethod.POST)
+	public void reSupport(SupportVO vo) {
+		System.out.println(vo);
+		adminService.reSupport(vo);
 	}
 }

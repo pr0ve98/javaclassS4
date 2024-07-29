@@ -6,6 +6,45 @@
     window.Kakao.init("f1fade264b3d07d67f8e358b3d68803e");
     Kakao.isInitialized();
     
+    document.addEventListener('DOMContentLoaded', function () {
+        const emailInput = document.getElementById('supportEmail');
+        const mainSupportSelect = document.getElementById('mainSupport');
+        const subSupportSelect = document.getElementById('subSupport');
+        const textarea = document.querySelector('textarea');
+        const submitButton = document.querySelector('button[onclick="supportInput()"]');
+
+        function validateForm() {
+            const emailFilled = emailInput.value.trim() !== '';
+            const mainSupportFilled = mainSupportSelect.value.trim() !== '';
+            const textareaFilled = textarea.value.trim() !== '';
+            let subSupportFilled = true;
+
+            if (mainSupportSelect.value === '회원 정보' || mainSupportSelect.value === '서비스 불편/오류 제보') {
+                subSupportFilled = subSupportSelect.value.trim() !== '';
+            }
+
+            if (emailFilled && mainSupportFilled && textareaFilled && subSupportFilled) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        }
+
+        emailInput.addEventListener('input', validateForm);
+        mainSupportSelect.addEventListener('change', function() {
+            validateForm();
+            // mainSupport 값이 변경될 때 subSupport를 표시 또는 숨김
+            if (mainSupportSelect.value === '회원 정보' || mainSupportSelect.value === '서비스 불편/오류 제보') {
+                subSupportSelect.style.display = 'block';
+            } else {
+                subSupportSelect.style.display = 'none';
+                subSupportSelect.value = ''; // 선택 초기화
+            }
+        });
+        subSupportSelect.addEventListener('change', validateForm);
+        textarea.addEventListener('input', validateForm);
+    });
+    
 	function w3_open() {
 	  document.getElementById("mySidebar").style.display = "block";
 	}
@@ -44,6 +83,13 @@
         html.style.overflow = 'hidden';
     }
     
+	function showPopupSupport() {
+    	const popup = document.querySelector('#popup-support');
+    	const html = document.querySelector('html');
+        popup.classList.remove('hide');
+        html.style.overflow = 'hidden';
+    }
+    
     function closePopup(flag) {
     	let popup = '';
     	if(flag == 'join') popup = document.querySelector('#popup-join');
@@ -55,6 +101,7 @@
     	else if(flag == 'add') popup = document.querySelector('#popup-add');
     	else if(flag == 'gameedit') popup = document.querySelector('#popup-gameedit');
     	else if(flag == 'report') popup = document.querySelector('#popup-report');
+    	else if(flag == 'support') popup = document.querySelector('#popup-support');
     	const html = document.querySelector('html');
     	popup.classList.add('hide');
     	html.style.overflow = 'auto';
@@ -200,7 +247,77 @@
 		}
 	}
   	
-  	function showPopupSupport() {
+	function supportInputImg() {
+		$("#supportInputImgs").trigger('click');
+	}
+	
+	function supportFileChange() {
+		let fName = document.getElementById("supportInputImgs").files[0].name;
+		if(fName.length > 15) fName = fName.substring(0, 15) + "...";
+		$('#supportInputText').html(fName+"<span onclick='supportDeleteImg()' style='color:red; font-weight: bold; margin-left: 3px; cursor:pointer;'>x</span>");
+		$('#supportInputText').show();
+	}
+	
+	function mainSupportChange(e) {
+		let subMember = ["로그인", "회원가입", "탈퇴", "기타"];
+		let subService = ["서비스 관련", "웹 이용문의", "모바일 이용문의", "기타"];
 		
+		$("#subSupport").empty();
+		
+		let op;
+		if(e.value == "회원 정보") op = subMember;
+		else if(e.value == "서비스 불편/오류 제보") op = subService;
+		else {
+			$("#subSupport").hide();
+		}
+		
+		if(op) {
+			for(let i=0; i<op.length; i++){
+				$("#subSupport").append('<option>'+op[i]+'</option>');
+			}
+			$("#subSupport").show();
+		}
+	}
+	
+	function supportDeleteImg() {
+		$('#supportInputImgs, #supportInputText').val('');
+		$('#supportInputText').hide();
+	}
+	
+	function supportInput() {
+		const supEmail = document.getElementById('supportEmail');
+	    const main = document.getElementById('mainSupport');
+	    const sub = document.getElementById('subSupport');
+	    const supContent = document.getElementById('supportContent');
+	    const supImg = document.getElementById('supportInputImgs');
+	    
+	    const formData = new FormData();
+	    formData.append('supEmail', supEmail.value);
+	    formData.append('main', main.value);
+	    if (sub.style.display !== 'none') {
+	        formData.append('sub', sub.value);
+	    }
+	    formData.append('supContent', supContent.value);
+	    if (supImg.files.length > 0) {
+	        formData.append('supImg', supImg.files[0]);
+	    }
+	    
+	    $.ajax({
+			url : "${ctp}/admin/supportInput",
+			type : "post",
+			data : formData,
+			processData: false,
+			contentType: false,
+			success : function(res) {
+				if(res != "0"){
+					alert("문의 등록 완료!");
+					location.reload();
+				}
+			},
+			error : function() {
+				alert("오류!!");
+			}
+		});
+
 	}
 	</script>

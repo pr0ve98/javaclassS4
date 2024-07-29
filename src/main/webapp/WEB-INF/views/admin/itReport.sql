@@ -13,3 +13,13 @@ create table itBan (
 	banDay int not null default 3,
 	banTime datetime default now()
 );
+
+create table itSupport (
+	supIdx int not null auto_increment primary key,
+	supEmail varchar(100) not null,
+	main varchar(50) not null,
+	sub varchar(30),
+	supContent text not null,
+	supImg varchar(200),
+	supComplete int not null default 0
+);

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.spring.javaclassS4.vo.BanVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
+import com.spring.javaclassS4.vo.SupportVO;
 
 public interface AdminDAO {
 
@@ -72,5 +73,14 @@ public interface AdminDAO {
 	public void reportRead(@Param("reIdx") int reIdx);
 
 	public void reportAcquittal(@Param("reIdx") int reIdx);
+
+	public int supportInput(@Param("vo")SupportVO vo);
+
+	public int getSupportTotRecCnt(@Param("viewpart") String viewpart, @Param("search") String search);
+
+	public ArrayList<GameVO> getSupportList(@Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize, 
+			@Param("viewpart") String viewpart, @Param("search") String search);
+
+	public void setSupportComplete(@Param("supIdx") int supIdx);
 
 }

@@ -39,8 +39,8 @@
 	<select id="getGameReviewCount" resultType="int">
 		select count(*) from itReview where revGameIdx=#{gameIdx};
 	</select>
-	<select id="getGameReviewTotal" resultType="double">
-		select sum(rating) from itReview where revGameIdx=#{gameIdx};
+	<select id="getGameReviewTotal" resultType="int">
+		select rating from itReview where revGameIdx=#{gameIdx};
 	</select>
 	
 	

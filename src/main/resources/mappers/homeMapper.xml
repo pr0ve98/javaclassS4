@@ -33,4 +33,13 @@
 	<select id="getRatingCount" resultType="int">
 		select count(*) from itReview where revGameIdx=#{gameIdx} and rating=#{rating};
 	</select>
+	<select id="allCount" resultType="int">
+		select count(*) from itReview where revGameIdx=#{gameIdx};
+	</select>
+	<select id="getPosiBest" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle, likeSub.likeCnt FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx LEFT JOIN (SELECT c.cmIdx, count(l.likeCmIdx) as likeCnt FROM itCommunity c LEFT JOIN itLike l ON c.cmIdx = l.likeCmIdx WHERE c.cmGameIdx = #{gameIdx} AND c.part = '리뷰' AND c.rating >= 3 GROUP BY c.cmIdx ORDER BY likeCnt desc LIMIT 1) as likeSub ON c.cmIdx = likeSub.cmIdx WHERE c.part = '리뷰' AND c.cmGameIdx = #{gameIdx} AND c.rating >= 3 ORDER BY c.cmIdx desc LIMIT 1;
+	</select>
+	<select id="getNegaBest" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle, likeSub.likeCnt FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx LEFT JOIN (SELECT c.cmIdx, count(l.likeCmIdx) as likeCnt FROM itCommunity c LEFT JOIN itLike l ON c.cmIdx = l.likeCmIdx WHERE c.cmGameIdx = #{gameIdx} AND c.part = '리뷰' AND <![CDATA[c.rating <= 2]]> GROUP BY c.cmIdx ORDER BY likeCnt desc LIMIT 1) as likeSub ON c.cmIdx = likeSub.cmIdx WHERE c.part = '리뷰' AND c.cmGameIdx = #{gameIdx} AND <![CDATA[c.rating <= 2]]> ORDER BY c.cmIdx desc LIMIT 1;
+	</select>
 </mapper>

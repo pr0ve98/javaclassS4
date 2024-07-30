@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <c:set var="ctp" value="${pageContext.request.contextPath}"/>
+<% pageContext.setAttribute("newLine", "\n"); %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -220,10 +222,6 @@
 				<img src="${ctp}/member/${sMemImg}" alt="프로필" class="profile-pic" style="width: 150px; height: 150px;"/>
 				<div><button class="joinBtn mt-3 mb-4" onclick="imageUpload()">이미지 변경</button></div>
 				<span style="display:none"><input type="file" name="fName" id="inputImgs" accept=".jpg,.gif,.png,.jpeg" /></span>
-				<div class="setting-title">사용중인 칭호</div>
-				<div class="mb-4">
-					준비중
-				</div>
 				<form name="myform">
 					<div class="setting-title">닉네임</div>
 					<input type="text" name="nickname" id="nickname" value="${sNickname}" placeholder="닉네임을 입력하세요" class="form-control forminput mb-4" style="width: 100%;" />

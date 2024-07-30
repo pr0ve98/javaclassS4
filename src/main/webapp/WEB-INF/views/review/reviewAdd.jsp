@@ -97,6 +97,13 @@
 		    ratingChart(ratingCounts,totalGames);
 	    }
 	    
+	 	// 로딩 시 초기 별점 설정
+	    document.querySelectorAll('.cm-box').forEach(function(box) {
+	        const rating = parseInt(box.getAttribute('data-rating'));
+	        const stars = box.querySelectorAll('.review-star-add');
+	        lockStars(stars, rating);
+	    });
+	    
 	 	// 이벤트 델리게이션을 사용하여 동적으로 추가된 별점 및 상태에 이벤트 등록
 	    document.addEventListener('mouseover', handleMouseOver);
 	    document.addEventListener('mouseout', handleMouseOut);
@@ -350,6 +357,8 @@
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
         html.style.overflow = 'hidden';
+        
+        $('#summernote').summernote('code', '');
         
 		const cmBox = document.querySelector('.cm-box[data-game-idx="'+gameIdx+'"]');
 		if (cmBox) {

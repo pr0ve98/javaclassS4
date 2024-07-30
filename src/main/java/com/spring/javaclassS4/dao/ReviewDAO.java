@@ -1,6 +1,7 @@
 package com.spring.javaclassS4.dao;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -33,7 +34,7 @@ public interface ReviewDAO {
 
 	public int getGameReviewCount(@Param("gameIdx") int gameIdx);
 
-	public double getGameReviewTotal(@Param("gameIdx") int gameIdx);
+	public List<Integer> getGameReviewTotal(@Param("gameIdx") int gameIdx);
 
 	public void setInvenscore(@Param("invenscore") double invenscore, @Param("gameIdx") int gameIdx);
 

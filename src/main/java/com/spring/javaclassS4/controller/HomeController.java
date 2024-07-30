@@ -14,14 +14,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spring.javaclassS4.dao.CommunityDAO;
 import com.spring.javaclassS4.service.HomeService;
+import com.spring.javaclassS4.service.ReviewService;
+import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
+import com.spring.javaclassS4.vo.ReviewVO;
 
 @Controller
 public class HomeController {
 	
 	@Autowired
 	HomeService homeService;
+	
+	@Autowired
+	ReviewService reviewService;
+	
+	@Autowired
+	CommunityDAO communityDAO;
 	
 	@RequestMapping(value = {"/", "/main"}, method = RequestMethod.GET)
 	public String home(Model model, HttpSession session) {
@@ -55,10 +65,12 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/gameview/{gameIdx}", method = RequestMethod.GET)
-	public String gameView(Model model, @PathVariable int gameIdx) {
+	public String gameView(Model model, @PathVariable int gameIdx, HttpSession session) {
+		String mid = session.getAttribute("sMid")==null ? "" : (String)session.getAttribute("sMid");
 		GameVO vo = homeService.getGame(gameIdx);
 		model.addAttribute("vo", vo);
 		
+		// 워드크라우드용
 		Map<String, Integer> positiveKeywords = new HashMap<>();
 		Map<String, Integer> negativeKeywords = new HashMap<>();
 		
@@ -79,6 +91,7 @@ public class HomeController {
 		    e.printStackTrace();
 		}
 		
+		// 평점용
 		int rating1 = homeService.getRatingCount(gameIdx, 1);
 		int rating2 = homeService.getRatingCount(gameIdx, 2);
 		int rating3 = homeService.getRatingCount(gameIdx, 3);
@@ -89,8 +102,20 @@ public class HomeController {
 		model.addAttribute("rating3", rating3);
 		model.addAttribute("rating4", rating4);
 		model.addAttribute("rating5", rating5);
-		int totRatingCnt = rating1 + rating2 + rating3 + rating4 + rating5;
+		int totRatingCnt = homeService.allCount(gameIdx);
 		model.addAttribute("totRatingCnt", totRatingCnt);
+		
+		// 리뷰 수정용
+		String cmContent = communityDAO.getCMReview(gameIdx, mid);
+		ReviewVO revVO = reviewService.getMidAndIdx(gameIdx, mid);
+		model.addAttribute("cmContent", cmContent);
+		model.addAttribute("revVO", revVO);
+		
+		// 긍정/비판
+		CommunityVO posiBest = homeService.getPosiBest(gameIdx, session);
+		CommunityVO negaBest = homeService.getNegaBest(gameIdx, session);
+		model.addAttribute("posiBest", posiBest);
+		model.addAttribute("negaBest", negaBest);
         
 		return "game/gameView";
 	}

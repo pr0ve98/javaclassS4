@@ -25,4 +25,10 @@ public interface HomeDAO {
 	public List<CommunityVO> reviewGameIdxN(@Param("gameIdx") int gameIdx);
 
 	public int getRatingCount(@Param("gameIdx") int gameIdx, @Param("rating") int rating);
+
+	public int allCount(@Param("gameIdx") int gameIdx);
+
+	public CommunityVO getPosiBest(@Param("gameIdx") int gameIdx);
+
+	public CommunityVO getNegaBest(@Param("gameIdx") int gameIdx);
 }

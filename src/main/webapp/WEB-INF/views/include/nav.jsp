@@ -40,7 +40,6 @@
 						        <a href="#">내 게임</a>
 						        <a href="#">일지</a>
 						        <a href="#">리뷰</a>
-						        <a href="#">업적</a>
 						        <a href="#">통계</a>
 						        <a href="${ctp}/setting/profile">설정</a>
 						        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>
@@ -104,7 +103,6 @@
 							        <a href="#">내 게임</a>
 							        <a href="#">일지</a>
 							        <a href="#">리뷰</a>
-							        <a href="#">업적</a>
 							        <a href="#">통계</a>
 							        <a href="${ctp}/setting/profile">설정</a>
 							        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>

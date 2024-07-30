@@ -3,6 +3,9 @@ package com.spring.javaclassS4.service;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
+import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 
 public interface HomeService {
@@ -26,5 +29,11 @@ public interface HomeService {
 	public Map<String, Integer> negativeMap(int gameIdx);
 
 	public int getRatingCount(int gameIdx, int rating);
+
+	public int allCount(int gameIdx);
+
+	public CommunityVO getPosiBest(int gameIdx, HttpSession session);
+
+	public CommunityVO getNegaBest(int gameIdx, HttpSession session);
 
 }

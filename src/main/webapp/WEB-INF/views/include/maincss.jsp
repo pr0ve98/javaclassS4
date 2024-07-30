@@ -1452,7 +1452,6 @@
     }
     .gameviewContent {
     	display: flex;
-    	flex-wrap: wrap;
     	padding: 0 25px;
     	gap: 50px;
     }
@@ -1719,6 +1718,7 @@
         }
         .gameviewContent {
         	padding: 0;
+        	flex-wrap: wrap;
         }
         .word-cloud {
             height: 100px;

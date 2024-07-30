@@ -390,6 +390,7 @@
 	.review-info {
 		display: flex;
 		flex-direction: column;
+		cursor: pointer;
 	}
 	.review-game-img {
 		width: 56px;
@@ -1145,7 +1146,7 @@
 		cursor: pointer;
 	}
 	.view-wrap {
-		padding-bottom: 400px;
+		padding-bottom: 100px;
 	}
 	.gamebackground {
 		position: relative;
@@ -1409,6 +1410,86 @@
 		border-radius: 8px;
 		object-fit:cover;
 	}
+    .gvc-width {
+   		width: 66%;
+    }
+    .tabs {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        border-bottom: 2px solid #32373d;
+        padding: 0 25px 30px;
+        font-size: 20px;
+    }
+    .tab-container {
+        display: flex;
+        gap: 20px;
+        position: relative;
+    }
+    .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        position: relative;
+        top: 2px;
+        color: #b2bdce;
+    }
+    .tab.active {
+        border-bottom: 2px solid #00c722;
+        color: #00c722;
+        top: 0;
+    }
+    .editplz-button {
+        background-color: #00c722;
+        border: none;
+        color: white;
+        padding: 10px 15px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 15px;
+    }
+    .gameviewContent {
+    	display: flex;
+    	flex-wrap: wrap;
+    	padding: 0 25px;
+    	gap: 50px;
+    }
+    .gvcontent-info {
+    	position: -webkit-sticky;
+	    position: sticky;
+	    top: 112px;
+    }
+    h3 {
+    	color: #fff;
+    	font-weight: bold;
+    }
+    a:hover {
+    	color:#b2bdce;
+    	text-decoration: none;
+    }
+    .reviewTotalContainer {
+    	display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    .word-cloud {
+        width: 100%;
+        height: 200px;
+        padding: 10px;
+    }
+    .gvc-title {
+        text-align: center;
+        font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+    .gvc-box {
+    	border-radius: 8px;
+    	border: 1px solid #b2bdce38;
+    	padding: 20px 40px;
+    }
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;
@@ -1618,6 +1699,37 @@
 			width: 50px;
 			height: 50px;
 		}
+		.view-wrap {
+			padding-bottom: 150px;
+		}
+		.score {
+			font-size: 16px;
+			text-wrap: wrap;
+		}
+		.tabs {
+			display: block;
+			padding: 0 0 30px;
+		}
+		.tab-container {
+			display: block;
+		}
+		.editplz-button {margin: 10px;}
+		.gvc-width {
+        	width: 100%;
+        }
+        .gameviewContent {
+        	padding: 0;
+        }
+        .word-cloud {
+            height: 100px;
+            padding: 0px;
+        }
+        .gvc-box {
+        	padding: 10px 20px;
+        }
+        .gvc-title {
+	        font-size: 1em;
+	    }
 	}
 	@media screen and (max-width: 567px) {
 		.game-selection {justify-content: start;}

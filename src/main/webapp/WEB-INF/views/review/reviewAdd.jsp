@@ -97,134 +97,144 @@
 		    ratingChart(ratingCounts,totalGames);
 	    }
 	    
-	    // 별점 및 상태 추가
-	    const gameContainers = document.querySelectorAll('.cm-box');
-	
-	    gameContainers.forEach(container => {
-	        const stars = container.querySelectorAll('.review-star-add');
-	        const zeroRatingArea1 = container.querySelector('#zero-rating-area1');
-	        const zeroRatingArea2 = container.querySelector('#zero-rating-area2');
-	        const gameIdx = parseInt(container.getAttribute('data-game-idx'));
-	        let currentRating = parseInt(container.getAttribute('data-rating')) || 0; // 초기 별점 값을 가져옴(이미 리뷰한 게임)
-	
-	        // 초기 별점 설정
-	        if (currentRating) {
-	            lockStars(stars, currentRating);
-	            updateReviewText(gameIdx, currentRating); // 초기 별점에 맞게 텍스트 업데이트
-	        }
-	
-	     	// 각 별에 마우스를 올렸을 때 별점과 임시 텍스트를 업데이트
-	        stars.forEach(star => {
-	            star.addEventListener('mouseover', function() {
-	                const index = parseInt(this.getAttribute('data-index'));
-	                highlightStars(stars, index);
-	                updateTemporaryReviewText(gameIdx, index);
-	            });
-				
-	         	// 마우스가 별에서 벗어났을 때 별점과 텍스트를 초기화
-	            star.addEventListener('mouseout', function() {
-	                resetStars(stars, currentRating); // 별점을 현재 고정된 값으로 초기화
-	                updateReviewText(gameIdx, currentRating); // 별점 초기화 후 텍스트도 초기화
-	            });
-	
-	         	// 별을 클릭했을 때 별점을 고정하고 텍스트를 업데이트
-	            star.addEventListener('click', function() {
-	            	if(mid == '') {
-	            		showPopupLogin();
-	            		return false;
-	            	}
-	                const index = parseInt(this.getAttribute('data-index'));
-	                currentRating = index;
-	                lockStars(stars, currentRating);
-	                updateReviewText(gameIdx, currentRating);
-	                $("#moreReviewInput"+gameIdx).show();
-	                
-	                const stateButton = container.querySelector('.state-button.selected');
-	                const state = stateButton ? stateButton.getAttribute('data-state') || 'none' : 'none';
-	               	inputReview(gameIdx, currentRating, state); // 별점 저장
-	            });
-	        });
-			
-	     	// 별점 삭제 영역을 클릭했을 때 별점을 0으로 설정하고 텍스트를 초기화
-	        const zeroRatingAreas = [zeroRatingArea1, zeroRatingArea2];
-	        zeroRatingAreas.forEach(zeroRatingArea => {
-	            zeroRatingArea.addEventListener('click', function() {
-	            	if(mid == '') {
-	            		showPopupLogin();
-	            		return false;
-	            	}
-	                currentRating = 0;
-	                lockStars(stars, currentRating);
-	                updateReviewText(gameIdx, currentRating);
-	                $("#moreReviewInput"+gameIdx).hide();
-	                
-	                const stateButton = container.querySelector('.state-button.selected');
-	                const state = stateButton ? stateButton.getAttribute('data-state') || 'none' : 'none';
-	                if(currentRating == 0 && state == 'none') deleteReview(gameIdx);
-	                else inputReview(gameIdx, currentRating, state); // 별점 저장
-	            });
-	        });
-	        
-	     	// 상태 버튼
-	        const buttons = container.querySelectorAll('.state-button');
-	        const stateIcon = container.querySelector('#stateIcon');
+	 	// 이벤트 델리게이션을 사용하여 동적으로 추가된 별점 및 상태에 이벤트 등록
+	    document.addEventListener('mouseover', handleMouseOver);
+	    document.addEventListener('mouseout', handleMouseOut);
+	    document.addEventListener('click', handleClick);
 
-	        buttons.forEach(button => {
-	            button.addEventListener('click', function() {
-	                // 모든 버튼에서 selected 클래스를 제거
-	                buttons.forEach(btn => {
-	                    if (btn !== button) {
-	                        btn.classList.remove('selected');
-	                    }
-	                });
-	                
-	                // 클릭된 버튼의 selected 클래스를 토글
-	                const isSelected = button.classList.toggle('selected');
-	                if (isSelected) {
-	                    const state = button.getAttribute('data-state');
-	                    switch (state) {
-	                        case 'play':
-	                            stateIcon.src = '${ctp}/images/playIcon.svg';
-	                            $("#statetext"+gameIdx).html("<font color=\"#fff\">하고있어요</font>");
-	                            break;
-	                        case 'done':
-	                            stateIcon.src = '${ctp}/images/doneIcon.png';
-	                            $("#statetext"+gameIdx).html("<font color=\"#fff\">다했어요</font>");
-	                            break;
-	                        case 'stop':
-	                            stateIcon.src = '${ctp}/images/stopIcon.svg';
-	                            $("#statetext"+gameIdx).html("<font color=\"#fff\">그만뒀어요</font>");
-	                            break;
-	                        case 'folder':
-	                            stateIcon.src = '${ctp}/images/folderIcon.svg';
-	                            $("#statetext"+gameIdx).html("<font color=\"#fff\">모셔놨어요</font>");
-	                            break;
-	                        case 'pin':
-	                            stateIcon.src = '${ctp}/images/pinIcon.svg';
-	                            $("#statetext"+gameIdx).html("<font color=\"#fff\">관심있어요</font>");
-	                            break;
-	                        default:
-	                            stateIcon.src = '${ctp}/images/noneIcon.svg';
-	                            $("#statetext"+gameIdx).html("현재 게임 상태를 선택해주세요");
-	                            break;
-	                    }
-	                } else {
-	                    stateIcon.src = '${ctp}/images/noneIcon.svg';
-	                    $("#statetext"+gameIdx).html("현재 게임 상태를 선택해주세요");
-	                }
-	                
-	                const stateButton = container.querySelector('.state-button.selected');
-	                const state = stateButton ? stateButton.getAttribute('data-state') || 'none' : 'none';
-	                if(currentRating == 0 && state == 'none') deleteReview(gameIdx);
-	                else inputReview(gameIdx, currentRating, state); // 별점 저장
-	            });
-	        });
-	    });
-	    
-	    // 페이지 로드 로딩페이지 제거
 	    $(window).on('load', function() {
-	    	removeLoadingPage();
+	        removeLoadingPage();
 	    });
+
+	    function handleMouseOver(e) {
+	        if (e.target.classList.contains('review-star-add')) {
+	            const star = e.target;
+	            const index = parseInt(star.getAttribute('data-index'));
+	            const container = star.closest('.cm-box');
+	            const stars = container.querySelectorAll('.review-star-add');
+	            highlightStars(stars, index);
+	            const gameIdx = parseInt(container.getAttribute('data-game-idx'));
+	            updateTemporaryReviewText(gameIdx, index);
+	        }
+	    }
+
+	    function handleMouseOut(e) {
+	        if (e.target.classList.contains('review-star-add')) {
+	            const star = e.target;
+	            const container = star.closest('.cm-box');
+	            const stars = container.querySelectorAll('.review-star-add');
+	            const currentRating = parseInt(container.getAttribute('data-rating')) || 0;
+	            resetStars(stars, currentRating);
+	            const gameIdx = parseInt(container.getAttribute('data-game-idx'));
+	            updateReviewText(gameIdx, currentRating);
+	        }
+	    }
+
+	    function handleClick(e) {
+	        if (e.target.classList.contains('review-star-add')) {
+	            handleStarClick(e);
+	        } else if (e.target.id === 'zero-rating-area1' || e.target.id === 'zero-rating-area2') {
+	            handleZeroRatingClick(e);
+	        } else if (e.target.classList.contains('state-button') || e.target.closest('.state-button')) {
+	            handleStateButtonClick(e);
+	        }
+	    }
+
+	    function handleStarClick(e) {
+	        if (mid == '') {
+	            showPopupLogin();
+	            return false;
+	        }
+	        const star = e.target;
+	        const index = parseInt(star.getAttribute('data-index'));
+	        const container = star.closest('.cm-box');
+	        const stars = container.querySelectorAll('.review-star-add');
+	        let currentRating = index;
+	        container.setAttribute('data-rating', currentRating);
+	        lockStars(stars, currentRating);
+	        const gameIdx = parseInt(container.getAttribute('data-game-idx'));
+	        updateReviewText(gameIdx, currentRating);
+	        $("#moreReviewInput" + gameIdx).show();
+
+	        const stateButton = container.querySelector('.state-button.selected');
+	        const state = stateButton ? stateButton.getAttribute('data-state') || 'none' : 'none';
+	        inputReview(gameIdx, currentRating, state);
+	    }
+
+	    function handleZeroRatingClick(e) {
+	        if (mid == '') {
+	            showPopupLogin();
+	            return false;
+	        }
+	        const zeroRatingArea = e.target;
+	        const container = zeroRatingArea.closest('.cm-box');
+	        const stars = container.querySelectorAll('.review-star-add');
+	        let currentRating = 0;
+	        container.setAttribute('data-rating', currentRating);
+	        lockStars(stars, currentRating);
+	        const gameIdx = parseInt(container.getAttribute('data-game-idx'));
+	        updateReviewText(gameIdx, currentRating);
+	        $("#moreReviewInput" + gameIdx).hide();
+
+	        const stateButton = container.querySelector('.state-button.selected');
+	        const state = stateButton ? stateButton.getAttribute('data-state') || 'none' : 'none';
+	        if (currentRating == 0 && state == 'none') deleteReview(gameIdx);
+	        else inputReview(gameIdx, currentRating, state);
+	    }
+
+	    function handleStateButtonClick(e) {
+	        const button = e.target.closest('.state-button');
+	        const container = button.closest('.cm-box');
+	        const buttons = container.querySelectorAll('.state-button');
+	        const gameIdx = parseInt(container.getAttribute('data-game-idx'));
+	        const stateIcon = container.querySelector('#stateIcon');
+	        const currentRating = parseInt(container.getAttribute('data-rating')) || 0;
+
+	        buttons.forEach(btn => {
+	            if (btn !== button) {
+	                btn.classList.remove('selected');
+	            }
+	        });
+
+	        const isSelected = button.classList.toggle('selected');
+	        if (isSelected) {
+	            const state = button.getAttribute('data-state');
+	            switch (state) {
+	                case 'play':
+	                    stateIcon.src = '${ctp}/images/playIcon.svg';
+	                    $("#statetext" + gameIdx).html("<font color=\"#fff\">하고있어요</font>");
+	                    break;
+	                case 'done':
+	                    stateIcon.src = '${ctp}/images/doneIcon.png';
+	                    $("#statetext" + gameIdx).html("<font color=\"#fff\">다했어요</font>");
+	                    break;
+	                case 'stop':
+	                    stateIcon.src = '${ctp}/images/stopIcon.svg';
+	                    $("#statetext" + gameIdx).html("<font color=\"#fff\">그만뒀어요</font>");
+	                    break;
+	                case 'folder':
+	                    stateIcon.src = '${ctp}/images/folderIcon.svg';
+	                    $("#statetext" + gameIdx).html("<font color=\"#fff\">모셔놨어요</font>");
+	                    break;
+	                case 'pin':
+	                    stateIcon.src = '${ctp}/images/pinIcon.svg';
+	                    $("#statetext" + gameIdx).html("<font color=\"#fff\">관심있어요</font>");
+	                    break;
+	                default:
+	                    stateIcon.src = '${ctp}/images/noneIcon.svg';
+	                    $("#statetext" + gameIdx).html("현재 게임 상태를 선택해주세요");
+	                    break;
+	            }
+	        } else {
+	            stateIcon.src = '${ctp}/images/noneIcon.svg';
+	            $("#statetext" + gameIdx).html("현재 게임 상태를 선택해주세요");
+	        }
+
+	        const stateButton = container.querySelector('.state-button.selected');
+	        const state = stateButton ? stateButton.getAttribute('data-state') || 'none' : 'none';
+	        if (currentRating == 0 && state == 'none') deleteReview(gameIdx);
+	        else inputReview(gameIdx, currentRating, state); // 별점 저장
+	    }
 	    
 	    // 로딩페이지 제거 함수
 	    function removeLoadingPage() {
@@ -300,6 +310,8 @@
 	
 	    // 리뷰 추가 및 수정
 	    function inputReview(gameIdx, rating, state) {
+	    	if(state == null) state = 'none';
+	    	
 	        $.ajax({
 	        	url : "${ctp}/review/reviewAdd",
 	        	type : "post",
@@ -389,6 +401,7 @@
 	
 	function reviewMoreInput() {
 		let content = $('#summernote').summernote('code').trim();
+		if(content.indexOf('<p>') == -1) content = '<p>'+content+'</p>';
         let gameIdx = $('#gameIdx').val();
         let rating = $('#rating').val();
         let state = $('#state').val();
@@ -522,7 +535,7 @@
 							<div class="review-add">
 								<div style="display: flex; justify-content: space-between; align-items: center;">
 									<div class="review-add-title" onclick="location.href='${ctp}/gameview/${vo.gameIdx}';">${vo.gameTitle}</div>
-									<div style="position: relative;">
+									<div style="position: relative; cursor: pointer;">
 										<img id="stateIcon" src="${ctp}/images/${vo.state == null ? 'none' : vo.state}Icon.svg" onclick="toggleContentMenu(${vo.gameIdx})">
 										<div id="contentMenu${vo.gameIdx}" class="review-menu">
 								        	<div class="review-menu-star">

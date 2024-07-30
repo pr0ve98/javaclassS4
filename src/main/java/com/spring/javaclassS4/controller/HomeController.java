@@ -1,6 +1,8 @@
 package com.spring.javaclassS4.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.javaclassS4.service.HomeService;
 import com.spring.javaclassS4.vo.GameVO;
 
@@ -55,6 +58,40 @@ public class HomeController {
 	public String gameView(Model model, @PathVariable int gameIdx) {
 		GameVO vo = homeService.getGame(gameIdx);
 		model.addAttribute("vo", vo);
+		
+		Map<String, Integer> positiveKeywords = new HashMap<>();
+		Map<String, Integer> negativeKeywords = new HashMap<>();
+		
+		int positiveCnt = homeService.reviewGameIdxAll(gameIdx);
+		if(positiveCnt >= 3) positiveKeywords = homeService.positiveMap(gameIdx);
+		
+		int negativeCnt = homeService.reviewGameIdxN(gameIdx);
+		if(negativeCnt >= 3) negativeKeywords = homeService.negativeMap(gameIdx);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+		    String positiveKeywordsJson = objectMapper.writeValueAsString(positiveKeywords);
+		    String negativeKeywordsJson = objectMapper.writeValueAsString(negativeKeywords);
+		
+		    model.addAttribute("positiveKeywordsJson", positiveKeywordsJson);
+		    model.addAttribute("negativeKeywordsJson", negativeKeywordsJson);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		
+		int rating1 = homeService.getRatingCount(gameIdx, 1);
+		int rating2 = homeService.getRatingCount(gameIdx, 2);
+		int rating3 = homeService.getRatingCount(gameIdx, 3);
+		int rating4 = homeService.getRatingCount(gameIdx, 4);
+		int rating5 = homeService.getRatingCount(gameIdx, 5);
+		model.addAttribute("rating1", rating1);
+		model.addAttribute("rating2", rating2);
+		model.addAttribute("rating3", rating3);
+		model.addAttribute("rating4", rating4);
+		model.addAttribute("rating5", rating5);
+		int totRatingCnt = rating1 + rating2 + rating3 + rating4 + rating5;
+		model.addAttribute("totRatingCnt", totRatingCnt);
+        
 		return "game/gameView";
 	}
 	

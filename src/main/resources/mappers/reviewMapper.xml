@@ -31,7 +31,7 @@
 		select * from itReview where revMid=#{mid} and revGameIdx=#{gameIdx};
 	</select>
 	<select id="getReviewMore" resultType="com.spring.javaclassS4.vo.CommunityVO">
-		select * from itCommunity where mid=#{mid} and cmGameIdx=#{gameIdx};
+		select * from itCommunity where mid=#{mid} and cmGameIdx=#{gameIdx} and part='리뷰';
 	</select>
 	<select id="getRatingCount" resultType="int">
 		select count(*) from itReview where revMid=#{mid} and rating=#{cnt};

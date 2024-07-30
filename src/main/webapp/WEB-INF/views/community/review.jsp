@@ -756,7 +756,7 @@
 									<div style="position:relative;">
 										<i class="fa-solid fa-bars fa-xl" onclick="toggleContentMenu(${cmVO.cmIdx})" style="color: #D5D5D5;cursor:pointer;"></i>
 							 			<div id="contentMenu${cmVO.cmIdx}" class="content-menu">
-									        <c:if test="${sMid == cmVO.mid}"><div onclick="reviewGameEdit(${cmVO.cmGameIdx}, '${cmVO.gameImg}', '${cmVO.gameTitle}', ${cmVO.rating}, '${cmVO.state}','${cmVO.cmContent}')">수정</div></c:if>
+									        <c:if test="${sMid == cmVO.mid}"><div onclick="reviewGameEdit(${cmVO.cmGameIdx}, '${cmVO.gameImg}', '${cmVO.gameTitle}', ${cmVO.rating}, '${cmVO.state}','${fn:replace(cmVO.cmContent, '\'', '')}')">수정</div></c:if>
 										    <c:if test="${sMid == cmVO.mid || sLevel == 0}"><div onclick="contentDelete(${cmVO.cmIdx})"><font color="red">삭제</font></div></c:if>
 									        <c:if test="${sLevel == 0}"><div onclick="location.href='${ctp}/admin/userlist?page=1&viewpart=all&searchpart=아이디&search=${cmVO.mid}';">사용자 제재</div></c:if>
 									        <c:if test="${sMid != cmVO.mid && sLevel != 0}"><div onclick="reportPopup(${cmVO.cmIdx}, '게시글', '${cmVO.mid}')">신고</div></c:if>
@@ -766,7 +766,7 @@
 					 		</c:if>
 						</div>
 						<hr/>
-						<div style="display:flex; margin: 0 20px; align-items:center; gap:20px;">
+						<div style="display:flex; margin: 0 20px; align-items:center; gap:20px; cursor: pointer;" onclick="location.href='${ctp}/gameview/${cmVO.gameIdx}';">
 							<div>
 								<c:if test="${fn:indexOf(cmVO.gameImg, 'http') == -1}"><img src="${ctp}/game/${cmVO.gameImg}" alt="${vo.gameTitle}" class="re-gameImg"></c:if>
 	            				<c:if test="${fn:indexOf(cmVO.gameImg, 'http') != -1}"><img src="${cmVO.gameImg}" alt="${vo.gameTitle}" class="re-gameImg"></c:if>
@@ -973,7 +973,7 @@
 		<hr/>
         <textarea id="summernote" name="content"></textarea>
         <div class="footer text-right" style="display: block;">
-            <button class="post-button">게시하기</button>
+            <button class="post-button" onclick="">게시하기</button>
         </div>
         <!-- Summernote JS -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
@@ -985,13 +985,18 @@
 	            event.preventDefault();
 
 		        let mid = '${sMid}';
-		        let content = $('#summernote').summernote('code').trim();
+		        let content = $('#summernote').summernote('code');
+		        if(content.indexOf('<p>') == -1) content = '<p>'+content+'</p>';
 		        let gameIdx = $('#writeGameIdx').val();
 		        let rating = $('.review-star-add2').filter(function() {
 	                return $(this).css('background-image').includes('/javaclassS4/images/starpull.png');
 	            }).length;
 		        let state = $('.state-button.selected').data('state') || 'none';
 
+		        if(gameIdx == '') {
+		        	return false;
+		        }
+		        
 		        if (content == '' || content == '<p><br></p>') {
 		            alert("글 내용을 입력하세요!");
 		            $('#summernote').focus();

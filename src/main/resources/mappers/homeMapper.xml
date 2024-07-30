@@ -24,4 +24,13 @@
 	<select id="getMyGameState" resultType="int">
 		select count(*) from itReview where revMid=#{mid} and state=#{state};
 	</select>
+	<select id="reviewGameIdxAll" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		select * from itCommunity where cmGameIdx=#{gameIdx} and part='리뷰' and <![CDATA[rating >= 3]]>;
+	</select>
+	<select id="reviewGameIdxN" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		select * from itCommunity where cmGameIdx=#{gameIdx} and part='리뷰' and <![CDATA[rating <= 2]]>;
+	</select>
+	<select id="getRatingCount" resultType="int">
+		select count(*) from itReview where revGameIdx=#{gameIdx} and rating=#{rating};
+	</select>
 </mapper>

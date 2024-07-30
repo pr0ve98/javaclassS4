@@ -1117,6 +1117,7 @@
 
 		        let mid = '${sMid}';
 		        let content = $('#summernote').summernote('code').trim();
+		        if(content.indexOf('<p>') == -1) content = '<p>'+content+'</p>';
 		        let category = $('.community-category.active').data('category');
 		        let gameIdx = $('.game-button.active').data('idx');
 		        let publicType = $('select[name="publicType"]').val();
@@ -1261,6 +1262,7 @@
 		 	// 수정하기 버튼 클릭
 	        function editCommunity() {
 		        let content = $('#summernote2').summernote('code').trim();
+		        if(content.indexOf('<p>') == -1) content = '<p>'+content+'</p>';
 		        let category = $('.community-editcategory.active').data('category');
 		        let gameIdx = $('.gameedit-button.active').data('editidx');
 		        let publicType = $('select[name="publicType2"]').val();

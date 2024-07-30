@@ -521,10 +521,10 @@ public class CommunityController {
 				str += "</div></div></div>";
 			}
 			str += "</div><hr/>";
-			str += "<div style=\"display:flex; margin: 0 20px; align-items:center; gap:20px;\"><div>";
+			str += "<div style=\"display:flex; margin: 0 20px; align-items:center; gap:20px; cursor:pointer;\" onclick=\"location.href='"+request.getContextPath()+"/gameview/"+vo.getGameIdx()+"'\"><div>";
 			if(vo.getGameImg().indexOf("http") == -1) str += "<img src=\""+request.getContextPath()+"/game/"+vo.getGameImg()+"\" alt=\""+vo.getGameTitle()+"\" class=\"re-gameImg\">";
 			else str += "<img src=\""+vo.getGameImg()+"\" alt=\""+vo.getGameTitle()+"\" class=\"re-gameImg\">";
-			str += "</div><div class=\"review-info\"><div class=\"game-title\">"+vo.getGameTitle()+"</div>"
+			str += "</div><div class=\"review-info\";><div class=\"game-title\">"+vo.getGameTitle()+"</div>"
 				+ "<div class=\"review-game-info\">"
 				+ "<span class=\"review-star\"><i class=\"fa-solid fa-star\" style=\"color: #FFD43B;\"></i>&nbsp;"+vo.getRating()+"</span>"
 				+ "<span class=\"review-state-"+vo.getState()+"\">";

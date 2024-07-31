@@ -48,8 +48,8 @@ public interface HomeService {
 	
 	public int infoCnt(int gameIdx);
 
-	public int getGameViewRCTotRecCnt(String flag, int gameIdx);
+	public int getGameViewRCTotRecCnt(int gameIdx, String part);
 
-	public ArrayList<CommunityVO> getGameViewRCList(String mid, int startIndexNo, int pageSize, String flag, int gameIdx);
+	public ArrayList<CommunityVO> getGameViewRCList(String mid, int startIndexNo, int pageSize, int gameIdx, String part);
 
 }

@@ -875,10 +875,10 @@
 		</div>
 		<div class="tabs">
 	        <div class="tab-container">
-	            <div class="tab active">상세정보</div>
-	            <div class="tab" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/review';">리뷰 ${totRatingCnt}</div>
-	            <div class="tab">일지 ${ilgiCnt}</div>
-	            <div class="tab">소식/정보 ${infoCnt}</div>
+	            <div class="tab active" onclick="location.href='${ctp}/gameview/${vo.gameIdx}';">상세정보</div>
+	            <div class="tab" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/review';">리뷰 ${reviewContentCnt}</div>
+	            <div class="tab" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/record';">일지 ${ilgiCnt}</div>
+	            <div class="tab" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/info';">소식/정보 ${infoCnt}</div>
 	        </div>
 	        <button class="editplz-button" onclick="showGameEditPopup()">정보수정요청</button>
 	    </div>
@@ -1065,7 +1065,9 @@
 							<div style="color:#b2bdce; font-size:12px;" class="mt-2"><span id="viewLike${myReview.cmIdx}">이 글을 ${myReview.likeCnt}명이 좋아합니다.</span></div>
 						</div>
 					</div>
-					<div class="editplz-button mt-2" style="background-color:#00c72299;">${totRatingCnt}개의 리뷰 모두 보기</div>
+				</c:if>
+				<c:if test="${negaBest != null || posiBest != null || myReview != null}">
+					<div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/review';">${reviewContentCnt}개의 리뷰 모두 보기</div>
 				</c:if>
 				<c:if test="${negaBest == null && posiBest == null && myReview == null}">
 					<div style="margin: 100px 20px; text-align: center;">
@@ -1208,7 +1210,6 @@
         <div class="footer">
             <select class="dropdown-btn" id="publicType" name="publicType">
                 <option value="전체">전체 공개</option>
-                <option value="친구">친구만 공개</option>
                 <option value="비공개">비공개</option>
             </select>
             <button class="post-button" onclick="communityInput()">게시하기</button>

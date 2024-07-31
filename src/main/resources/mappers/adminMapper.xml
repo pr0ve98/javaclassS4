@@ -273,7 +273,7 @@
 		insert into itSupport values(default, #{vo.supEmail}, #{vo.main}, #{vo.sub}, #{vo.supContent}, #{vo.supImg}, default);
 	</insert>
 	<insert id="gameRequestInput">
-		insert into itGameRequest values(default, #{vo.reqMid}, #{vo.gameIdx}, #{vo.gameTitle}, #{vo.gameSubTitle}, #{vo.jangre},#{vo.platform},#{vo.showDate},#{vo.price},#{vo.metascore},#{vo.steamscore},#{vo.steamPage},#{vo.developer},#{vo.gameInfo}, default);
+		insert into itGameRequest values(default, #{vo.reqMid}, #{vo.gameIdx}, #{vo.gameTitle}, #{vo.gameSubTitle}, #{vo.jangre},#{vo.platform},#{vo.showDate},#{vo.price},#{vo.metascore},#{vo.steamscore},#{vo.steamPage},#{vo.developer},#{vo.gameInfo}, default, default);
 	</insert>
 	
 	

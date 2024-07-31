@@ -118,6 +118,8 @@ public class HomeController {
 		ReviewVO revVO = reviewService.getMidAndIdx(gameIdx, mid);
 		model.addAttribute("cmContent", cmContent);
 		model.addAttribute("revVO", revVO);
+		int reviewContentCnt = homeService.getGameViewRCTotRecCnt(gameIdx, "리뷰");
+		model.addAttribute("reviewContentCnt", reviewContentCnt);
 		
 		// 긍정/비판
 		CommunityVO posiBest = homeService.getPosiBest(gameIdx, session);
@@ -286,24 +288,83 @@ public class HomeController {
 	
 	
 	@RequestMapping(value = "/gameview/{gameIdx}/review", method = RequestMethod.GET)
-	public String gameReview(Model model, @PathVariable int gameIdx, HttpSession session, String flag,
-			@RequestParam(name="viewpart", defaultValue = "gameIdx desc", required = false) String viewpart,
+	public String gameReview(Model model, @PathVariable int gameIdx, HttpSession session,
 			@RequestParam(name="page", defaultValue = "1", required = false) int page,
 			@RequestParam(name="pageSize", defaultValue = "20", required = false) int pageSize) {
 		String mid = (String) session.getAttribute("sMid");
 		GameVO vo = homeService.getGame(gameIdx);
 		model.addAttribute("vo", vo);
 		
-		int totRecCnt = homeService.getGameViewRCTotRecCnt(flag, gameIdx);
-		int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+		int totRecCnt = homeService.getGameViewRCTotRecCnt(gameIdx, "리뷰");
+		int totPage = (totRecCnt % pageSize)== 0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+		int startIndexNo = (page - 1) * pageSize;
+		model.addAttribute("totRecCnt", totRecCnt);
+		model.addAttribute("page", page);
+		model.addAttribute("totPage", totPage);
+		
+		ArrayList<CommunityVO> cmVOS = homeService.getGameViewRCList(mid, startIndexNo, pageSize, gameIdx, "리뷰");
+		model.addAttribute("cmVOS", cmVOS);
+		
+		int ilgiCnt = homeService.ilgiCnt(gameIdx);
+		int infoCnt = homeService.infoCnt(gameIdx);
+		model.addAttribute("ilgiCnt", ilgiCnt);
+		model.addAttribute("infoCnt", infoCnt);
+		
+		return "game/gameReview";
+	}
+	
+	@RequestMapping(value = "/gameview/{gameIdx}/record", method = RequestMethod.GET)
+	public String gameRecord(Model model, @PathVariable int gameIdx, HttpSession session,
+			@RequestParam(name="page", defaultValue = "1", required = false) int page,
+			@RequestParam(name="pageSize", defaultValue = "20", required = false) int pageSize) {
+		String mid = (String) session.getAttribute("sMid");
+		GameVO vo = homeService.getGame(gameIdx);
+		model.addAttribute("vo", vo);
+		
+		int totRecCnt = homeService.getGameViewRCTotRecCnt(gameIdx, "일지");
+		int totPage = (totRecCnt % pageSize)== 0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
 		int startIndexNo = (page - 1) * pageSize;
 		model.addAttribute("page", page);
 		model.addAttribute("totPage", totPage);
 		
-		ArrayList<CommunityVO> cmVOS = homeService.getGameViewRCList(mid, startIndexNo, pageSize, flag, gameIdx);
-		
+		ArrayList<CommunityVO> cmVOS = homeService.getGameViewRCList(mid, startIndexNo, pageSize, gameIdx, "일지");
 		model.addAttribute("cmVOS", cmVOS);
-		return "game/gameReview";
+		
+		int ilgiCnt = homeService.ilgiCnt(gameIdx);
+		int infoCnt = homeService.infoCnt(gameIdx);
+		int reviewCnt = homeService.getGameViewRCTotRecCnt(gameIdx, "리뷰");
+		model.addAttribute("reviewCnt", reviewCnt);
+		model.addAttribute("ilgiCnt", ilgiCnt);
+		model.addAttribute("infoCnt", infoCnt);
+		
+		return "game/gameRecord";
+	}
+	
+	@RequestMapping(value = "/gameview/{gameIdx}/info", method = RequestMethod.GET)
+	public String gameInfo(Model model, @PathVariable int gameIdx, HttpSession session,
+			@RequestParam(name="page", defaultValue = "1", required = false) int page,
+			@RequestParam(name="pageSize", defaultValue = "20", required = false) int pageSize) {
+		String mid = (String) session.getAttribute("sMid");
+		GameVO vo = homeService.getGame(gameIdx);
+		model.addAttribute("vo", vo);
+		
+		int totRecCnt = homeService.getGameViewRCTotRecCnt(gameIdx, "소식/정보");
+		int totPage = (totRecCnt % pageSize)== 0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+		int startIndexNo = (page - 1) * pageSize;
+		model.addAttribute("page", page);
+		model.addAttribute("totPage", totPage);
+		
+		ArrayList<CommunityVO> cmVOS = homeService.getGameViewRCList(mid, startIndexNo, pageSize, gameIdx, "소식/정보");
+		model.addAttribute("cmVOS", cmVOS);
+		
+		int ilgiCnt = homeService.ilgiCnt(gameIdx);
+		int infoCnt = homeService.infoCnt(gameIdx);
+		int reviewCnt = homeService.getGameViewRCTotRecCnt(gameIdx, "리뷰");
+		model.addAttribute("reviewCnt", reviewCnt);
+		model.addAttribute("ilgiCnt", ilgiCnt);
+		model.addAttribute("infoCnt", infoCnt);
+		
+		return "game/gameInfo";
 	}
 	
 }

@@ -44,8 +44,8 @@ public interface HomeDAO {
 	
 	public int infoCnt(@Param("gameIdx") int gameIdx);
 
-	public int getGameViewRCTotRecCnt(@Param("flag") String flag, @Param("gameIdx") int gameIdx);
+	public int getGameViewRCTotRecCnt(@Param("gameIdx") int gameIdx, @Param("part") String part);
 
-	public ArrayList<CommunityVO> getGameViewRCList(@Param("mid") String mid, @Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize,
-			@Param("flag") String flag, @Param("gameIdx") int gameIdx);
+	public ArrayList<CommunityVO> getGameViewRCList(@Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize,
+			@Param("gameIdx") int gameIdx, @Param("part") String part);
 }

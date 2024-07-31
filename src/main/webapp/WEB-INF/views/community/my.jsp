@@ -1040,7 +1040,6 @@
         <div class="footer">
             <select class="dropdown-btn" id="publicType" name="publicType">
                 <option value="전체">전체 공개</option>
-                <option value="친구">친구만 공개</option>
                 <option value="비공개">비공개</option>
             </select>
             <button class="post-button">게시하기</button>
@@ -1203,7 +1202,6 @@
         <div class="footer">
             <select class="dropdown-btn" id="publicType2" name="publicType2">
                 <option value="전체">전체 공개</option>
-                <option value="친구">친구만 공개</option>
                 <option value="비공개">비공개</option>
             </select>
             <button class="edit-button" onclick="editCommunity()">수정하기</button>

@@ -102,3 +102,13 @@
 		</div>
     </div>
 </div>
+<div id="popup-pwdreset" class="hide">
+  <div class="popup-pwdreset-content scrollbar">
+		<div class="popup-replyedit-header mb-4">
+            <span class="e-header-text">비밀번호 찾기</span>
+    		<div style="cursor:pointer;" onclick="closePopup('pwdreset')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+		</div>
+		<div class="popup-support-main">
+		</div>
+    </div>
+</div>

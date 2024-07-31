@@ -25,10 +25,10 @@
 		select count(*) from itReview where revMid=#{mid} and state=#{state};
 	</select>
 	<select id="reviewGameIdxAll" resultType="com.spring.javaclassS4.vo.CommunityVO">
-		select * from itCommunity where cmGameIdx=#{gameIdx} and part='리뷰' and <![CDATA[rating >= 3]]>;
+		select * from itCommunity where cmGameIdx=#{gameIdx} and part='리뷰' and publicType='전체' and <![CDATA[rating >= 3]]>;
 	</select>
 	<select id="reviewGameIdxN" resultType="com.spring.javaclassS4.vo.CommunityVO">
-		select * from itCommunity where cmGameIdx=#{gameIdx} and part='리뷰' and <![CDATA[rating <= 2]]>;
+		select * from itCommunity where cmGameIdx=#{gameIdx} and part='리뷰' and publicType='전체' and <![CDATA[rating <= 2]]>;
 	</select>
 	<select id="getRatingCount" resultType="int">
 		select count(*) from itReview where revGameIdx=#{gameIdx} and rating=#{rating};
@@ -37,10 +37,10 @@
 		select count(*) from itReview where revGameIdx=#{gameIdx};
 	</select>
 	<select id="getPosiBest" resultType="com.spring.javaclassS4.vo.CommunityVO">
-		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle, likeSub.likeCnt FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx LEFT JOIN (SELECT c.cmIdx, count(l.likeCmIdx) as likeCnt FROM itCommunity c LEFT JOIN itLike l ON c.cmIdx = l.likeCmIdx WHERE c.cmGameIdx = #{gameIdx} AND c.part = '리뷰' AND c.rating >= 3 GROUP BY c.cmIdx ORDER BY likeCnt desc LIMIT 1) as likeSub ON c.cmIdx = likeSub.cmIdx WHERE c.part = '리뷰' AND c.cmGameIdx = #{gameIdx} AND c.rating >= 3 ORDER BY c.cmIdx desc LIMIT 1;
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle, likeSub.likeCnt FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx LEFT JOIN (SELECT c.cmIdx, count(l.likeCmIdx) as likeCnt FROM itCommunity c LEFT JOIN itLike l ON c.cmIdx = l.likeCmIdx WHERE c.cmGameIdx = #{gameIdx} AND c.part = '리뷰' and c.publicType='전체' AND c.rating >= 3 GROUP BY c.cmIdx ORDER BY likeCnt desc LIMIT 1) as likeSub ON c.cmIdx = likeSub.cmIdx WHERE c.part = '리뷰' AND c.cmGameIdx = #{gameIdx} AND c.rating >= 3 ORDER BY c.cmIdx desc LIMIT 1;
 	</select>
 	<select id="getNegaBest" resultType="com.spring.javaclassS4.vo.CommunityVO">
-		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle, likeSub.likeCnt FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx LEFT JOIN (SELECT c.cmIdx, count(l.likeCmIdx) as likeCnt FROM itCommunity c LEFT JOIN itLike l ON c.cmIdx = l.likeCmIdx WHERE c.cmGameIdx = #{gameIdx} AND c.part = '리뷰' AND <![CDATA[c.rating <= 2]]> GROUP BY c.cmIdx ORDER BY likeCnt desc LIMIT 1) as likeSub ON c.cmIdx = likeSub.cmIdx WHERE c.part = '리뷰' AND c.cmGameIdx = #{gameIdx} AND <![CDATA[c.rating <= 2]]> ORDER BY c.cmIdx desc LIMIT 1;
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle, likeSub.likeCnt FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx LEFT JOIN (SELECT c.cmIdx, count(l.likeCmIdx) as likeCnt FROM itCommunity c LEFT JOIN itLike l ON c.cmIdx = l.likeCmIdx WHERE c.cmGameIdx = #{gameIdx} AND c.part = '리뷰' and c.publicType='전체' AND <![CDATA[c.rating <= 2]]> GROUP BY c.cmIdx ORDER BY likeCnt desc LIMIT 1) as likeSub ON c.cmIdx = likeSub.cmIdx WHERE c.part = '리뷰' AND c.cmGameIdx = #{gameIdx} AND <![CDATA[c.rating <= 2]]> ORDER BY c.cmIdx desc LIMIT 1;
 	</select>
 	<select id="getMyReview" resultType="com.spring.javaclassS4.vo.CommunityVO">
 		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.part = '리뷰' AND c.cmGameIdx = #{gameIdx} AND c.mid=#{mid};
@@ -49,15 +49,25 @@
 		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.cmIdx=#{cmIdx};
 	</select>
 	<select id="ilgiCnt" resultType="int">
-		select count(*) from itCommunity where cmGameIdx=#{gameIdx} and part='일지';
+		select count(*) from itCommunity where cmGameIdx=#{gameIdx} and part='일지' and publicType='전체';
 	</select>
 	<select id="getIlgiList" resultType="com.spring.javaclassS4.vo.CommunityVO">
-		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.part = '일지' AND c.cmGameIdx = #{gameIdx} order by cmIdx desc limit 2;
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.part = '일지' AND c.cmGameIdx = #{gameIdx} and c.publicType='전체' order by cmIdx desc limit 2;
 	</select>
 	<select id="infoCnt" resultType="int">
-		select count(*) from itCommunity where cmGameIdx=#{gameIdx} and part='소식/정보';
+		select count(*) from itCommunity where cmGameIdx=#{gameIdx} and part='소식/정보' and publicType='전체';
 	</select>
 	<select id="getInfolist" resultType="com.spring.javaclassS4.vo.CommunityVO">
-		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.part = '소식/정보' AND c.cmGameIdx = #{gameIdx} order by cmIdx desc limit 2;
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.part = '소식/정보' AND c.cmGameIdx = #{gameIdx} and c.publicType='전체' order by cmIdx desc limit 2;
+	</select>
+	<select id="getGameViewRCTotRecCnt" resultType="int">
+		<if test="part == '리뷰'">SELECT count(*) as totRecCnt from itCommunity where cmGameIdx=#{gameIdx} and part='리뷰';</if>
+		<if test="part == '일지'">SELECT count(*) as totRecCnt from itCommunity where cmGameIdx=#{gameIdx} and part='일지' and publicType='전체';</if>
+		<if test="part == '소식/정보'">SELECT count(*) as totRecCnt from itCommunity where cmGameIdx=#{gameIdx} and part='소식/정보' and publicType='전체';</if>
+	</select>
+	<select id="getGameViewRCList" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		<if test="part == '리뷰'">SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.cmGameIdx=#{gameIdx} and c.part='리뷰' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};</if>
+		<if test="part == '일지'">SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.cmGameIdx=#{gameIdx} and c.part='일지' and c.publicType='전체' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};</if>
+		<if test="part == '소식/정보'">SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.cmGameIdx=#{gameIdx} and c.part='소식/정보' and c.publicType='전체' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};</if>
 	</select>
 </mapper>

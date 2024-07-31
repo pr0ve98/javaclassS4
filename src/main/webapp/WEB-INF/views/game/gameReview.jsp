@@ -8,7 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
-<title>리뷰 | 인겜토리</title>
+<title>${vo.gameTitle} 리뷰 | 인겜토리</title>
 <link rel="icon" type="image/x-icon" href="${ctp}/images/ingametory.ico">
 <jsp:include page="/WEB-INF/views/include/bs4.jsp" />
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
@@ -88,27 +88,6 @@
 	        };
 	    }
 	    
-        const game = document.getElementById('gamesearch');
-        
-        // 게임 검색
-        function gameSearchForm() {
-        	if(game.value.length >= 2) {
-	        	$.ajax({
-	        		url : "${ctp}/community/reviewGameSearch",
-	        		type : "post",
-	        		data : {game : gamesearch.value},
-	        		success : function(res) {
-	        			$("#results-container").html(res);
-	        			$("#results-container").show();
-					},
-					error : function() {
-						alert("전송오류!");
-					}
-		        });
-        	}
-        }
-        gamesearch.addEventListener('input', gameSearchForm);
-        
      	// 별점 및 상태 추가
         const stars = document.querySelectorAll('.review-star-add2');
         const zeroRatingArea2 = document.querySelector('#zero-rating-area2');
@@ -276,10 +255,12 @@
         $('html').css('overflow', 'auto');
     }
 	
-	function showPopupWrite() {
- 		document.getElementById("writeGameIdx").value = '';
-	 	document.getElementById("reviewWriteImg").src = "${ctp}/images/nomygameimage.jpg";
- 		document.getElementById("reviewWriteTitle").innerHTML = "게임을 선택해주세요";
+	function showPopupWrite(gameIdx, rating, state, cmContent) {
+		if(mid == '') {
+			showPopupLogin();
+			return false;
+		}
+		
  		$('#summernote').summernote('code', '');
  		
  		const stars = document.querySelectorAll('.review-star-add2');
@@ -295,37 +276,33 @@
                }
            });
         });
+        
+ 		if(gameIdx != null && gameIdx != ''){
+ 			currentRating = rating;
+ 			stars.forEach(star => {
+	            const starIndex = parseInt(star.getAttribute('data-index'));
+	            if (rating === 0) {
+	                star.style.backgroundImage = 'url("${ctp}/images/star2.png")';
+	            } else {
+	                if (starIndex <= rating) {
+	                    star.style.backgroundImage = 'url("${ctp}/images/starpull.png")';
+	                } else {
+	                    star.style.backgroundImage = 'url("${ctp}/images/star2.png")';
+	                }
+	            }
+	        });
+ 			
+ 			const element = document.querySelector('[data-state="'+state+'"]');
+ 		    if (element) {
+ 		        element.classList.add('selected');
+ 		    }
+ 		   $('#summernote').summernote('code', cmContent);
+ 		}
  		
-    	const popup = document.querySelector('#popup-write');
+    	const popup = document.querySelector('#popup-reviewwrite');
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
         html.style.overflow = 'hidden';
-    }
-	
-	function showPopupGameSearch() {
-		document.getElementById("gamesearch").value = "";
-		$("#results-container").hide();
-    	const popup = document.querySelector('#popup-gamesearch');
-    	const html = document.querySelector('html');
-        popup.classList.remove('hide');
-        html.style.overflow = 'hidden';
-    }
-	
-	function showAllContent(cmIdx) {
-		$.ajax({
-			url : "${ctp}/community/showAllContent",
-			type : "post",
-			data : {cmIdx : cmIdx},
-			success : function(res) {
-				$("#cmContent"+cmIdx).html(res);
-				$("#cmContent"+cmIdx).removeClass("moreGra");
-				$("#cmContent"+cmIdx).addClass("expanded");
-				$("#moreBtn"+cmIdx).hide();
-			},
-			error : function() {
-				alert("전송오류!");
-			}
-		});
 	}
 	
 	function likeAdd(cmIdx) {
@@ -701,6 +678,108 @@
  		
  		$('#summernote').summernote('code', cmContent);
 	}
+ 	
+ 	function reviewInput() {
+		let content = $('#summernote').summernote('code');
+        if(content.indexOf('<p>') == -1) content = '<p>'+content+'</p>';
+        let gameIdx = $('#writeGameIdx').val();
+        let rating = $('.review-star-add2').filter(function() {
+            return $(this).css('background-image').includes('/javaclassS4/images/starpull.png');
+        }).length;
+        let state = $('.state-button.selected').data('state') || 'none';
+
+        if(gameIdx == '') {
+        	return false;
+        }
+        
+        if (content == '' || content == '<p><br></p>') {
+            alert("글 내용을 입력하세요!");
+            $('#summernote').focus();
+            return false;
+        }
+
+        $.ajax({
+            url: "${ctp}/review/reviewInput",
+            type: "post",
+            data: {mid: mid, cmContent: content, cmGameIdx: gameIdx, rating : rating, state : state},
+            success: function(res) {
+            	location.reload();
+            },
+            error: function() {
+               alert("전송오류!");
+            }
+        });
+	}
+ 	
+ 	function showGameEditPopup() {
+ 		let platforms = '${vo.platform}'.split(", ");
+		platforms.forEach(platform => {
+		    document.querySelectorAll('.eg-button').forEach(button => {
+		        if (button.getAttribute('data-platform') === platform) {
+		            button.classList.add('eg-button-active');
+		        }
+		    });
+		});
+ 		
+    	const popup = document.querySelector('#popup-gameedit');
+    	const html = document.querySelector('html');
+        popup.classList.remove('hide');
+        html.style.overflow = 'hidden';
+	}
+ 	
+ 	function gameEdit() {
+ 		let gameIdx = document.getElementById("writeGameIdx").value;
+		let gameTitle = document.getElementById("egameTitle").value.trim();
+		let gameSubTitle = document.getElementById("egameSubTitle").value.trim();
+		let jangre = document.getElementById("ejangre").value.trim();
+		let showDate = document.forms["egameaddform"]["eshowDate"].value;
+		let price = document.getElementById("eprice").value.trim();
+		let metascore = document.getElementById("emetascore").value.trim();
+		let steamscore = document.getElementById("esteamscore").value.trim();
+		let steamPage = document.getElementById("esteamPage").value.trim();
+		let developer = document.getElementById("edeveloper").value.trim();
+		let gameInfo = document.getElementById("egameInfo").value.trim();
+		
+		const platformActive = document.querySelectorAll('.eg-button-active');
+
+		let platform = '';
+
+		platformActive.forEach((button) => {
+			platform += button.getAttribute('data-platform') + ', ';
+		});
+		
+		platform = platform.substring(0, platform.length-2);
+		
+		let query = {
+				reqMid : '${sMid}',
+				gameIdx : gameIdx,
+				gameTitle : gameTitle,
+				gameSubTitle : gameSubTitle,
+				jangre:jangre,
+				platform:platform,
+				showDate:showDate,
+				price:price,
+				metascore:metascore,
+				steamscore:steamscore,
+				steamPage:steamPage,
+				developer:developer,
+				gameInfo:gameInfo
+		}
+		
+ 		$.ajax({
+ 			url : "${ctp}/admin/gameRequestInput",
+ 			type : "post",
+            data: JSON.stringify(query),
+            contentType: "application/json",
+ 			success : function() {
+ 				alert("요청이 정상접수 되었습니다!");
+ 				closePopup('gameedit');
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
+	}
 </script>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
@@ -753,33 +832,14 @@
 		</div>
 		<div class="tabs">
 	        <div class="tab-container">
-	            <div class="tab">상세정보</div>
-	            <div class="tab active">리뷰 ${totRatingCnt}</div>
-	            <div class="tab">일지 ${ilgiCnt}</div>
-	            <div class="tab">소식/정보 ${infoCnt}</div>
+	            <div class="tab" onclick="location.href='${ctp}/gameview/${vo.gameIdx}';">상세정보</div>
+	            <div class="tab active" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/review';">리뷰 ${totRecCnt}</div>
+	            <div class="tab" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/record';">일지 ${ilgiCnt}</div>
+	            <div class="tab" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/info';">소식/정보 ${infoCnt}</div>
 	        </div>
 	        <button class="editplz-button" onclick="showGameEditPopup()">정보수정요청</button>
 	    </div>
 		<div style="width:100%;">
-			<div style="display: flex; align-items: flex-end; justify-content: space-between;">
-				<div>
-					<label for="agree" class="chk_box">
-						<input type="checkbox" id="agree" checked="checked" />
-						<span class="on"></span>
-						내용 있는 리뷰만 보기
-					</label>
-				</div>
-				<select id="viewpart" name="part" class="dropdown-btn" onchange="partchange()">
-					<option value="reIdx desc" ${viewpart == 'reIdx desc' ? 'selected' : ''}>최근순</option>
-					<option value="reIdx" ${viewpart == 'reIdx' ? 'selected' : ''}>오래된순</option>
-					<option value="notComplete" ${viewpart == 'notComplete' ? 'selected' : ''}>5점 리뷰만</option>
-					<option value="complete" ${viewpart == 'complete' ? 'selected' : ''}>4점 리뷰만</option>
-					<option value="acquittal" ${viewpart == 'acquittal' ? 'selected' : ''}>3점 리뷰만</option>
-					<option value="acquittal" ${viewpart == 'acquittal' ? 'selected' : ''}>2점 리뷰만</option>
-					<option value="acquittal" ${viewpart == 'acquittal' ? 'selected' : ''}>1점 리뷰만</option>
-				</select>
-			</div>
-			<p><br/></p>
 			<c:forEach var="cmVO" items="${cmVOS}">
 				<div class="cm-box" id="cmbox${cmVO.cmIdx}">
 					<div style="display:flex;justify-content: space-between;">
@@ -793,7 +853,7 @@
 						 			<div id="contentMenu${cmVO.cmIdx}" class="content-menu">
 								        <c:if test="${sMid == cmVO.mid}"><div onclick="reviewGameEdit(${cmVO.cmGameIdx}, '${cmVO.gameImg}', '${cmVO.gameTitle}', ${cmVO.rating}, '${cmVO.state}','${fn:replace(cmVO.cmContent, '\'', '')}')">수정</div></c:if>
 									    <c:if test="${sMid == cmVO.mid || sLevel == 0}"><div onclick="contentDelete(${cmVO.cmIdx})"><font color="red">삭제</font></div></c:if>
-								        <c:if test="${sLevel == 0}"><div onclick="location.href='${ctp}/admin/userlist?page=1&viewpart=all&searchpart=아이디&search=${cmVO.mid}';">사용자 제재</div></c:if>
+								        <c:if test="${sMid != cmVO.mid && sLevel == 0}"><div onclick="location.href='${ctp}/admin/userlist?page=1&viewpart=all&searchpart=아이디&search=${cmVO.mid}';">사용자 제재</div></c:if>
 								        <c:if test="${sMid != cmVO.mid && sLevel != 0}"><div onclick="reportPopup(${cmVO.cmIdx}, '게시글', '${cmVO.mid}')">신고</div></c:if>
 							    	</div>
 					 			</div>
@@ -924,30 +984,33 @@
 					</c:if>
 				</div>
 			</c:forEach>
+			<c:if test="${fn:length(cmVOS) == 0}">
+				<div style="margin: 100px 20px; text-align: center;">
+					<div>보여드릴 리뷰가 없습니다.</div>
+					<div>가장 먼저 이 게임의 리뷰를 남겨보세요.</div>
+					<div class="editplz-button mt-2" style="margin: 0 auto; width: 30%;" onclick="showPopupWrite()">리뷰 작성</div>
+				</div>
+			</c:if>
 			<span id="root"></span>
 		</div>
 	</div>
 </main>
 <jsp:include page="/WEB-INF/views/include/footer.jsp" />
 <jsp:include page="/WEB-INF/views/include/navPopup.jsp" />
-<div id="popup-write" class="hide">
-  <div class="popup-write-content scrollbar">
+<div id="popup-reviewwrite" class="hide">
+  <div class="popup-reviewwrite-content scrollbar">
   		<div class="popup-write-header">
             <span class="header-text"></span>
-    		<div style="cursor:pointer;" onclick="closePopup('write')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+    		<div style="cursor:pointer;" onclick="closePopup('reviewwrite')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
-        <button class="gamesearch-button ml-3" onclick="showPopupGameSearch()">
-        	<img src="${ctp}/images/plus.jpg" alt="">
-        	<div class="game-name">게임 선택</div>
-        </button>
-        <hr/>
         <div style="display: flex; align-items: center;">
         	<div style="width:100px; font-weight: bold; color: #fff; text-align: center;">게임</div>
         	<div style="flex-grow: 1">
         		<div style="display: flex; gap: 30px; align-items: center;">
-        			<img src="${ctp}/images/nomygameimage.jpg" id="reviewWriteImg" width="50px" height="50px" style="border-radius: 8px; object-fit: cover;"/>
-        			<div id="reviewWriteTitle">게임을 선택하세요</div>
-        			<input type="hidden" id="writeGameIdx" name="writeGameIdx" />
+        			<c:if test="${fn:indexOf(vo.gameImg, 'http') == -1}"><img src="${ctp}/game/${vo.gameImg}" id="reviewWriteImg" width="50px" height="50px" style="border-radius: 8px; object-fit: cover;"/></c:if>
+        			<c:if test="${fn:indexOf(vo.gameImg, 'http') != -1}"><img src="${vo.gameImg}" id="reviewWriteImg" width="50px" height="50px" style="border-radius: 8px; object-fit: cover;"/></c:if>
+        			<div id="reviewWriteTitle">${vo.gameTitle}</div>
+        			<input type="hidden" id="writeGameIdx" name="writeGameIdx" value="${vo.gameIdx}" />
         		</div>
         	</div>
         </div>
@@ -970,31 +1033,31 @@
         	<div style="width:100px; font-weight: bold; color: #fff; text-align: center;">상태</div>
         	<div style="flex-grow: 1">
 				<div class="state-buttons" style="display: flex;">
-					<div class="state-button ${gamevo.state == 'play' ? 'selected' : ''}" data-state="play" style="width: 60px; height: 55px;">
+					<div class="state-button ${gameVO.state == 'play' ? 'selected' : ''}" data-state="play" style="width: 60px; height: 55px;">
 						<div class="button-background" style="align-items: center;">
 							<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Play.svg&quot;);
 							width: 30px; height: 30px; margin-top: 0;"></span>
 						</div>
 					</div>
-					<div class="state-button ${gamevo.state == 'done' ? 'selected' : ''}" data-state="done" style="width: 60px; height: 55px;">
+					<div class="state-button ${gameVO.state == 'done' ? 'selected' : ''}" data-state="done" style="width: 60px; height: 55px;">
 						<div class="button-background" style="align-items: center;">
 							<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Check.svg&quot;);
 							width: 30px; height: 30px; margin-top: 0;"></span>
 						</div>
 					</div>
-					<div class="state-button ${gamevo.state == 'stop' ? 'selected' : ''}" data-state="stop" style="width: 60px; height: 55px;">
+					<div class="state-button ${gameVO.state == 'stop' ? 'selected' : ''}" data-state="stop" style="width: 60px; height: 55px;">
 						<div class="button-background" style="align-items: center;">
 							<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Cancel.svg&quot;);
 							width: 30px; height: 30px; margin-top: 0;"></span>
 						</div>
 					</div>
-					<div class="state-button ${gamevo.state == 'folder' ? 'selected' : ''}" data-state="folder" style="width: 60px; height: 55px;">
+					<div class="state-button ${gameVO.state == 'folder' ? 'selected' : ''}" data-state="folder" style="width: 60px; height: 55px;">
 						<div class="button-background" style="align-items: center;">
 							<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Folder.svg&quot;);
 							width: 30px; height: 30px; margin-top: 0;"></span>
 						</div>
 					</div>
-					<div class="state-button ${gamevo.state == 'pin' ? 'selected' : ''}" data-state="pin" style="width: 60px; height: 55px;">
+					<div class="state-button ${gameVO.state == 'pin' ? 'selected' : ''}" data-state="pin" style="width: 60px; height: 55px;">
 						<div class="button-background" style="align-items: center;">
 							<span class="state-icon" style="mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Pin.svg&quot;);
 							width: 30px; height: 30px; margin-top: 0;"></span>
@@ -1006,49 +1069,11 @@
 		<hr/>
         <textarea id="summernote" name="content"></textarea>
         <div class="footer text-right" style="display: block;">
-            <button class="post-button" onclick="">게시하기</button>
+            <button class="post-button" onclick="reviewInput()">게시하기</button>
         </div>
         <!-- Summernote JS -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>
-	    
-	    <script>
-	        // 게시하기 버튼 클릭 이벤트
-	        $('.post-button').click(function(event) {
-	            event.preventDefault();
-
-		        let mid = '${sMid}';
-		        let content = $('#summernote').summernote('code');
-		        if(content.indexOf('<p>') == -1) content = '<p>'+content+'</p>';
-		        let gameIdx = $('#writeGameIdx').val();
-		        let rating = $('.review-star-add2').filter(function() {
-	                return $(this).css('background-image').includes('/javaclassS4/images/starpull.png');
-	            }).length;
-		        let state = $('.state-button.selected').data('state') || 'none';
-
-		        if(gameIdx == '') {
-		        	return false;
-		        }
-		        
-		        if (content == '' || content == '<p><br></p>') {
-		            alert("글 내용을 입력하세요!");
-		            $('#summernote').focus();
-		            return false;
-		        }
-
-		        $.ajax({
-		            url: "${ctp}/review/reviewInput",
-		            type: "post",
-		            data: {mid: mid, cmContent: content, cmGameIdx: gameIdx, rating : rating, state : state},
-		            success: function(res) {
-		            	location.reload();
-		            },
-		            error: function() {
-		               alert("전송오류!");
-		            }
-		        });
-	        });
-		</script>
     </div>
 </div>
 <div id="popup-gamesearch" class="hide">
@@ -1097,6 +1122,82 @@
  		<input type="hidden" id="sufferMid" name="sufferMid" />
 	 	<div class="text-center"><button class="btn btn-danger" onclick="reportInput()">신고하기</button></div>
     </div>
+</div>
+<div id="popup-gameedit" class="hide">
+  <div class="popup-gameedit-content scrollbar">
+		<div class="popup-add-header">
+			<div class="e-header-text">게임 수정</div>
+    		<div style="cursor:pointer;" onclick="closePopup('gameedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+		</div>
+		<div class="popup-add-main">
+			<form name="egameaddform" method="post">
+				<table class="table table-borderless" style="color:#fff">
+					<tr>
+						<td colspan="2" id="imgView"></td>
+					</tr>
+					<tr>
+						<th><font color="#ff5e5e">*</font> 이름</th>
+						<td><input type="text" name="egameTitle" id="egameTitle" value="${vo.gameTitle}" placeholder="게임 한글 이름을 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>외국어 이름</th>
+						<td><input type="text" name="egameSubTitle" id="egameSubTitle" value="${vo.gameSubTitle}" placeholder="게임 외국어 이름을 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>장르</th>
+						<td><input type="text" name="ejangre" id="ejangre" placeholder="장르를 입력하세요" value="${vo.jangre}" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>플랫폼</th>
+						<td>
+							<div class="g-buttons" style="margin: 0 auto;">
+			                    <span class="eg-button" data-platform="PC">PC</span>
+			                    <span class="eg-button" data-platform="PS4">PS4</span>
+			                    <span class="eg-button" data-platform="PS5">PS5</span>
+			                    <span class="eg-button" data-platform="XBO">XBO</span>
+			                    <span class="eg-button" data-platform="XSX">XSX</span>
+			                    <span class="eg-button" data-platform="XSS">XSS</span>
+			                    <span class="eg-button" data-platform="Switch">Switch</span>
+			                    <span class="eg-button" data-platform="Android">Android</span>
+			                    <span class="eg-button" data-platform="iOS">iOS</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>출시일</th>
+						<td><input type="date" name="eshowDate" id="eshowDate" value="${vo.showDate}" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>가격</th>
+						<td><input type="number" name="eprice" id="eprice" value="${vo.price}" placeholder="가격을 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>메타스코어</th>
+						<td><input type="number" name="emetascore" id="emetascore" value="${vo.metascore}" placeholder="메타스코어를 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>스팀평가</th>
+						<td><input type="text" name="esteamscore" id="esteamscore" value="${vo.steamscore}" placeholder="스팀 평가(전체)를 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>스팀링크</th>
+						<td><input type="text" name="esteamPage" id="esteamPage" value="${vo.steamPage}" placeholder="스팀 스토어 링크를 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>개발사</th>
+						<td><input type="text" name="edeveloper" id="edeveloper" value="${vo.developer}" placeholder="개발사를 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>게임소개</th>
+						<td><textarea rows="3" name="egameInfo" id="egameInfo" placeholder="게임소개를 입력하세요" class="form-control textarea">${vo.gameInfo}</textarea></td>
+					</tr>
+					<tr>
+						<td colspan="2"><input type="button" class="joinBtn-sm" value="수정 요청" onclick="gameEdit()" /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+  </div>
 </div>
 </body>
 </html>

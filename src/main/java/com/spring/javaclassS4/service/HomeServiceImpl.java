@@ -274,13 +274,19 @@ public class HomeServiceImpl implements HomeService {
 	}
 
 	@Override
-	public int getGameViewRCTotRecCnt(String flag, int gameIdx) {
-		return homeDAO.getGameViewRCTotRecCnt(flag, gameIdx);
+	public int getGameViewRCTotRecCnt(int gameIdx, String part) {
+		return homeDAO.getGameViewRCTotRecCnt(gameIdx, part);
 	}
 
 	@Override
-	public ArrayList<CommunityVO> getGameViewRCList(String mid, int startIndexNo, int pageSize, String flag, int gameIdx) {
-		return homeDAO.getGameViewRCList(mid, startIndexNo, pageSize, flag, gameIdx);
+	public ArrayList<CommunityVO> getGameViewRCList(String mid, int startIndexNo, int pageSize,
+			int gameIdx, String part) {
+		ArrayList<CommunityVO> vos = homeDAO.getGameViewRCList(startIndexNo, pageSize, gameIdx, part);
+		for(CommunityVO vo : vos) {
+			vo = voReVO(vo, mid);
+		}
+		return vos;
 	}
+
 
 }

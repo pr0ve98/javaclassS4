@@ -102,6 +102,7 @@
     	else if(flag == 'gameedit') popup = document.querySelector('#popup-gameedit');
     	else if(flag == 'report') popup = document.querySelector('#popup-report');
     	else if(flag == 'support') popup = document.querySelector('#popup-support');
+    	else if(flag == 'reviewwrite') popup = document.querySelector('#popup-reviewwrite');
     	const html = document.querySelector('html');
     	popup.classList.add('hide');
     	html.style.overflow = 'auto';

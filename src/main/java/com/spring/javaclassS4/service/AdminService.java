@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.spring.javaclassS4.vo.GameRequestVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
 import com.spring.javaclassS4.vo.SupportVO;
@@ -73,4 +74,15 @@ public interface AdminService {
 	public ArrayList<GameVO> getSupportList(int startIndexNo, int pageSize, String viewpart, String search);
 
 	public void reSupport(SupportVO vo);
+
+	public void gameRequestInput(GameRequestVO vo);
+
+	public int getGameRequstTotRecCnt(String viewpart, String searchpart, String search);
+
+	public ArrayList<GameRequestVO> getGameRequstList(int startIndexNo, int pageSize, String viewpart,
+			String searchpart, String search);
+
+	public void requestNo(int grIdx, String reason);
+
+	public void requestYes(int grIdx);
 }

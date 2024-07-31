@@ -198,6 +198,66 @@
 			</if>
 		</if>
 	</select>
+	<select id="getGameRequstTotRecCnt" resultType="int">
+		<if test="viewpart == 'notComplete'">
+			<if test="search == ''">select count(*) from itGameRequest where grComplete=0;</if>
+			<if test="search != ''">
+				<if test="searchpart == '게임이름'">select count(*) from itGameRequest where grComplete=0 and gameTitle like concat('%',#{search},'%');</if>
+				<if test="searchpart == '요청인'">select count(*) from itGameRequest where grComplete=0 and reqMid like concat('%',#{search},'%');</if>
+			</if>
+		</if>
+		<if test="viewpart == 'complete'">
+			<if test="search == ''">select count(*) from itGameRequest where grComplete=1;</if>
+			<if test="search != ''">
+				<if test="searchpart == '게임이름'">select count(*) from itGameRequest where grComplete=1 and gameTitle like concat('%',#{search},'%');</if>
+				<if test="searchpart == '요청인'">select count(*) from itGameRequest where grComplete=1 and reqMid like concat('%',#{search},'%');</if>
+			</if>
+		</if>
+		<if test="viewpart == 'acquittal'">
+			<if test="search == ''">select count(*) from itGameRequest where grComplete=2;</if>
+			<if test="search != ''">
+				<if test="searchpart == '게임이름'">select count(*) from itGameRequest where grComplete=2 and gameTitle like concat('%',#{search},'%');</if>
+				<if test="searchpart == '요청인'">select count(*) from itGameRequest where grComplete=2 and reqMid like concat('%',#{search},'%');</if>
+			</if>
+		</if>
+		<if test="viewpart != 'complete' and viewpart != 'notComplete' and viewpart != 'acquittal'">
+			<if test="search == ''">select count(*) from itGameRequest;</if>
+			<if test="search != ''">
+				<if test="searchpart == '게임이름'">select count(*) from itGameRequest where gameTitle like concat('%',#{search},'%');</if>
+				<if test="searchpart == '요청인'">select count(*) from itGameRequest where reqMid like concat('%',#{search},'%');</if>
+			</if>
+		</if>
+	</select>
+	<select id="getGameRequstList" resultType="com.spring.javaclassS4.vo.GameRequestVO">
+		<if test="viewpart == 'notComplete'">
+			<if test="search == ''">select * from itGameRequest where grComplete=0 order by grIdx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				<if test="searchpart == '게임이름'">select * from itGameRequest where grComplete=0 and gameTitle like concat('%',#{search},'%') order by grIdx desc limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '요청인'">select * from itGameRequest where grComplete=0 and reqMid like concat('%',#{search},'%') order by grIdx desc limit #{startIndexNo},#{pageSize};</if>
+			</if>
+		</if>
+		<if test="viewpart == 'complete'">
+			<if test="search == ''">select * from itGameRequest where grComplete=1 order by grIdx desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				<if test="searchpart == '게임이름'">select * from itGameRequest where grComplete=1 and gameTitle like concat('%',#{search},'%') order by grIdx desc limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '요청인'">select * from itGameRequest where grComplete=1 and reqMid like concat('%',#{search},'%') order by grIdx desc limit #{startIndexNo},#{pageSize};</if>
+			</if>
+		</if>
+		<if test="viewpart == 'acquittal'">
+			<if test="search == ''">select * from itGameRequest where grComplete=2 order by select * from itGameRequest where grComplete=1 order by grIdx desc limit #{startIndexNo},#{pageSize}; desc limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				<if test="searchpart == '게임이름'">select * from itGameRequest where grComplete=2 and gameTitle like concat('%',#{search},'%') order by grIdx desc limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '요청인'">select * from itGameRequest where grComplete=2 and reqMid like concat('%',#{search},'%') order by grIdx desc limit #{startIndexNo},#{pageSize};</if>
+			</if>
+		</if>
+		<if test="viewpart != 'complete' and viewpart != 'notComplete' and viewpart != 'acquittal'">
+			<if test="search == ''">select * from itGameRequest order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
+			<if test="search != ''">
+				<if test="searchpart == '게임이름'">select * from itGameRequest where gameTitle like concat('%',#{search},'%') order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
+				<if test="searchpart == '요청인'">select * from itGameRequest where reqMid like concat('%',#{search},'%') order by ${viewpart} limit #{startIndexNo},#{pageSize};</if>
+			</if>
+		</if>
+	</select>
 
 	
 	
@@ -211,6 +271,9 @@
 	</insert>
 	<insert id="supportInput">
 		insert into itSupport values(default, #{vo.supEmail}, #{vo.main}, #{vo.sub}, #{vo.supContent}, #{vo.supImg}, default);
+	</insert>
+	<insert id="gameRequestInput">
+		insert into itGameRequest values(default, #{vo.reqMid}, #{vo.gameIdx}, #{vo.gameTitle}, #{vo.gameSubTitle}, #{vo.jangre},#{vo.platform},#{vo.showDate},#{vo.price},#{vo.metascore},#{vo.steamscore},#{vo.steamPage},#{vo.developer},#{vo.gameInfo}, default);
 	</insert>
 	
 	
@@ -253,6 +316,12 @@
 	</update>
 	<update id="setSupportComplete">
 		update itSupport set supComplete=1 where supIdx=#{supIdx};
+	</update>
+	<update id="requestYes">
+		update itGameRequest set grComplete=1 where grIdx=#{grIdx};
+	</update>
+	<update id="requestNo">
+		update itGameRequest set grComplete=2, reason=#{reason} where grIdx=#{grIdx};
 	</update>
 	
 	

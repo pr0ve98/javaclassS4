@@ -36,4 +36,20 @@ public interface HomeService {
 
 	public CommunityVO getNegaBest(int gameIdx, HttpSession session);
 
+	public CommunityVO getMyReview(int gameIdx, HttpSession session);
+
+	public CommunityVO gameViewCommunityView(int cmIdx, HttpSession session);
+
+	public ArrayList<CommunityVO> getIlgiList(int gameIdx, HttpSession session);
+
+	public int ilgiCnt(int gameIdx);
+	
+	public ArrayList<CommunityVO> getInfolist(int gameIdx, HttpSession session);
+	
+	public int infoCnt(int gameIdx);
+
+	public int getGameViewRCTotRecCnt(String flag, int gameIdx);
+
+	public ArrayList<CommunityVO> getGameViewRCList(String mid, int startIndexNo, int pageSize, String flag, int gameIdx);
+
 }

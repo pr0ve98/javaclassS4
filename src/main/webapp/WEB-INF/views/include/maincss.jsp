@@ -526,7 +526,7 @@
 	
 	#popup-join .popup-join-content, #popup-login .popup-login-content, #popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
 	 #popup-edit .popup-edit-content, #popup-replyedit .popup-replyedit-content, #popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content,
-	 #popup-report .popup-report-content, #popup-support .popup-support-content {
+	 #popup-report .popup-report-content, #popup-support .popup-support-content, #popup-reviewwrite .popup-reviewwrite-content {
 	  padding: 20px;
 	  background: #32373d;
 	  border-radius: 5px;
@@ -536,7 +536,7 @@
 	  min-width: 330px;
 	}
 	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
-	#popup-edit .popup-edit-content {width: 700px;}
+	#popup-edit .popup-edit-content, #popup-reviewwrite .popup-reviewwrite-content {width: 700px;}
 	#popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content {width:500px;}
 	#popup-report .popup-report-content, #popup-support .popup-support-content {width: 330px;}
 	
@@ -1489,6 +1489,20 @@
     	border: 1px solid #b2bdce38;
     	padding: 20px 40px;
     }
+    .chk_box { display: block; position: relative; padding-left: 28px; margin-bottom: 0; cursor: pointer; font-size: 14px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+
+	/* 기본 체크박스 숨기기 */
+	.chk_box input[type="checkbox"] { display: none; }
+	
+	/* 선택되지 않은 체크박스 스타일 꾸미기 */
+	.on { width: 20px; height: 20px; background: #ddd; position: absolute; top: 0; left: 0; }
+	
+	/* 선택된 체크박스 스타일 꾸미기 */
+	.chk_box input[type="checkbox"]:checked + .on { background: #00c722; }
+	.on:after { content: ""; position: absolute; display: none; }
+	.chk_box input[type="checkbox"]:checked + .on:after { display: block; }
+	.on:after { width: 6px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; -webkit-transform: rotate(45deg); -ms-transform: rotate(45deg); transform: rotate(45deg); position: absolute; left: 6px; top: 2px; }
+	
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;

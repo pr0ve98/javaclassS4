@@ -20,6 +20,7 @@ import com.spring.javaclassS4.service.AdminService;
 import com.spring.javaclassS4.service.CommunityService;
 import com.spring.javaclassS4.service.MemberService;
 import com.spring.javaclassS4.vo.CommunityVO;
+import com.spring.javaclassS4.vo.GameRequestVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.MemberVO;
 import com.spring.javaclassS4.vo.ReplyVO;
@@ -367,5 +368,49 @@ public class AdminController {
 	public void reSupport(SupportVO vo) {
 		System.out.println(vo);
 		adminService.reSupport(vo);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/gameRequestInput", method = RequestMethod.POST)
+	public void gameRequestInput(@RequestBody GameRequestVO vo) {
+		adminService.gameRequestInput(vo);
+	}
+	
+	
+	@RequestMapping(value = "/gameRequestlist", method = RequestMethod.GET)
+	public String gameRequestlist(HttpSession session, Model model,
+			@RequestParam(name="viewpart", defaultValue = "grIdx desc", required = false) String viewpart,
+			@RequestParam(name="searchpart", defaultValue = "게임이름", required = false) String searchpart,
+			@RequestParam(name="search", defaultValue = "", required = false) String search,
+			@RequestParam(name="page", defaultValue = "1", required = false) int page,
+			@RequestParam(name="pageSize", defaultValue = "20", required = false) int pageSize) {
+		
+		int totRecCnt = adminService.getGameRequstTotRecCnt(viewpart, searchpart, search);
+		int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+		int startIndexNo = (page - 1) * pageSize;
+		model.addAttribute("page", page);
+		model.addAttribute("totRecCnt", totRecCnt);
+		model.addAttribute("totPage", totPage);
+		
+		ArrayList<GameRequestVO> vos = adminService.getGameRequstList(startIndexNo, pageSize, viewpart, searchpart, search);
+		
+		model.addAttribute("vos", vos);
+		model.addAttribute("viewpart", viewpart);
+		model.addAttribute("searchpart", searchpart);
+		model.addAttribute("search", search);
+		
+		return "admin/gameRequestlist";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/requestYes", method = RequestMethod.POST)
+	public void requestYes(int grIdx) {
+		adminService.requestYes(grIdx);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/requestNo", method = RequestMethod.POST)
+	public void requestNo(int grIdx, String reason) {
+		adminService.requestNo(grIdx, reason);
 	}
 }

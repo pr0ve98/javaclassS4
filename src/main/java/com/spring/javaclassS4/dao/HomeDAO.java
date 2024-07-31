@@ -31,4 +31,21 @@ public interface HomeDAO {
 	public CommunityVO getPosiBest(@Param("gameIdx") int gameIdx);
 
 	public CommunityVO getNegaBest(@Param("gameIdx") int gameIdx);
+
+	public CommunityVO getMyReview(@Param("gameIdx") int gameIdx, @Param("mid") String mid);
+
+	public CommunityVO showAllContent(@Param("cmIdx") int cmIdx);
+
+	public ArrayList<CommunityVO> getIlgiList(@Param("gameIdx") int gameIdx);
+
+	public int ilgiCnt(@Param("gameIdx") int gameIdx);
+	
+	public ArrayList<CommunityVO> getInfolist(@Param("gameIdx") int gameIdx);
+	
+	public int infoCnt(@Param("gameIdx") int gameIdx);
+
+	public int getGameViewRCTotRecCnt(@Param("flag") String flag, @Param("gameIdx") int gameIdx);
+
+	public ArrayList<CommunityVO> getGameViewRCList(@Param("mid") String mid, @Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize,
+			@Param("flag") String flag, @Param("gameIdx") int gameIdx);
 }

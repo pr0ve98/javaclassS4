@@ -23,3 +23,21 @@ create table itSupport (
 	supImg varchar(200),
 	supComplete int not null default 0
 );
+
+create table itGameRequest (
+	grIdx int not null auto_increment primary key,
+	reqMid varchar(30) not null,
+	gameIdx int not null,
+	gameTitle varchar(300) not null,
+	gameSubTitle varchar(300),
+	jangre varchar(100),
+	platform varchar(100),
+	showDate date,
+	price int,
+	metascore int,
+	steamscore varchar(20),
+	steamPage varchar(255),
+	developer varchar(50),
+	gameInfo text,
+	grComplete int not null default 0
+);

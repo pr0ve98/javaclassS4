@@ -19,6 +19,7 @@ import com.spring.javaclassS4.dao.AdminDAO;
 import com.spring.javaclassS4.dao.CommunityDAO;
 import com.spring.javaclassS4.dao.MemberDAO;
 import com.spring.javaclassS4.vo.BanVO;
+import com.spring.javaclassS4.vo.GameRequestVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.MemberVO;
 import com.spring.javaclassS4.vo.ReplyVO;
@@ -376,6 +377,32 @@ public class AdminServiceImpl implements AdminService {
 		} catch (MessagingException e) {e.printStackTrace();}
 		
 		adminDAO.setSupportComplete(vo.getSupIdx());
+	}
+
+	@Override
+	public void gameRequestInput(GameRequestVO vo) {
+		adminDAO.gameRequestInput(vo);
+	}
+
+	@Override
+	public int getGameRequstTotRecCnt(String viewpart, String searchpart, String search) {
+		return adminDAO.getGameRequstTotRecCnt(viewpart, searchpart, search);
+	}
+
+	@Override
+	public ArrayList<GameRequestVO> getGameRequstList(int startIndexNo, int pageSize, String viewpart,
+			String searchpart, String search) {
+		return adminDAO.getGameRequstList(startIndexNo, pageSize, viewpart, searchpart, search);
+	}
+	
+	@Override
+	public void requestYes(int grIdx) {
+		adminDAO.requestYes(grIdx);
+	}
+	
+	@Override
+	public void requestNo(int grIdx, String reason) {
+		adminDAO.requestNo(grIdx, reason);
 	}
 
 }

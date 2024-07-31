@@ -58,6 +58,7 @@
 						        </div>
 						        <a href="${ctp}/admin/userlist">회원 관리</a>
 						        <a href="${ctp}/admin/gamelist">게임 관리</a>
+						        <a href="${ctp}/admin/gameRequestlist">게임 요청 목록</a>
 						        <a href="${ctp}/admin/supportlist">문의 목록</a>
 						        <a href="${ctp}/admin/reportlist">신고 목록</a>
 						        <a href="${ctp}/setting/profile">계정 설정</a>
@@ -121,6 +122,7 @@
 						        </div>
 						        <a href="${ctp}/admin/userlist">회원 관리</a>
 						        <a href="${ctp}/admin/gamelist">게임 관리</a>
+						        <a href="${ctp}/admin/gameRequestlist">게임 요청 목록</a>
 						        <a href="${ctp}/admin/supportlist">문의 목록</a>
 						        <a href="${ctp}/admin/reportlist">신고 목록</a>
 						        <a href="${ctp}/setting/profile">계정 설정</a>

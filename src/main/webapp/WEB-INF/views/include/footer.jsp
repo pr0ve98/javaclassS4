@@ -5,7 +5,6 @@
 	<div class="footer-menu">
 		<img src="${ctp}/images/logo.png" height="50px" />
 		<span>문의하기</span>
-		<span>게임순위</span>
 		<span>게임찾기</span>
 		<span>게임평가</span>
 		<span>게임요청</span>

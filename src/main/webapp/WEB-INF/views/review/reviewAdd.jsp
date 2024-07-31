@@ -31,11 +31,12 @@
 		// 무한스크롤
 		function rootData() {
 			isFetching = true;
+			let viewpart = $("#viewpart").val();
 			
 			$.ajax({
 				url : "${ctp}/review/rootData",
 				type : "post",
-				data : {page : ${page}+totPage},
+				data : {page : ${page}+totPage, viewpart:viewpart},
 				success : function(res) {
 					if(res) {
 						isFetching = false;

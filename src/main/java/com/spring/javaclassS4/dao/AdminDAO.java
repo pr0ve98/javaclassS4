@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.apache.ibatis.annotations.Param;
 
 import com.spring.javaclassS4.vo.BanVO;
+import com.spring.javaclassS4.vo.GameRequestVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
 import com.spring.javaclassS4.vo.SupportVO;
@@ -82,5 +83,17 @@ public interface AdminDAO {
 			@Param("viewpart") String viewpart, @Param("search") String search);
 
 	public void setSupportComplete(@Param("supIdx") int supIdx);
+
+	public void gameRequestInput(@Param("vo") GameRequestVO vo);
+
+	public int getGameRequstTotRecCnt(@Param("viewpart") String viewpart, @Param("searchpart") String searchpart, @Param("search") String search);
+
+	public ArrayList<GameRequestVO> getGameRequstList(@Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize, 
+			@Param("viewpart") String viewpart, @Param("searchpart") String searchpart,
+			@Param("search") String search);
+
+	public void requestYes(@Param("grIdx") int grIdx);
+
+	public void requestNo(@Param("grIdx") int grIdx, @Param("reason") String reason);
 
 }

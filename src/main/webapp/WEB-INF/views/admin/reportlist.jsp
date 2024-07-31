@@ -164,7 +164,7 @@
 				<option value="reIdx" ${viewpart == 'reIdx' ? 'selected' : ''}>오래된순</option>
 				<option value="notComplete" ${viewpart == 'notComplete' ? 'selected' : ''}>미처리 신고만</option>
 				<option value="complete" ${viewpart == 'complete' ? 'selected' : ''}>처리완료 신고만</option>
-				<option value="acquittal" ${viewpart == 'complete' ? 'selected' : ''}>무혐의 신고만</option>
+				<option value="acquittal" ${viewpart == 'acquittal' ? 'selected' : ''}>무혐의 신고만</option>
 			</select>
 		</div>
 		<p><br/></p>

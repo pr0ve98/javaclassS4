@@ -138,74 +138,7 @@ public class HomeServiceImpl implements HomeService {
 		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
 		CommunityVO vo = homeDAO.getPosiBest(gameIdx);
 		if(vo != null) {
-			Document doc = Jsoup.parse(vo.getCmContent());
-			Elements ptag = doc.select("p");
-			Elements img = doc.select("img");
-			
-			StringBuilder reContent = new StringBuilder();
-			
-			if(!img.isEmpty()) {
-				Element firstImg = img.first();
-				for (Element e : ptag) {
-					reContent.append(e.outerHtml());
-					if(e.equals(firstImg.parent())) {
-						vo.setLongContent(1);
-						break;
-					}
-				}
-			}
-			else {
-				if(ptag.size() < 7) {
-					ptag.forEach(p -> reContent.append(p.outerHtml()));
-					vo.setLongContent(0);
-				}
-				else {
-					ptag.stream().limit(7).forEach(p -> reContent.append(p.outerHtml()));
-					vo.setLongContent(1);
-				}
-			}
-			vo.setCmContent(reContent.toString());
-			List<String> likeMember = communityDAO.getLikeMember(vo.getCmIdx());
-			if(mid != null && likeMember.size() > 0) {
-				for(int j=0; j<likeMember.size(); j++) {
-					if(mid.equals(likeMember.get(j))) {
-						vo.setLikeSW(1);
-						break;
-					}
-					else vo.setLikeSW(0);
-				}
-			}
-			vo.setLikeMember(likeMember);
-			vo.setLikeCnt(likeMember.size());
-			
-	        ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vo.getCmIdx());
-	        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
-	
-	        for (ReplyVO k : parentsReply) {
-	            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
-	            k.setChildReplyCount(childReplyCount);
-	
-	            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vo.getCmIdx(), k.getReplyIdx());
-	            
-	            // 자식 댓글을 추가
-	            if (childReplies != null) {
-	                childsReply.addAll(childReplies);
-	            }
-	        }
-		        
-			int replyCount = communityDAO.getReplyCount(vo.getCmIdx());
-			vo.setParentsReply(parentsReply);
-			vo.setChildReply(childsReply);
-			vo.setReplyCount(replyCount);
-			
-			if(vo.getCmGameIdx() != 0) {
-				GameVO vo2 = communityDAO.getGameIdx(vo.getCmGameIdx());
-				vo.setGameImg(vo2.getGameImg());
-			}
-			
-			FollowVO fVO = communityDAO.getFollow(mid, vo.getMid());
-			if(fVO == null) vo.setFollow(0);
-			else vo.setFollow(1);
+			vo = voReVO(vo, mid);
 		}
 		return vo;
 	}
@@ -215,76 +148,139 @@ public class HomeServiceImpl implements HomeService {
 		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
 		CommunityVO vo = homeDAO.getNegaBest(gameIdx);
 		if(vo != null) {
-			Document doc = Jsoup.parse(vo.getCmContent());
-			Elements ptag = doc.select("p");
-			Elements img = doc.select("img");
-			
-			StringBuilder reContent = new StringBuilder();
-			
-			if(!img.isEmpty()) {
-				Element firstImg = img.first();
-				for (Element e : ptag) {
-					reContent.append(e.outerHtml());
-					if(e.equals(firstImg.parent())) {
-						vo.setLongContent(1);
-						break;
-					}
-				}
-			}
-			else {
-				if(ptag.size() < 7) {
-					ptag.forEach(p -> reContent.append(p.outerHtml()));
-					vo.setLongContent(0);
-				}
-				else {
-					ptag.stream().limit(7).forEach(p -> reContent.append(p.outerHtml()));
-					vo.setLongContent(1);
-				}
-			}
-			vo.setCmContent(reContent.toString());
-			List<String> likeMember = communityDAO.getLikeMember(vo.getCmIdx());
-			if(mid != null && likeMember.size() > 0) {
-				for(int j=0; j<likeMember.size(); j++) {
-					if(mid.equals(likeMember.get(j))) {
-						vo.setLikeSW(1);
-						break;
-					}
-					else vo.setLikeSW(0);
-				}
-			}
-			vo.setLikeMember(likeMember);
-			vo.setLikeCnt(likeMember.size());
-			
-	        ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vo.getCmIdx());
-	        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
-	
-	        for (ReplyVO k : parentsReply) {
-	            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
-	            k.setChildReplyCount(childReplyCount);
-	
-	            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vo.getCmIdx(), k.getReplyIdx());
-	            
-	            // 자식 댓글을 추가
-	            if (childReplies != null) {
-	                childsReply.addAll(childReplies);
-	            }
-	        }
-		        
-			int replyCount = communityDAO.getReplyCount(vo.getCmIdx());
-			vo.setParentsReply(parentsReply);
-			vo.setChildReply(childsReply);
-			vo.setReplyCount(replyCount);
-			
-			if(vo.getCmGameIdx() != 0) {
-				GameVO vo2 = communityDAO.getGameIdx(vo.getCmGameIdx());
-				vo.setGameImg(vo2.getGameImg());
-			}
-			
-			FollowVO fVO = communityDAO.getFollow(mid, vo.getMid());
-			if(fVO == null) vo.setFollow(0);
-			else vo.setFollow(1);
+			vo = voReVO(vo, mid);
 		}
 		return vo;
+	}
+
+	@Override
+	public CommunityVO getMyReview(int gameIdx, HttpSession session) {
+		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
+		CommunityVO vo = homeDAO.getMyReview(gameIdx, mid);
+		if(vo != null) {
+			vo = voReVO(vo, mid);
+		}
+		return vo;
+	}
+	
+	public CommunityVO voReVO(CommunityVO vo, String mid) {
+		Document doc = Jsoup.parse(vo.getCmContent());
+		Elements ptag = doc.select("p");
+		Elements img = doc.select("img");
+		
+		StringBuilder reContent = new StringBuilder();
+		
+		if(!img.isEmpty()) {
+			Element firstImg = img.first();
+			for (Element e : ptag) {
+				reContent.append(e.outerHtml());
+				if(e.equals(firstImg.parent())) {
+					vo.setLongContent(1);
+					break;
+				}
+			}
+		}
+		else {
+			if(ptag.size() < 7) {
+				ptag.forEach(p -> reContent.append(p.outerHtml()));
+				vo.setLongContent(0);
+			}
+			else {
+				ptag.stream().limit(7).forEach(p -> reContent.append(p.outerHtml()));
+				vo.setLongContent(1);
+			}
+		}
+		vo.setCmContent(reContent.toString());
+		List<String> likeMember = communityDAO.getLikeMember(vo.getCmIdx());
+		if(mid != null && likeMember.size() > 0) {
+			for(int j=0; j<likeMember.size(); j++) {
+				if(mid.equals(likeMember.get(j))) {
+					vo.setLikeSW(1);
+					break;
+				}
+				else vo.setLikeSW(0);
+			}
+		}
+		vo.setLikeMember(likeMember);
+		vo.setLikeCnt(likeMember.size());
+		
+        ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vo.getCmIdx());
+        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
+
+        for (ReplyVO k : parentsReply) {
+            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
+            k.setChildReplyCount(childReplyCount);
+
+            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vo.getCmIdx(), k.getReplyIdx());
+            
+            // 자식 댓글을 추가
+            if (childReplies != null) {
+                childsReply.addAll(childReplies);
+            }
+        }
+	        
+		int replyCount = communityDAO.getReplyCount(vo.getCmIdx());
+		vo.setParentsReply(parentsReply);
+		vo.setChildReply(childsReply);
+		vo.setReplyCount(replyCount);
+		
+		if(vo.getCmGameIdx() != 0) {
+			GameVO vo2 = communityDAO.getGameIdx(vo.getCmGameIdx());
+			vo.setGameImg(vo2.getGameImg());
+		}
+		
+		FollowVO fVO = communityDAO.getFollow(mid, vo.getMid());
+		if(fVO == null) vo.setFollow(0);
+		else vo.setFollow(1);
+		return vo;
+	}
+
+	@Override
+	public CommunityVO gameViewCommunityView(int cmIdx, HttpSession session) {
+		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
+		CommunityVO vo = homeDAO.showAllContent(cmIdx);
+		if(vo != null) vo = voReVO(vo, mid);
+		return vo;
+	}
+
+	@Override
+	public ArrayList<CommunityVO> getIlgiList(int gameIdx, HttpSession session) {
+		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
+		ArrayList<CommunityVO> vos = homeDAO.getIlgiList(gameIdx);
+		for(CommunityVO vo : vos) {
+			vo = voReVO(vo, mid);
+		}
+		return vos;
+	}
+
+	@Override
+	public int ilgiCnt(int gameIdx) {
+		return homeDAO.ilgiCnt(gameIdx);
+	}
+	
+	@Override
+	public ArrayList<CommunityVO> getInfolist(int gameIdx, HttpSession session) {
+		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
+		ArrayList<CommunityVO> vos = homeDAO.getInfolist(gameIdx);
+		for(CommunityVO vo : vos) {
+			vo = voReVO(vo, mid);
+		}
+		return vos;
+	}
+	
+	@Override
+	public int infoCnt(int gameIdx) {
+		return homeDAO.infoCnt(gameIdx);
+	}
+
+	@Override
+	public int getGameViewRCTotRecCnt(String flag, int gameIdx) {
+		return homeDAO.getGameViewRCTotRecCnt(flag, gameIdx);
+	}
+
+	@Override
+	public ArrayList<CommunityVO> getGameViewRCList(String mid, int startIndexNo, int pageSize, String flag, int gameIdx) {
+		return homeDAO.getGameViewRCList(mid, startIndexNo, pageSize, flag, gameIdx);
 	}
 
 }

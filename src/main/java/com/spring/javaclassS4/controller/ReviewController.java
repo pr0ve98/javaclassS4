@@ -121,9 +121,9 @@ public class ReviewController {
 			else if(vo.getState() != null && vo.getState().equals("folder")) str += "<font color=\"#fff\">모셔놨어요</font>";
 			else if(vo.getState() != null && vo.getState().equals("pin")) str += "<font color=\"#fff\">관심있어요</font>";
 			else str += "현재 게임 상태를 선택해주세요";
-			str += "</div></div></div></div>"
-				+ "<div style=\"margin-bottom: 30px;\">"+vo.getShowDate().substring(0,4)+"</div>"
-				+ "<div style=\"display: flex; position: relative;\">"
+			str += "</div></div></div></div>";
+			if(vo.getShowDate() != null) str += "<div style=\"margin-bottom: 30px;\">"+vo.getShowDate().substring(0,4)+"</div>";
+			str += "<div style=\"display: flex; position: relative;\">"
 				+ "<div id=\"zero-rating-area2\" style=\"position: absolute; left: -20px; width: 20px; height: 40px; cursor: pointer;\"></div>"
 				+ "<span class=\"review-star-add mr-1\" data-index=\"1\"></span>"
 				+ "<span class=\"review-star-add mr-1\" data-index=\"2\"></span>"

@@ -27,6 +27,9 @@
 		font-family: 'SUITE-Regular';
 		cursor: default;
 	}
+	h1, h2, h3, h4, h5, h6 {
+		font-family: 'SUITE-Regular'!important;
+	}
 	p {margin-bottom: 0}
 	main {
 		padding: 20px;
@@ -878,6 +881,9 @@
 	.community-content {
 		margin: 20px;
 	}
+	.community-content img {
+		width: 100%!important;
+	}
 	.cm-content {
 		max-height: 500px; /* 초기에 보여질 최대 높이 */
         overflow: hidden;
@@ -1410,6 +1416,12 @@
 		border-radius: 8px;
 		object-fit:cover;
 	}
+	.news-gameImg {
+		width: 213px;
+		height: 120px;
+		border-radius: 8px;
+		object-fit:cover;
+	}
     .gvc-width {
    		width: 66%;
     }
@@ -1502,7 +1514,31 @@
 	.on:after { content: ""; position: absolute; display: none; }
 	.chk_box input[type="checkbox"]:checked + .on:after { display: block; }
 	.on:after { width: 6px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; -webkit-transform: rotate(45deg); -ms-transform: rotate(45deg); transform: rotate(45deg); position: absolute; left: 6px; top: 2px; }
-	
+	.newsBody {
+		display: flex;
+		gap: 40px;
+	}
+	.newsSN {
+		flex-grow:3;
+		max-width: 1000px;
+	}
+	.newsviewContainer {
+		width: 65%;
+		margin: 50px auto;
+	}
+	.newsCmBox {
+		display:flex;
+		margin: 0 20px;
+		align-items:center;
+		gap:20px;
+	}
+	.newsTitle {
+		color:#fff;
+		font-size: 40px;
+		font-family: 'SUITE-ExtraBold';
+	}
+	.deleteEditNewsMB {display: none;}
+	.deleteEditNewsPC {display: block;}
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;
@@ -1744,6 +1780,27 @@
         .gvc-title {
 	        font-size: 1em;
 	    }
+	    iframe.note-video-clip {width: 100%;}
+	    .newsviewContainer {width: 100%;}
+	    .newsCmBox {
+	    	flex-direction: column;
+	    }
+	    .news-gameImg {
+			width: 100%;
+			height: 100%;
+		}
+		.deleteEditNewsMB {display: block;}
+		.deleteEditNewsPC {display: none;}
+		.newsTitle {font-size: 25px;}
+		.note-editable img {
+			width: 100%!important;
+		}
+		.newsBody {
+			flex-direction: column;
+		}
+		.newsSN {
+			width: 100%;
+		}
 	}
 	@media screen and (max-width: 567px) {
 		.game-selection {justify-content: start;}

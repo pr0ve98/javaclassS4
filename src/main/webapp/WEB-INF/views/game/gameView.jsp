@@ -1103,7 +1103,7 @@
 							</div>
 						</div>
 					</c:forEach>
-					<div class="editplz-button mt-2" style="background-color:#00c72299;">${ilgiCnt}개의 일지 모두 보기</div>
+					<div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/record';">${ilgiCnt}개의 일지 모두 보기</div>
 					</c:if>
 					<c:if test="${fn:length(ilgilist) == 0}">
 						<div style="margin: 100px 20px; text-align: center;">
@@ -1140,7 +1140,7 @@
 							</div>
 						</div>
 					</c:forEach>
-					<div class="editplz-button mt-2" style="background-color:#00c72299;">${infoCnt}개의 소식/정보 모두 보기</div>
+					<div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/info';">${infoCnt}개의 소식/정보 모두 보기</div>
 					</c:if>
 					<c:if test="${fn:length(infolist) == 0}">
 						<div style="margin: 100px 20px; text-align: center;">

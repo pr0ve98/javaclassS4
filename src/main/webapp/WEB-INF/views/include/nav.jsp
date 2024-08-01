@@ -9,7 +9,7 @@
 			<button class="w3-button w3-block w3-left-align" onclick="myAccFunc(1)">커뮤니티</button>
 			<div id="demoAcc1" class="w3-bar-block w3-hide w3-card-4 litiledark">
 				<a href="${ctp}/community/recent" class="w3-bar-item w3-button">피드</a>
-				<a href="#" class="w3-bar-item w3-button">뉴스</a>
+				<a href="${ctp}/news/newsRecent" class="w3-bar-item w3-button">뉴스</a>
 			</div>
 			<button class="w3-button w3-block w3-left-align" onclick="location.href='${ctp}/review'">평가</button>
 			<button class="w3-button w3-block w3-left-align" onclick="myAccFunc(4)">Accordion4</button>

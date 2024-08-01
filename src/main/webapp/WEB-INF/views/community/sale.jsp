@@ -301,22 +301,21 @@
     }
 
     // 페이지 떠날 때 이미지 제거
-    window.onbeforeunload = function() {
-        if (!isWriteButtonClicked) {
-            if ($('#summernote').is(':visible')) {
-                // Summernote에 대한 로직
-                if (initialImages.length > 0) {
-                    initialImages.forEach(function(src) {
-                        deleteImage(src);
-                    });
-                }
-            } else if ($('#summernote2').is(':visible')) {
-                // Summernote2에 대한 로직
-                editCurrentImages = getCurrentImages('#summernote2');
-                detectDeletedImages(editInitialImages, editCurrentImages);
-            }
-        }
-    };
+	let wasSummernoteVisible = false;
+	let wasSummernote2Visible = false;
+	
+	// 팝업이 닫히기 전에 Summernote의 상태를 저장
+	function beforeClosePopup() {
+	    wasSummernoteVisible = $('#summernote').is(':visible');
+	    wasSummernote2Visible = $('#summernote2').is(':visible');
+	}
+	
+	function closePopupBefore(flag) {
+		$('#summernote').summernote('code', '');
+		$('#summernote2').summernote('code', '');
+		beforeClosePopup();
+		closePopup(flag);
+	}
 	
 	function showPopupWrite() {
     	const popup = document.querySelector('#popup-write');
@@ -829,13 +828,13 @@
 		<div class="community">
 			<span class="cm-menu">
 				<span class="cb mb-4">
-					<span class="communityBtn cb-active">
+					<span class="communityBtn cb-active" onclick="location.href='${ctp}/community/recent';">
 			            <img src="https://img.icons8.com/ios-filled/50/ffffff/chat.png" alt="Chat Icon"/>
 			        </span>
 			        <span class="cb-text-active"><b>인겜토리</b></span>
 				</span>
 				<span class="cn">
-			        <span class="communityBtn">
+			        <span class="communityBtn" onclick="location.href='${ctp}/news/newsRecent';">>
 			            <img src="https://img.icons8.com/ios-filled/50/b2bdce/news.png" alt="News Icon"/>
 			        </span>
 			        <span class="cb-text"><b>뉴스</b></span>
@@ -1012,7 +1011,7 @@
   <div class="popup-write-content scrollbar">
   		<div class="popup-write-header">
             <span class="header-text"></span>
-    		<div style="cursor:pointer;" onclick="closePopup('write')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+    		<div style="cursor:pointer;" onclick="closePopupBefore('write')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
         <div class="category-selection">
             <button class="community-category" data-category="일지">일지</button>
@@ -1173,7 +1172,7 @@
   <div class="popup-edit-content scrollbar">
   		<div class="popup-edit-header">
             <span class="header-edittext"></span>
-    		<div style="cursor:pointer;" onclick="closePopup('edit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+    		<div style="cursor:pointer;" onclick="closePopupBefore('edit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
         <div class="category-selection">
             <button class="community-editcategory active" data-category="일지">일지</button>

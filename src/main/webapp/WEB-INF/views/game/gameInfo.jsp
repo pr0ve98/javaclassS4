@@ -169,22 +169,21 @@
     }
     
     // 페이지 떠날 때 이미지 제거
-    window.onbeforeunload = function() {
-        if (!isWriteButtonClicked) {
-            if ($('#summernote').is(':visible')) {
-                // Summernote에 대한 로직
-                if (initialImages.length > 0) {
-                    initialImages.forEach(function(src) {
-                        deleteImage(src);
-                    });
-                }
-            } else if ($('#summernote2').is(':visible')) {
-                // Summernote2에 대한 로직
-                editCurrentImages = getCurrentImages('#summernote2');
-                detectDeletedImages(editInitialImages, editCurrentImages);
-            }
-        }
-    };
+	let wasSummernoteVisible = false;
+	let wasSummernote2Visible = false;
+	
+	// 팝업이 닫히기 전에 Summernote의 상태를 저장
+	function beforeClosePopup() {
+	    wasSummernoteVisible = $('#summernote').is(':visible');
+	    wasSummernote2Visible = $('#summernote2').is(':visible');
+	}
+	
+	function closePopupBefore(flag) {
+		$('#summernote').summernote('code', '');
+		$('#summernote2').summernote('code', '');
+		beforeClosePopup();
+		closePopup(flag);
+	}
 	
 	function showPopupWrite() {
     	const popup = document.querySelector('#popup-write');
@@ -797,7 +796,9 @@
 	        </div>
 	        <button class="editplz-button" onclick="showGameEditPopup()">정보수정요청</button>
 	    </div>
-		<div style="width:100%;">
+	    <hr/>
+	    <div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="showPopupWrite()">소식/정보 작성</div>
+		<div style="width:100%;" class="mt-2">
 			<c:forEach var="cmVO" items="${cmVOS}">
 				<div class="cm-box" id="cmbox${cmVO.cmIdx}">
 					<div style="display:flex;justify-content: space-between;">
@@ -957,7 +958,7 @@
   <div class="popup-write-content scrollbar">
   		<div class="popup-write-header">
             <span class="header-text"></span>
-    		<div style="cursor:pointer;" onclick="closePopup('write')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+    		<div style="cursor:pointer;" onclick="closePopupBefore('write')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
 		<div style="display: flex; align-items: center;">
         	<div style="width:100px; font-weight: bold; color: #fff; text-align: center;">게임</div>
@@ -1059,7 +1060,7 @@
   <div class="popup-edit-content scrollbar">
   		<div class="popup-edit-header">
             <span class="header-edittext"></span>
-    		<div style="cursor:pointer;" onclick="closePopup('edit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+    		<div style="cursor:pointer;" onclick="closePopupBefore('edit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
 		<div style="display: flex; align-items: center;">
         	<div style="width:100px; font-weight: bold; color: #fff; text-align: center;">게임</div>

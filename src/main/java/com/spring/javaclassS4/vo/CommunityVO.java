@@ -16,6 +16,7 @@ public class CommunityVO {
 	private String cmDate;
 	private String cmHostIp;
 	private String publicType;
+	private String newsTitle;
 	
 	private int hour_diff;
 	private int min_diff;
@@ -49,4 +50,7 @@ public class CommunityVO {
 	
 	// 팔로우 여부
 	private int follow;
+	
+	// 뉴스 썸네일
+	private String newsThumnail;
 }

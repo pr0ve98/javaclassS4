@@ -50,7 +50,7 @@
 		insert into itReview values(default, #{mid}, #{gameIdx}, #{rating}, #{state});
 	</insert>
 	<insert id="reviewMoreInput">
-		insert into itCommunity values(default, #{vo.mid}, #{vo.section}, #{vo.part}, #{vo.cmGameIdx}, #{vo.cmContent}, default, #{vo.cmHostIp}, #{vo.publicType}, #{vo.rating}, #{vo.state});
+		insert into itCommunity values(default, #{vo.mid}, #{vo.section}, #{vo.part}, #{vo.cmGameIdx}, #{vo.cmContent}, default, #{vo.cmHostIp}, #{vo.publicType}, #{vo.rating}, #{vo.state}, default);
 	</insert>
 	
 	

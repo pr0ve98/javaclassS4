@@ -716,13 +716,13 @@
 		<div class="community">
 			<span class="cm-menu">
 				<span class="cb mb-4">
-					<span class="communityBtn cb-active">
+					<span class="communityBtn cb-active" onclick="location.href='${ctp}/community/recent';">
 			            <img src="https://img.icons8.com/ios-filled/50/ffffff/chat.png" alt="Chat Icon"/>
 			        </span>
 			        <span class="cb-text-active"><b>인겜토리</b></span>
 				</span>
 				<span class="cn">
-			        <span class="communityBtn">
+			        <span class="communityBtn" onclick="location.href='${ctp}/news/newsRecent';">>
 			            <img src="https://img.icons8.com/ios-filled/50/b2bdce/news.png" alt="News Icon"/>
 			        </span>
 			        <span class="cb-text"><b>뉴스</b></span>

@@ -839,7 +839,10 @@
 	        </div>
 	        <button class="editplz-button" onclick="showGameEditPopup()">정보수정요청</button>
 	    </div>
-		<div style="width:100%;">
+	    <hr/>
+	    <c:if test="${revVO == null}"><div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="showPopupWrite()">리뷰 작성</div></c:if>
+	    <c:if test="${revVO != null}"><div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="showPopupWrite(${revVO.revGameIdx}, ${revVO.rating}, '${revVO.state}', '${cmContent}')">리뷰 수정</div></c:if>
+		<div style="width:100%;" class="mt-2">
 			<c:forEach var="cmVO" items="${cmVOS}">
 				<div class="cm-box" id="cmbox${cmVO.cmIdx}">
 					<div style="display:flex;justify-content: space-between;">

@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.spring.javaclassS4.common.JavaclassProvide;
 import com.spring.javaclassS4.dao.CommunityDAO;
 import com.spring.javaclassS4.dao.MemberDAO;
+import com.spring.javaclassS4.dao.ReviewDAO;
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.GameVO;
@@ -40,6 +41,9 @@ public class CommunityServiceImpl implements CommunityService {
 	
 	@Autowired
 	CommunityDAO communityDAO;
+	
+	@Autowired
+	ReviewDAO reviewDAO;
 
 	@Override
 	public String imageUpload(MultipartFile fName, HttpServletRequest request) {
@@ -250,7 +254,10 @@ public class CommunityServiceImpl implements CommunityService {
 			List<String> likeMember = communityDAO.getLikeMember(vos.get(i).getCmIdx());
 			if(mid != null && likeMember.size() > 0) {
 				for(int j=0; j<likeMember.size(); j++) {
-					if(mid.equals(likeMember.get(j))) vos.get(i).setLikeSW(1);
+					if(mid.equals(likeMember.get(j))) {
+						vos.get(i).setLikeSW(1);
+						break;
+					}
 					else vos.get(i).setLikeSW(0);
 				}
 			}
@@ -645,6 +652,20 @@ public class CommunityServiceImpl implements CommunityService {
 	@Override
 	public void setReviewDelete(String mid, int cmGameIdx) {
 		communityDAO.setReviewDelete(mid, cmGameIdx);
+		int reviewCount = reviewDAO.getGameReviewCount(cmGameIdx);
+		if(reviewCount >= 3) {
+			List<Integer> reviewTotal = reviewDAO.getGameReviewTotal(cmGameIdx);
+			int rt = 0;
+			for(int su : reviewTotal) {
+				rt += su;
+			}
+			double invenscore = ((double)rt / reviewCount);
+			invenscore = Math.round(invenscore * 10) / 10.0;
+			reviewDAO.setInvenscore(invenscore, cmGameIdx);
+		}
+		else {
+			reviewDAO.setInvenscore(0, cmGameIdx);
+		}
 	}
 
 	@Override
@@ -707,7 +728,10 @@ public class CommunityServiceImpl implements CommunityService {
 				List<String> likeMember = communityDAO.getLikeMember(vos.get(i).getCmIdx());
 				if(mid != null && likeMember.size() > 0) {
 					for(int j=0; j<likeMember.size(); j++) {
-						if(mid.equals(likeMember.get(j))) vos.get(i).setLikeSW(1);
+						if(mid.equals(likeMember.get(j))) {
+							vos.get(i).setLikeSW(1);
+							break;
+						}
 						else vos.get(i).setLikeSW(0);
 					}
 				}
@@ -761,6 +785,82 @@ public class CommunityServiceImpl implements CommunityService {
 			return communityDAO.getFollowTotRecCnt(midsStr);
 		}
 		return 0;
+	}
+
+	@Override
+	public int getNewsCnt(String part) {
+		return communityDAO.getNewsCnt(part);
+	}
+
+	@Override
+	public ArrayList<CommunityVO> getNewsList(int startIndexNo, int pageSize, String part) {
+		ArrayList<CommunityVO> vos = communityDAO.getNewsList(startIndexNo, pageSize, part);
+		for(CommunityVO vo : vos) {
+			Document doc = Jsoup.parse(vo.getCmContent());
+			Elements img = doc.select("img");
+			
+			if(!img.isEmpty()) {
+				Element firstImg = img.first();
+			    String imgSrc = firstImg.attr("src");
+
+			    String imgName;
+
+			    if (imgSrc.startsWith("http")) {
+			        imgName = imgSrc;
+			    } else {
+			        imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+			    }
+
+			    vo.setNewsThumnail(imgName);
+			}
+			else {
+				vo.setNewsThumnail("thumnailNot.jpg");
+			}
+			List<String> likeMember = communityDAO.getLikeMember(vo.getCmIdx());
+			vo.setLikeMember(likeMember);
+			vo.setLikeCnt(likeMember.size());
+		}
+		return vos;
+	}
+
+	@Override
+	public CommunityVO getNewsContentCmIdx(int cmIdx, String mid) {
+		CommunityVO vo = communityDAO.getNewsContentCmIdx(cmIdx);
+		
+		List<String> likeMember = communityDAO.getLikeMember(vo.getCmIdx());
+		if(mid != null && likeMember.size() > 0) {
+			for(int j=0; j<likeMember.size(); j++) {
+				if(mid.equals(likeMember.get(j))) {
+					vo.setLikeSW(1);
+					break;
+				}
+				else vo.setLikeSW(0);
+			}
+		}
+		vo.setLikeMember(likeMember);
+		vo.setLikeCnt(likeMember.size());
+		
+        ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vo.getCmIdx());
+        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
+
+        for (ReplyVO k : parentsReply) {
+            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
+            k.setChildReplyCount(childReplyCount);
+
+            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vo.getCmIdx(), k.getReplyIdx());
+            
+            // 자식 댓글을 추가
+            if (childReplies != null) {
+                childsReply.addAll(childReplies);
+            }
+        }
+	        
+		int replyCount = communityDAO.getReplyCount(vo.getCmIdx());
+		vo.setParentsReply(parentsReply);
+		vo.setChildReply(childsReply);
+		vo.setReplyCount(replyCount);
+		
+		return vo;
 	}
 
 }

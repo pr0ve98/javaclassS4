@@ -78,4 +78,10 @@ public interface CommunityService {
 
 	public String reviewGameSearch(String game);
 
+	public int getNewsCnt(String string);
+
+	public ArrayList<CommunityVO> getNewsList(int startIndexNo, int pageSize, String part);
+
+	public CommunityVO getNewsContentCmIdx(int cmIdx, String mid);
+
 }

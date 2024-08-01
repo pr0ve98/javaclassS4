@@ -285,7 +285,7 @@ public class CommunityController {
 		String hostIp = request.getRemoteAddr();
 		vo.setCmHostIp(hostIp);
 		int sw = 0;
-		if(vo.getPart().equals("자유")) sw = 1;
+		if(vo.getPart().equals("자유") || vo.getSection().equals("뉴스")) sw = 1;
 		return communityService.communityEdit(vo, sw)+"";
 	}
 	
@@ -627,6 +627,36 @@ public class CommunityController {
 						+"</div></div>";
 			}
 			str += "</div></div>";
+		}
+		return str;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/newsRootData", method = RequestMethod.POST, produces = "application/text; charset=utf8")
+	public String newsRootData(HttpSession session, HttpServletRequest request, String part,
+			@RequestParam(name="page", defaultValue = "1", required = false) int page,
+			@RequestParam(name="pageSize", defaultValue = "10", required = false) int pageSize) {
+		int startIndexNo = (page - 1) * pageSize;
+		ArrayList<CommunityVO> cmVOS = null;
+		
+		if(part.equals("recent")) cmVOS = communityService.getNewsList(startIndexNo, pageSize, "전체");
+		else if(part.equals("report")) cmVOS = communityService.getNewsList(startIndexNo, pageSize, "취재");
+		else cmVOS = communityService.getNewsList(startIndexNo, pageSize, "예판");
+		
+		String str = "";
+		for (CommunityVO vo : cmVOS) {
+			str += "<div class=\"cm-box\" id=\"cmbox"+vo.getCmIdx()+"\">"
+				+ "<div class=\"newsCmBox\"><div>";
+			if(vo.getNewsThumnail().indexOf("http") == -1) str += "<img src=\""+request.getContextPath()+"/community/"+vo.getNewsThumnail()+"\" alt=\"뉴스썸네일\" class=\"re-gameImg\" style=\"height: 120px;\">";
+			else str += "<img src=\""+vo.getNewsThumnail()+"\" alt=\"뉴스썸네일\" class=\"re-gameImg\" style=\"height: 120px;\">";
+			str += "</div><div><div style=\"color:#00c722; font-weight: bold;\">"+vo.getPart()+"</div>"
+				+ "<div class=\"game-title\" style=\"cursor: pointer;\" onclick=\"location.href='"+request.getContextPath()+"/news/"+vo.getCmIdx()+"';\">"+vo.getNewsTitle()+"</div>"
+				+ "<div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\">";
+			if(vo.getHour_diff() < 1) str += vo.getMin_diff()+"분 전";
+			else if(vo.getHour_diff() < 24 && vo.getHour_diff() >= 1) str += vo.getHour_diff()+"시간 전";
+			else str += vo.getCmDate().substring(0,10);
+			str += "</div><div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\"><span id=\"cm-likeCnt"+vo.getCmIdx()+"\">이 글을 "+vo.getLikeCnt()+"명이 좋아합니다.</span></div>"
+				+ "</div></div></div>";
 		}
 		return str;
 	}

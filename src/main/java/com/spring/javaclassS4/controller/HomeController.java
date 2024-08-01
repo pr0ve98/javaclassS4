@@ -305,6 +305,12 @@ public class HomeController {
 		ArrayList<CommunityVO> cmVOS = homeService.getGameViewRCList(mid, startIndexNo, pageSize, gameIdx, "리뷰");
 		model.addAttribute("cmVOS", cmVOS);
 		
+		// 리뷰 수정용
+		String cmContent = communityDAO.getCMReview(gameIdx, mid);
+		ReviewVO revVO = reviewService.getMidAndIdx(gameIdx, mid);
+		model.addAttribute("cmContent", cmContent);
+		model.addAttribute("revVO", revVO);
+		
 		int ilgiCnt = homeService.ilgiCnt(gameIdx);
 		int infoCnt = homeService.infoCnt(gameIdx);
 		model.addAttribute("ilgiCnt", ilgiCnt);

@@ -24,4 +24,8 @@ public interface MemberDAO {
 
 	public void unlockMember(@Param("day") int day);
 
+	public void pwdResetOk(@Param("email") String email, @Param("pwdEncode") String pwdEncode);
+
+	public void pwdChange(@Param("mid") String mid, @Param("pwd") String pwd);
+
 }

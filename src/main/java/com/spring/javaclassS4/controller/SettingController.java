@@ -36,5 +36,12 @@ public class SettingController {
 		return "setting/profile";
 	}
 	
+	@RequestMapping(value = "/pwdChange", method = RequestMethod.GET)
+	public String pwdChange(HttpSession session, Model model) {
+		String mid = (String) session.getAttribute("sMid");
+		if(mid == null) return "redirect:/";
+		return "setting/pwdChange";
+	}
+	
 	
 }

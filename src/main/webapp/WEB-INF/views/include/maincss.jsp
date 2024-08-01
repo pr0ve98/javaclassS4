@@ -27,7 +27,7 @@
 		font-family: 'SUITE-Regular';
 		cursor: default;
 	}
-	h1, h2, h3, h4, h5, h6 {
+	.newsviewContainer h1, .newsviewContainer h2, .newsviewContainer h3, .newsviewContainer h4, .newsviewContainer h5, .newsviewContainer h6 {
 		font-family: 'SUITE-Regular'!important;
 	}
 	p {margin-bottom: 0}
@@ -263,6 +263,10 @@
 		border-color: #00c722;
 		min-width: 120px;
 		text-align: center;
+	}
+	.joinBtn:disabled {
+		background-color: #8c8c8c;
+		border-color: #6e6e6e;
 	}
 	.joinBtn-sm {
 		border-radius: 15px;
@@ -529,7 +533,8 @@
 	
 	#popup-join .popup-join-content, #popup-login .popup-login-content, #popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
 	 #popup-edit .popup-edit-content, #popup-replyedit .popup-replyedit-content, #popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content,
-	 #popup-report .popup-report-content, #popup-support .popup-support-content, #popup-reviewwrite .popup-reviewwrite-content {
+	 #popup-report .popup-report-content, #popup-support .popup-support-content, #popup-reviewwrite .popup-reviewwrite-content,
+	 #popup-pwdreset .popup-pwdreset-content {
 	  padding: 20px;
 	  background: #32373d;
 	  border-radius: 5px;
@@ -541,7 +546,7 @@
 	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
 	#popup-edit .popup-edit-content, #popup-reviewwrite .popup-reviewwrite-content {width: 700px;}
 	#popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content {width:500px;}
-	#popup-report .popup-report-content, #popup-support .popup-support-content {width: 330px;}
+	#popup-report .popup-report-content, #popup-support .popup-support-content, #popup-pwdreset .popup-pwdreset-content {width: 330px;}
 	
 	.popup-open {
 		overflow: hidden;

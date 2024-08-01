@@ -3,6 +3,7 @@ package com.spring.javaclassS4.controller;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.UUID;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.spring.javaclassS4.common.JavaclassProvide;
 import com.spring.javaclassS4.service.MemberService;
 import com.spring.javaclassS4.vo.MemberVO;
 
@@ -29,6 +31,9 @@ public class MemberController {
 	
 	@Autowired
 	BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	JavaclassProvide javaclassProvide;
 	
 	@Transactional
 	@RequestMapping(value = "/kakaoLogin", method = RequestMethod.GET)
@@ -202,6 +207,35 @@ public class MemberController {
 			return "1";
 		}
 		else return "0";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/pwdResetOk", method = RequestMethod.POST)
+	public String pwdResetOk(String email) {
+		MemberVO vo = memberService.getMemberEmailCheck(email);
+		if(vo == null) return "0";
+		if(vo.getPwd().equals("kakaoMember")) return "0";
+		
+		UUID uid = UUID.randomUUID();
+		String pwd = uid.toString().substring(0, 6);
+		String pwdEncode = passwordEncoder.encode(pwd);
+		memberService.pwdResetOk(email, pwd, pwdEncode);
+		return "1";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/pwdChange", method = RequestMethod.POST)
+	public String pwdChange(String nowpwd, String pwd, HttpSession session) {
+		String mid = (String) session.getAttribute("sMid");
+		if(mid == null) return "redirect:/";
+		
+		MemberVO vo = memberService.getMemberIdCheck(mid);
+		if(vo.getPwd().equals("kakaoMember")) return "2";
+		if(!passwordEncoder.matches(nowpwd, vo.getPwd())) return "0";
+		
+		pwd = passwordEncoder.encode(pwd);
+		memberService.pwdChange(mid, pwd);
+		return "1";
 	}
 	
 }

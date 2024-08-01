@@ -8,7 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
-<title>설정 | 인겜토리</title>
+<title>프로필 설정 | 인겜토리</title>
 <link rel="icon" type="image/x-icon" href="${ctp}/images/ingametory.ico">
 <jsp:include page="/WEB-INF/views/include/bs4.jsp" />
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
@@ -198,7 +198,7 @@
 			<div class="setting-left">
 				<div class="left-menu-title">계정관리</div>
 				<div class="left-menu-box">프로필 변경</div>
-				<div class="left-menu-box">비밀번호 변경</div>
+				<div class="left-menu-box" onclick="location.href='${ctp}/setting/pwdChange';">비밀번호 변경</div>
 				<div class="left-menu-title">스토어 관리</div>
 				<div class="left-menu-box">구매한 게임키 확인</div>
 				<div class="left-menu-title">기타</div>

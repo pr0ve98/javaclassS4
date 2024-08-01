@@ -109,6 +109,10 @@
     		<div style="cursor:pointer;" onclick="closePopup('pwdreset')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
 		<div class="popup-support-main">
+			회원가입 시 가입했던 이메일을 적어주시면 그 이메일로 임시비밀번호를 보내드립니다!
+			<input type="text" id="pwdResetEmail" name="pwdResetEmail" placeholder="이메일을 입력하세요" class="forminput mt-2" style="width:100%" />
+			<div><span id="email-error2" class="error-message"></span></div>
+			<button id="pwdResetSubmit" class="imgInputBtn text-center mt-4" style="width:100%; font-size:18px;" disabled="disabled" onclick="pwdResetOk()">비밀번호 변경</button>
 		</div>
     </div>
 </div>

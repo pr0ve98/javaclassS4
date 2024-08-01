@@ -24,4 +24,8 @@ public interface MemberService {
 
 	public void setMemberBasicGameList(String mid);
 
+	public void pwdResetOk(String email, String pwd, String pwdEncode);
+
+	public void pwdChange(String mid, String pwd);
+
 }

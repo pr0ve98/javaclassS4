@@ -3,6 +3,7 @@ package com.spring.javaclassS4.service;
 import java.io.File;
 import java.util.UUID;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -77,5 +78,21 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void setMemberBasicGameList(String mid) {
 		memberDAO.setMemberBasicGameList(mid);
+	}
+
+	@Override
+	public void pwdResetOk(String email, String pwd, String pwdEncode) {
+		memberDAO.pwdResetOk(email, pwdEncode);
+		String title = "[INGAMETORY] 임시 비밀번호를 발급했습니다";
+		String text = "임시 비밀번호: "+pwd+"<br/><br/>빠른 시일내로 로그인하여 비밀번호를 새롭게 변경해주세요.<br/> 감사합니다!";
+			
+		try {
+			javaclassProvide.mailSend(email, title, "임시 비밀번호 발급", text);
+		} catch (MessagingException e) {e.printStackTrace();}
+	}
+
+	@Override
+	public void pwdChange(String mid, String pwd) {
+		memberDAO.pwdChange(mid, pwd);
 	}
 }

@@ -30,4 +30,10 @@
 	<update id="unlockMember">
 		UPDATE itMember m JOIN itBan b ON m.mid = b.banMid SET m.loginState = 'OK' WHERE m.loginState = 'NO' AND b.banDay = #{day} AND <![CDATA[TIMESTAMPDIFF(MINUTE, b.banTime, now()) >= #{day} * 1440]]>;
 	</update>
+	<update id="pwdResetOk">
+		UPDATE itMember set pwd=#{pwdEncode} where email=#{email};
+	</update>
+	<update id="pwdChange">
+		UPDATE itMember set pwd=#{pwd} where mid=#{mid};
+	</update>
 </mapper>

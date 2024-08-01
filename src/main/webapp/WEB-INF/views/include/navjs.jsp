@@ -89,6 +89,45 @@
         popup.classList.remove('hide');
         html.style.overflow = 'hidden';
     }
+	
+	function pwdReset() {
+		const emailError2 = document.getElementById('email-error2');
+		emailError2.style.display = 'none';
+		
+    	const popup = document.querySelector('#popup-pwdreset');
+    	const html = document.querySelector('html');
+        popup.classList.remove('hide');
+        html.style.overflow = 'hidden';
+    }
+	
+	function pwdResetOk() {
+		const mask = document.querySelector('.mask');
+		const html = document.querySelector('html');
+		mask.style.display = 'block';
+		html.style.overflow = 'hidden';
+		
+		const pwdResetEmail = document.getElementById('pwdResetEmail').value;
+		
+		$.ajax({
+			url : "${ctp}/member/pwdResetOk",
+			type : "post",
+			data : {email : pwdResetEmail},
+			success : function(res) {
+				mask.style.display = 'none';
+				html.style.overflow = 'auto';
+				if(res == "1"){
+					alert("메일을 확인해주세요!");
+					location.reload();
+				}
+				else {
+					alert("존재하지 않는 회원이거나 카카오 회원입니다!");
+				}
+			},
+			error : function() {
+				alert("오류!!");
+			}
+		});
+    }
     
     function closePopup(flag) {
     	let popup = '';
@@ -103,6 +142,7 @@
     	else if(flag == 'report') popup = document.querySelector('#popup-report');
     	else if(flag == 'support') popup = document.querySelector('#popup-support');
     	else if(flag == 'reviewwrite') popup = document.querySelector('#popup-reviewwrite');
+    	else if(flag == 'pwdreset') popup = document.querySelector('#popup-pwdreset');
     	const html = document.querySelector('html');
     	popup.classList.add('hide');
     	html.style.overflow = 'auto';
@@ -112,9 +152,12 @@
  	    const email = document.getElementById('joinemail');
  	    const pwd = document.getElementById('joinpwd');
  	    const submitBtn = document.getElementById('submitBtn');
-
  	    const emailError = document.getElementById('email-error');
  	    const pwdError = document.getElementById('pwd-error');
+
+ 	    const pwdResetEmail = document.getElementById('pwdResetEmail');
+ 	    const emailError2 = document.getElementById('email-error2');
+ 	    const pwdResetSubmit = document.getElementById('pwdResetSubmit');
 
  	    function validateForm() {
  	        let isValid = true;
@@ -150,9 +193,28 @@
 
  	       submitBtn.disabled = !isValid;
  	    }
+ 	    
+ 	   function validateResetEmail() {
+ 	        const emailReg = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+ 	        if (!emailReg.test(pwdResetEmail.value)) {
+ 	            emailError2.textContent = '잘못된 형식입니다';
+ 	            emailError2.style.display = 'inline';
+ 	            pwdResetEmail.classList.add('error-form');
+ 	           	pwdResetSubmit.disabled = true;  // 버튼 비활성화
+ 	        } else {
+ 	            emailError2.style.display = 'none';
+ 	            pwdResetEmail.classList.remove('error-form');
+ 	           	pwdResetSubmit.disabled = false; // 버튼 활성화
+ 	        }
+ 	    }
 
  	    email.addEventListener('input', validateForm);
  	    pwd.addEventListener('input', validateForm);
+ 	    pwdResetEmail.addEventListener('input', validateResetEmail);
+ 	    
+ 	   	validateForm();
+ 	  	validateResetEmail();
+ 	    
  	});
  	
  	function emailJoin() {

@@ -125,6 +125,13 @@
 			return false;
 		}
 		
+		if(showDate == "") {
+			alert("출시일을 입력하세요");
+	        $('.mask').hide();
+	        $('html').css('overflow', 'auto');
+			return false;
+		}
+		
 		if(fileName == "" && gameImg == ""){
 			alert("업로드할 파일을 선택하세요");
 	        $('.mask').hide();
@@ -337,6 +344,13 @@
 		
 		if(gameTitle == "") {
 			alert("게임의 이름을 입력하세요");
+	        $('.mask').hide();
+	        $('html').css('overflow', 'auto');
+			return false;
+		}
+		
+		if(showDate == "") {
+			alert("출시일을 입력하세요");
 	        $('.mask').hide();
 	        $('html').css('overflow', 'auto');
 			return false;
@@ -614,7 +628,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th>출시일</th>
+						<th><font color="#ff5e5e">*</font> 출시일</th>
 						<td><input type="date" name="showDate" id="showDate" class="forminput" /></td>
 					</tr>
 					<tr>
@@ -704,7 +718,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th>출시일</th>
+						<th><font color="#ff5e5e">*</font> 출시일</th>
 						<td><input type="date" name="eshowDate" id="eshowDate" class="forminput" /></td>
 					</tr>
 					<tr>

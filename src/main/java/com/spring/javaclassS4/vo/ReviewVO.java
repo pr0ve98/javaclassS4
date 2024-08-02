@@ -9,4 +9,8 @@ public class ReviewVO {
 	private int revGameIdx;
 	private int rating;
 	private String state;
+	
+	// 게임 정보
+	private int gameIdx;
+	private String gameImg;
 }

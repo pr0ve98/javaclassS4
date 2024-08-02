@@ -128,13 +128,13 @@
 		<div class="setting-main">
 			<div class="setting-left">
 				<div class="left-menu-title">계정관리</div>
-				<div class="left-menu-box">프로필 변경</div>
-				<div class="left-menu-box">비밀번호 변경</div>
-				<div class="left-menu-title">스토어 관리</div>
-				<div class="left-menu-box">구매한 게임키 확인</div>
+				<div class="left-menu-box" onclick="location.href='${ctp}/setting/profile';">프로필 변경</div>
+				<div class="left-menu-box" onclick="location.href='${ctp}/setting/pwdChange';">비밀번호 변경</div>
+				<hr/>
 				<div class="left-menu-title">기타</div>
-				<div class="left-menu-box">계정 삭제</div>
-				<div class="left-menu-box">로그아웃</div>
+				<div class="left-menu-box">계정 탈퇴</div>
+				<c:if test="${sKakao == 'OK'}"><div class="left-menu-box" onclick="javascript:kakaoLogout()">로그아웃</div></c:if>
+		        <c:if test="${sKakao == 'NO'}"><div class="left-menu-box" onclick="location.href='${ctp}/member/memberLogout';">로그아웃</div></c:if>
 			</div>
 			<div class="setting-right">
 				<h2>비밀번호 변경</h2>

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
+import com.spring.javaclassS4.vo.ReviewVO;
 
 public interface HomeService {
 
@@ -51,5 +52,9 @@ public interface HomeService {
 	public int getGameViewRCTotRecCnt(int gameIdx, String part);
 
 	public ArrayList<CommunityVO> getGameViewRCList(String mid, int startIndexNo, int pageSize, int gameIdx, String part);
+
+	public ArrayList<ReviewVO> getMyGameList(String mid, String part);
+
+	public ArrayList<CommunityVO> bestReviews(HttpSession session);
 
 }

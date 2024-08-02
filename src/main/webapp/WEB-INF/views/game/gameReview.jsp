@@ -356,7 +356,24 @@
  	        dropdown.style.display = "block";
  	    }
  	}
- 	
+	
+	function showAllContent(cmIdx) {
+		$.ajax({
+			url : "${ctp}/community/showAllContent",
+			type : "post",
+			data : {cmIdx : cmIdx},
+			success : function(res) {
+				$("#cmContent"+cmIdx).html(res);
+				$("#cmContent"+cmIdx).removeClass("moreGra");
+				$("#cmContent"+cmIdx).addClass("expanded");
+				$("#moreBtn"+cmIdx).hide();
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
+	
  	function contentDelete(cmIdx) {
 		let ans = confirm("정말로 삭제하시겠습니까?");
 		if(ans) {
@@ -750,6 +767,16 @@
 		
 		platform = platform.substring(0, platform.length-2);
 		
+		if(gameTitle == '' || gameTitle == null) {
+			alert("게임 이름은 필수 항목입니다!");
+			return false;
+		}
+		
+		if(showDate == '' || showDate == null) {
+			alert("출시일은 필수 항목입니다!");
+			return false;
+		}
+		
 		let query = {
 				reqMid : '${sMid}',
 				gameIdx : gameIdx,
@@ -842,7 +869,7 @@
 	    <hr/>
 	    <c:if test="${revVO == null}"><div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="showPopupWrite()">리뷰 작성</div></c:if>
 	    <c:if test="${revVO != null}"><div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="showPopupWrite(${revVO.revGameIdx}, ${revVO.rating}, '${revVO.state}', '${cmContent}')">리뷰 수정</div></c:if>
-		<div style="width:100%;" class="mt-2">
+		<div style="width:100%; color:#fff;;" class="mt-2">
 			<c:forEach var="cmVO" items="${cmVOS}">
 				<div class="cm-box" id="cmbox${cmVO.cmIdx}">
 					<div style="display:flex;justify-content: space-between;">
@@ -1167,7 +1194,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th>출시일</th>
+						<th><font color="#ff5e5e">*</font> 출시일</th>
 						<td><input type="date" name="eshowDate" id="eshowDate" value="${vo.showDate}" class="forminput" /></td>
 					</tr>
 					<tr>

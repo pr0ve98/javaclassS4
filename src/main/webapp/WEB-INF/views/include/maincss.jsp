@@ -293,12 +293,41 @@
 	    width: 90px;
 	    height: 90px;
 	    margin-right: 8px;
+	    cursor:pointer;
+	}
+	.star-back{
+		display: inline-block;
+		background-color: #00c722;
+		border-radius: 8px;
+		color: #fff;
+		text-align: center;
+	    border: 3px solid #161d25;
+	    font-size: 15px;
+	    letter-spacing: -.31px;
+	    width:40px;
+	}
+	.star-icon{
+		width: 18px;
+	    height: 18px;
+	    margin: 2px 0 0;
+	    background-color: #fafbfc;
+	    mask-size: cover;
+	    display: inline-block;
+	    vertical-align: top;
 	}
 	.playState {
 		position: absolute;
 	    width: 28px;
 	    height: 28px;
 	    right: -4px;
+	    bottom: -5px;
+	    z-index: 2;
+	}
+	.starState {
+		position: absolute;
+	    width: 28px;
+	    height: 28px;
+	    right: 10px;
 	    bottom: -5px;
 	    z-index: 2;
 	}
@@ -321,6 +350,7 @@
 		display: flex;
 		flex-direction: column;
 		width: 180px;
+		cursor:pointer;
 	}
 	.newgame-item-img {
 		display: inline-block;
@@ -368,6 +398,7 @@
 		border-radius: 10px;
 		height: calc(100% - 38px);
 		box-shadow: 0 4px 5px rgba(0,0,0,.06),0 1px 10px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.4);
+		cursor:pointer;
 	}
 	.review-box:hover {
 		background-color: #50748e24;
@@ -534,7 +565,7 @@
 	#popup-join .popup-join-content, #popup-login .popup-login-content, #popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
 	 #popup-edit .popup-edit-content, #popup-replyedit .popup-replyedit-content, #popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content,
 	 #popup-report .popup-report-content, #popup-support .popup-support-content, #popup-reviewwrite .popup-reviewwrite-content,
-	 #popup-pwdreset .popup-pwdreset-content {
+	 #popup-pwdreset .popup-pwdreset-content, #popup-ftgameedit .popup-ftgameedit-content {
 	  padding: 20px;
 	  background: #32373d;
 	  border-radius: 5px;
@@ -545,7 +576,7 @@
 	}
 	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
 	#popup-edit .popup-edit-content, #popup-reviewwrite .popup-reviewwrite-content {width: 700px;}
-	#popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content {width:500px;}
+	#popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content, #popup-ftgameedit .popup-ftgameedit-content{width:500px;}
 	#popup-report .popup-report-content, #popup-support .popup-support-content, #popup-pwdreset .popup-pwdreset-content {width: 330px;}
 	
 	.popup-open {
@@ -838,7 +869,7 @@
     	flex-wrap: wrap;
     	justify-content: center;
     }
-    .g-button, .eg-button {
+    .g-button, .eg-button, .ft-button {
     	flex: 0 1 calc(20% - 10px);
     	background: #161d25;
     	color: #b2bdce;
@@ -862,7 +893,7 @@
     	text-wrap: nowrap;
 		cursor: pointer;
     }
-    .c-button-active, .g-button-active, .eg-button-active {
+    .c-button-active, .g-button-active, .eg-button-active, .ft-button-active {
     	background: #00c722;
     	color: #fff;
     	font-weight: bold;
@@ -894,6 +925,7 @@
         overflow: hidden;
         position: relative;
         transition: max-height 0.5s ease-out;
+        color:#fff;
 	}
 	.moreGra::after {
         content: "";
@@ -1544,6 +1576,13 @@
 	}
 	.deleteEditNewsMB {display: none;}
 	.deleteEditNewsPC {display: block;}
+	.left-menu-box {
+		padding: 10px 10px 10px 0;
+    	font-size: 16px;
+	}
+	.left-menu-box:hover {
+		background-color: #161d25;
+	}
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;
@@ -1806,6 +1845,7 @@
 		.newsSN {
 			width: 100%;
 		}
+		.setting-main {flex-direction: column;}
 	}
 	@media screen and (max-width: 567px) {
 		.game-selection {justify-content: start;}

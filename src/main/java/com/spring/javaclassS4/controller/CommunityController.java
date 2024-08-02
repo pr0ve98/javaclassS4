@@ -515,7 +515,7 @@ public class CommunityController {
 					str += "<div onclick=\"location.href='"+request.getContextPath()+"/admin/userlist?page=1&viewpart=all&searchpart=아이디&search="+vo.getMid()+"';\">사용자 제재</div>";
 				}
 				else {
-					str += "<div onclick=\"reportPopup("+vo.getCmIdx()+", '게시글')\">신고</div>";
+					str += "<div onclick=\"reportPopup("+vo.getCmIdx()+", '게시글', '"+vo.getMid()+"')\">신고</div>";
 				}
 				
 				str += "</div></div></div>";

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
+import com.spring.javaclassS4.vo.ReviewVO;
 
 public interface HomeDAO {
 
@@ -48,4 +49,8 @@ public interface HomeDAO {
 
 	public ArrayList<CommunityVO> getGameViewRCList(@Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize,
 			@Param("gameIdx") int gameIdx, @Param("part") String part);
+
+	public ArrayList<ReviewVO> getMyGameList(@Param("mid") String mid, @Param("part") String part);
+
+	public ArrayList<CommunityVO> bestReviews();
 }

@@ -43,6 +43,14 @@
         });
         subSupportSelect.addEventListener('change', validateForm);
         textarea.addEventListener('input', validateForm);
+        
+		const ebuttons = document.querySelectorAll('.ft-button');
+        
+        ebuttons.forEach(ebutton => {
+        	ebutton.addEventListener('click', function () {
+                ebutton.classList.toggle('ft-button-active');
+            });
+        });
     });
     
 	function w3_open() {
@@ -139,6 +147,7 @@
     	else if(flag == 'replyedit') popup = document.querySelector('#popup-replyedit');
     	else if(flag == 'add') popup = document.querySelector('#popup-add');
     	else if(flag == 'gameedit') popup = document.querySelector('#popup-gameedit');
+    	else if(flag == 'ftgameedit') popup = document.querySelector('#popup-ftgameedit');
     	else if(flag == 'report') popup = document.querySelector('#popup-report');
     	else if(flag == 'support') popup = document.querySelector('#popup-support');
     	else if(flag == 'reviewwrite') popup = document.querySelector('#popup-reviewwrite');
@@ -382,5 +391,73 @@
 			}
 		});
 
+	}
+	function showGameEditPopup() {
+    	const popup = document.querySelector('#popup-ftgameedit');
+    	const html = document.querySelector('html');
+        popup.classList.remove('hide');
+        html.style.overflow = 'hidden';
+	}
+ 	
+ 	function gameRequest() {
+		let gameTitle = document.getElementById("ftgameTitle").value.trim();
+		let gameSubTitle = document.getElementById("ftgameSubTitle").value.trim();
+		let jangre = document.getElementById("ftjangre").value.trim();
+		let showDate = document.forms["ftgameaddform"]["ftshowDate"].value;
+		let price = document.getElementById("ftprice").value.trim();
+		let metascore = document.getElementById("ftmetascore").value.trim();
+		let steamscore = document.getElementById("ftsteamscore").value.trim();
+		let steamPage = document.getElementById("ftsteamPage").value.trim();
+		let developer = document.getElementById("ftdeveloper").value.trim();
+		let gameInfo = document.getElementById("ftgameInfo").value.trim();
+		
+		const platformActive = document.querySelectorAll('.ft-button-active');
+
+		let platform = '';
+
+		platformActive.forEach((button) => {
+			platform += button.getAttribute('data-platform') + ', ';
+		});
+		
+		platform = platform.substring(0, platform.length-2);
+		
+		if(gameTitle == '' || gameTitle == null) {
+			alert("게임 이름은 필수 항목입니다!");
+			return false;
+		}
+		
+		if(showDate == '' || showDate == null) {
+			alert("출시일은 필수 항목입니다!");
+			return false;
+		}
+		
+		let query = {
+				reqMid : '${sMid}',
+				gameTitle : gameTitle,
+				gameSubTitle : gameSubTitle,
+				jangre:jangre,
+				platform:platform,
+				showDate:showDate,
+				price:price,
+				metascore:metascore,
+				steamscore:steamscore,
+				steamPage:steamPage,
+				developer:developer,
+				gameInfo:gameInfo
+		}
+		
+ 		$.ajax({
+ 			url : "${ctp}/admin/gameRequestInput",
+ 			type : "post",
+            data: JSON.stringify(query),
+            contentType: "application/json",
+ 			success : function() {
+ 				alert("요청이 정상접수 되었습니다!");
+ 				closePopup('gameedit');
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
 	}
 	</script>

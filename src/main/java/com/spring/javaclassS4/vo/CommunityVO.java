@@ -53,4 +53,7 @@ public class CommunityVO {
 	
 	// 뉴스 썸네일
 	private String newsThumnail;
+	
+	// 홈 리뷰용
+	private String onlyText;
 }

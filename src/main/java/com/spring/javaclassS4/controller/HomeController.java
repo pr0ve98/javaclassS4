@@ -44,7 +44,7 @@ public class HomeController {
 	@RequestMapping(value = {"/", "/main"}, method = RequestMethod.GET)
 	public String home(Model model, HttpSession session) {
 		String mid = session.getAttribute("sMid")==null ? "" : (String)session.getAttribute("sMid");
-		ArrayList<GameVO> newgamelist = homeService.getNewGameList();
+		// 내 게임 상태
 		int myGameAllCount = homeService.getMyGameCount(mid);
 		int myGame5Star = homeService.getMyGameStar(mid, 5);
 		int myGame3Star = homeService.getMyGameStar(mid, 3);
@@ -66,8 +66,19 @@ public class HomeController {
 		model.addAttribute("myGameFolder", myGameFolder);
 		model.addAttribute("myGameNone", myGameNone);
 		
+		// 최근 담은 게임
+		ArrayList<ReviewVO> mygameVOS = homeService.getMyGameList(mid, "recent");
+		model.addAttribute("mygameVOS", mygameVOS);
 		
+		// 신작 게임
+		ArrayList<GameVO> newgamelist = homeService.getNewGameList();
 		model.addAttribute("newgamelist", newgamelist);
+		
+		// 추천 리뷰
+		ArrayList<CommunityVO> bestReviews = homeService.bestReviews(session);
+		model.addAttribute("bestReviews", bestReviews);
+		
+		
 		model.addAttribute("flag", "main");
 		return "home";
 	}
@@ -156,48 +167,87 @@ public class HomeController {
 		int replyCount = vo.getReplyCount();
 		String str = "";
 		
-	    str += "<div style=\"display:flex; justify-content:space-between;\">"
-	        + "<div style=\"display:flex; align-items:center;\">";
-	    str += "<img src=\"" + request.getContextPath() + "/member/" + vo.getMemImg() + "\" alt=\"프로필\" class=\"text-pic\"><div>";
-	    if(!vo.getTitle().equals("없음")) str += "<div style=\"font-size:12px;\">" + vo.getTitle() + "</div>";
-	    str += "<div style=\"font-weight:bold;\">" + vo.getNickname() + "</div><div>";
-	    
-	    if (vo.getPart().equals("소식/정보")) str += "<span class=\"badge badge-secondary\">소식/정보</span>&nbsp;";
-	    else if (vo.getPart().equals("자유")) str += "<span class=\"badge badge-secondary\">자유글</span>&nbsp;";
-	    else if (vo.getPart().equals("세일")) str += "<span class=\"badge badge-secondary\">세일정보</span>&nbsp;";
-	    else str += "<div style=\"color:#b2bdce; font-size:12px; cursor:pointer;\" onclick=\"location.href='"+request.getContextPath()+"/gameview/"+vo.getCmGameIdx()+"';\"><i class=\"fa-solid fa-gamepad fa-xs\" style=\"color: #b2bdce;\"></i>&nbsp;" + vo.getGameTitle() + "</div>";
-	    
-	    str += "</div></div></div>";
-	    
-	    if(!mid.equals("")) {
-		    str += "<div style=\"display: flex; align-items: center;\">";
-		    if(!mid.equals(vo.getMid()) && vo.getFollow() == 0) str += "<div class=\"replyok-button mr-4 fb"+vo.getMid()+"\" onclick=\"followAdd('"+vo.getMid()+"')\"><i class=\"fa-solid fa-plus fa-sm\"></i>&nbsp;팔로우</div>";
-		    str +="<div style=\"position:relative;\">"
-		        + "<i class=\"fa-solid fa-bars fa-xl\" onclick=\"toggleContentMenu(" + vo.getCmIdx() + ")\" style=\"color: #D5D5D5;cursor:pointer;\"></i>"
-		        + "<div id=\"contentMenu" + vo.getCmIdx() + "\" class=\"content-menu\">";
+		if(vo.getPart().equals("리뷰")) {
+			str += "<div style=\"display:flex; justify-content:space-between;\">"
+					+ "<div>";
+			str += "<img src=\"" + request.getContextPath() + "/member/" + vo.getMemImg() + "\" alt=\"프로필\" class=\"text-pic\" style=\"width:20px; height:20px;\">"
+					+ "<b>"+vo.getNickname()+"</b>님이 평가를 남기셨습니다</div>";
+			
+			if(!mid.equals("")) {
+				str += "<div style=\"display: flex; align-items: center;\">";
+				str +="<div style=\"position:relative;\">"
+						+ "<i class=\"fa-solid fa-bars fa-xl\" onclick=\"toggleContentMenu(" + vo.getCmIdx() + ")\" style=\"color: #D5D5D5;cursor:pointer;\"></i>"
+						+ "<div id=\"contentMenu" + vo.getCmIdx() + "\" class=\"content-menu\">";
+				
+				if (mid.equals(vo.getMid())) {
+					str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
+				}
+				else if (level == 0) {
+					str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
+					str += "<div onclick=\"location.href='"+request.getContextPath()+"/admin/userlist?page=1&viewpart=all&searchpart=아이디&search="+vo.getMid()+"';\">사용자 제재</div>";
+				}
+				else {
+					str += "<div onclick=\"reportPopup("+vo.getCmIdx()+", '게시글', '"+vo.getMid()+"')\">신고</div>";
+				}
+				
+				str += "</div></div></div>";
+			}
+			str += "</div><hr/>";
+			str += "<div style=\"display:flex; margin: 0 20px; align-items:center; gap:20px; cursor:pointer;\" onclick=\"location.href='"+request.getContextPath()+"/gameview/"+vo.getGameIdx()+"'\"><div>";
+			if(vo.getGameImg().indexOf("http") == -1) str += "<img src=\""+request.getContextPath()+"/game/"+vo.getGameImg()+"\" alt=\""+vo.getGameTitle()+"\" class=\"re-gameImg\">";
+			else str += "<img src=\""+vo.getGameImg()+"\" alt=\""+vo.getGameTitle()+"\" class=\"re-gameImg\">";
+			str += "</div><div class=\"review-info\";><div class=\"game-title\">"+vo.getGameTitle()+"</div>"
+				+ "<div class=\"review-game-info\">"
+				+ "<span class=\"review-star\"><i class=\"fa-solid fa-star\" style=\"color: #FFD43B;\"></i>&nbsp;"+vo.getRating()+"</span>"
+				+ "<span class=\"review-state-"+vo.getState()+"\">";
+			if(vo.getState().equals("play")) str += "<i class=\"fa-solid fa-play\"></i>&nbsp;하고있어요";
+			else if(vo.getState().equals("stop")) str += "<i class=\"fa-solid fa-xmark\"></i>&nbsp;그만뒀어요";
+			else if(vo.getState().equals("done")) str += "<i class=\"fa-solid fa-check\"></i>&nbsp;다했어요";
+			else if(vo.getState().equals("folder")) str += "<i class=\"fa-solid fa-folder\"></i>&nbsp;모셔놨어요";
+			else if(vo.getState().equals("pin")) str += "<i class=\"fa-solid fa-thumbtack\"></i>&nbsp;관심있어요";
+			else str += "<i class=\"fa-solid fa-ellipsis\"></i>&nbsp;상태없음";
+			str += "</span></div></div></div>";
+		}
+		else {
+		    str += "<div style=\"display:flex; justify-content:space-between;\">"
+		        + "<div style=\"display:flex; align-items:center;\">";
+		    str += "<img src=\"" + request.getContextPath() + "/member/" + vo.getMemImg() + "\" alt=\"프로필\" class=\"text-pic\"><div>";
+		    if(!vo.getTitle().equals("없음")) str += "<div style=\"font-size:12px;\">" + vo.getTitle() + "</div>";
+		    str += "<div style=\"font-weight:bold;\">" + vo.getNickname() + "</div><div>";
 		    
-		    if (mid.equals(vo.getMid())) {
-		    	str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
-		    }
-		    else if (level == 0) {
-		        str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
-		        str += "<div onclick=\"location.href='"+request.getContextPath()+"/admin/userlist?page=1&viewpart=all&searchpart=아이디&search="+vo.getMid()+"';\">사용자 제재</div>";
-		    }
-		    else {
-		    	str += "<div class=\"ufb"+vo.getMid()+"\" onclick=\"followDelete('"+vo.getMid()+"')\">언팔로우</div>";
-		    	str += "<div onclick=\"reportPopup("+vo.getCmIdx()+", '게시글')\">신고</div>";
-		    }
+		    if (vo.getPart().equals("소식/정보")) str += "<span class=\"badge badge-secondary\">소식/정보</span>&nbsp;";
+		    else if (vo.getPart().equals("자유")) str += "<span class=\"badge badge-secondary\">자유글</span>&nbsp;";
+		    else if (vo.getPart().equals("세일")) str += "<span class=\"badge badge-secondary\">세일정보</span>&nbsp;";
+		    else str += "<div style=\"color:#b2bdce; font-size:12px; cursor:pointer;\" onclick=\"location.href='"+request.getContextPath()+"/gameview/"+vo.getCmGameIdx()+"';\"><i class=\"fa-solid fa-gamepad fa-xs\" style=\"color: #b2bdce;\"></i>&nbsp;" + vo.getGameTitle() + "</div>";
 		    
 		    str += "</div></div></div>";
-	    }
 	    
-	    str += "</div>";
+		    if(!mid.equals("")) {
+			    str += "<div style=\"display: flex; align-items: center;\">";
+			    if(!mid.equals(vo.getMid()) && vo.getFollow() == 0) str += "<div class=\"replyok-button mr-4 fb"+vo.getMid()+"\" onclick=\"followAdd('"+vo.getMid()+"')\"><i class=\"fa-solid fa-plus fa-sm\"></i>&nbsp;팔로우</div>";
+			    str +="<div style=\"position:relative;\">"
+			        + "<i class=\"fa-solid fa-bars fa-xl\" onclick=\"toggleContentMenu(" + vo.getCmIdx() + ")\" style=\"color: #D5D5D5;cursor:pointer;\"></i>"
+			        + "<div id=\"contentMenu" + vo.getCmIdx() + "\" class=\"content-menu\">";
+			    
+			    if (mid.equals(vo.getMid())) {
+			    	str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
+			    }
+			    else if (level == 0) {
+			        str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
+			        str += "<div onclick=\"location.href='"+request.getContextPath()+"/admin/userlist?page=1&viewpart=all&searchpart=아이디&search="+vo.getMid()+"';\">사용자 제재</div>";
+			    }
+			    else {
+			    	str += "<div class=\"ufb"+vo.getMid()+"\" onclick=\"followDelete('"+vo.getMid()+"')\">언팔로우</div>";
+			    	str += "<div onclick=\"reportPopup("+vo.getCmIdx()+", '게시글')\">신고</div>";
+			    }
+			    
+			    str += "</div></div></div>";
+		    }
+		    
+		    str += "</div>";
+		}
 	    str += "<div class=\"community-content\">";
-	    
-	    if (vo.getLongContent() == 1) {
-	        str += "<div class=\"cm-content moreGra\" id=\"cmContent" + vo.getCmIdx() + "\">" + vo.getCmContent() + "</div>"
-	            + "<div onclick=\"showAllContent(" + vo.getCmIdx() + ")\" id=\"moreBtn" + vo.getCmIdx() + "\" style=\"cursor:pointer; color:#00c722; font-weight:bold;\">더 보기</div>";
-	    } else str += "<div class=\"cm-content\" id=\"cmContent" + vo.getCmIdx() + "\">" + vo.getCmContent() + "</div>";
+	    str += "<div class=\"cm-content\" id=\"cmContent" + vo.getCmIdx() + "\">" + vo.getCmContent() + "</div>";
 	    
 	    str += "<div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\">";
 	    
@@ -371,6 +421,42 @@ public class HomeController {
 		model.addAttribute("infoCnt", infoCnt);
 		
 		return "game/gameInfo";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/mygamePartChange", method = RequestMethod.POST, produces = "application/text; charset=utf8")
+	public String mygamePartChange(String part, HttpSession session, HttpServletRequest request) {
+		String mid = (String) session.getAttribute("sMid");
+		String str = "";
+		
+		if(mid != null) {
+			ArrayList<ReviewVO> mygameVOS = homeService.getMyGameList(mid, part);
+			for(ReviewVO vo : mygameVOS) {
+				str += "<span class=\"game-item\" onclick=\"location.href='"+request.getContextPath()+"/gameview/"+vo.getGameIdx()+"';\">";
+				if(vo.getGameImg().indexOf("http") == -1) str += "<img src=\""+request.getContextPath()+"/game/"+vo.getGameImg()+"\">";
+				else str += "<img src=\""+vo.getGameImg()+"\">";
+				if(part.equals("recent") || part.equals("nowPlaying")) {
+					str += "<span class=\"playState\">"
+						+ "<img src=\""+request.getContextPath()+"/images/"+vo.getState()+"Icon.svg\">";
+				}
+				else {
+					str += "<span class=\"starState\">"
+						+ "<span class=\"star-back\"><span class=\"star-icon\" style=\"mask-image: url(&quot;https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/solid/Star.svg&quot;);\"></span>"+vo.getRating()+"</span>";
+				}
+				str += "</span></span>";
+			}
+			if(mygameVOS.size() < 4) {
+				for(int i=0; i<4-mygameVOS.size(); i++) {
+					str += "<span class=\"game-item\"><img src=\""+request.getContextPath()+"/images/nomygameimage.jpg\"></span>";
+				}
+			}
+		}
+		else {
+			for(int i=0; i<4; i++) {
+				str += "<span class=\"game-item\"><img src=\""+request.getContextPath()+"/images/nomygameimage.jpg\"></span>";
+			}
+		}
+		return str;
 	}
 	
 }

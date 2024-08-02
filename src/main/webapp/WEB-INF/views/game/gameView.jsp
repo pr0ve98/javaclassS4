@@ -793,6 +793,16 @@
 		
 		platform = platform.substring(0, platform.length-2);
 		
+		if(gameTitle == '' || gameTitle == null) {
+			alert("게임 이름은 필수 항목입니다!");
+			return false;
+		}
+		
+		if(showDate == '' || showDate == null) {
+			alert("출시일은 필수 항목입니다!");
+			return false;
+		}
+		
 		let query = {
 				reqMid : '${sMid}',
 				gameIdx : gameIdx,
@@ -1166,6 +1176,10 @@
 		    				<td>${vo.platform}</td>
 	    				</tr>
 	    				<tr>
+		    				<th>장르</th>
+		    				<td>${vo.jangre}</td>
+	    				</tr>
+	    				<tr>
 		    				<th>발매일</th>
 		    				<td>${vo.showDate}</td>
 	    				</tr>
@@ -1450,7 +1464,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th>출시일</th>
+						<th><font color="#ff5e5e">*</font> 출시일</th>
 						<td><input type="date" name="eshowDate" id="eshowDate" value="${vo.showDate}" class="forminput" /></td>
 					</tr>
 					<tr>

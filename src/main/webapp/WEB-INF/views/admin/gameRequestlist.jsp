@@ -61,7 +61,7 @@
 		$("#egameImgForm").show();
 	}
 	
-	function showGameEditPopup(voString) {
+	function gameEditPopup(voString) {
 		let vo = parseGameVO(voString);
 		
 		if(vo.platform != null && vo.platform != ''){
@@ -500,7 +500,7 @@
 						<td data-title="거절 사유">&nbsp;&nbsp;${vo.reason}</td>
 						<td>
 							<c:if test="${vo.grComplete == 0}">
-								<button id="levelBtn${vo.grIdx}" class="badge badge-warning" onclick="showGameEditPopup('${fn:replace(fn:replace(fn:replace(vo, '\'', ''), '\"', '&quot;'), newLine, '<br/>')}')">등록/수정</button>
+								<button id="levelBtn${vo.grIdx}" class="badge badge-warning" onclick="gameEditPopup('${fn:replace(fn:replace(fn:replace(vo, '\'', ''), '\"', '&quot;'), newLine, '<br/>')}')">등록/수정</button>
 								<button id="levelOkBtn${vo.grIdx}" class="badge badge-success" onclick="requestYes(${vo.grIdx})">완료</button>
 								<button id="levelOkBtn${vo.grIdx}" class="badge badge-secondary" onclick="NoPopup(${vo.grIdx})">거절</button>
 							</c:if>

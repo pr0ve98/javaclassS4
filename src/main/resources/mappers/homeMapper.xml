@@ -70,4 +70,12 @@
 		<if test="part == '일지'">SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.cmGameIdx=#{gameIdx} and c.part='일지' and c.publicType='전체' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};</if>
 		<if test="part == '소식/정보'">SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.cmGameIdx=#{gameIdx} and c.part='소식/정보' and c.publicType='전체' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};</if>
 	</select>
+	<select id="getMyGameList" resultType="com.spring.javaclassS4.vo.ReviewVO">
+		<if test="part == 'recent' or part == 'recentReview'">SELECT r.*, g.gameImg, g.gameIdx FROM itReview r LEFT JOIN itGame g ON r.revGameIdx = g.gameIdx WHERE r.revMid=#{mid} ORDER BY r.revIdx desc limit 4;</if>
+		<if test="part == 'nowPlaying'">SELECT r.*, g.gameImg, g.gameIdx FROM itReview r LEFT JOIN itGame g ON r.revGameIdx = g.gameIdx WHERE r.revMid=#{mid} and r.state='play' ORDER BY r.revIdx desc limit 4;</if>
+		<if test="part == 'highStar'">SELECT r.*, g.gameImg, g.gameIdx FROM itReview r LEFT JOIN itGame g ON r.revGameIdx = g.gameIdx WHERE r.revMid=#{mid} ORDER BY r.rating desc limit 4;</if>
+	</select>
+	<select id="bestReviews" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		SELECT c.*, TIMESTAMPDIFF(hour, c.cmDate, NOW()) AS hour_diff, TIMESTAMPDIFF(minute, c.cmDate, NOW()) AS min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx LEFT JOIN (SELECT l.likeCmIdx, COUNT(l.likeCmIdx) AS likeCnt FROM itLike l GROUP BY l.likeCmIdx) likes ON c.cmIdx = likes.likeCmIdx WHERE c.part = '리뷰' AND likes.likeCnt >= 5 ORDER BY RAND() LIMIT 3;
+	</select>
 </mapper>

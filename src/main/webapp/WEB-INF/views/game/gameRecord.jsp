@@ -707,6 +707,16 @@
 		
 		platform = platform.substring(0, platform.length-2);
 		
+		if(gameTitle == '' || gameTitle == null) {
+			alert("게임 이름은 필수 항목입니다!");
+			return false;
+		}
+		
+		if(showDate == '' || showDate == null) {
+			alert("출시일은 필수 항목입니다!");
+			return false;
+		}
+		
 		let query = {
 				reqMid : '${sMid}',
 				gameIdx : gameIdx,
@@ -798,7 +808,7 @@
 	    </div>
 	    <hr/>
 	    <div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="showPopupWrite()">일지 작성</div>
-		<div style="width:100%;" class="mt-2">
+		<div style="width:100%; color:#fff;;" class="mt-2">
 			<c:forEach var="cmVO" items="${cmVOS}">
 				<div class="cm-box" id="cmbox${cmVO.cmIdx}">
 					<div style="display:flex;justify-content: space-between;">
@@ -1269,7 +1279,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th>출시일</th>
+						<th><font color="#ff5e5e">*</font> 출시일</th>
 						<td><input type="date" name="eshowDate" id="eshowDate" value="${vo.showDate}" class="forminput" /></td>
 					</tr>
 					<tr>

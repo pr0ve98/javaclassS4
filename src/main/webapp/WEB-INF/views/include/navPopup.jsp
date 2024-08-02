@@ -116,3 +116,76 @@
 		</div>
     </div>
 </div>
+<div id="popup-ftgameedit" class="hide">
+  <div class="popup-ftgameedit-content scrollbar">
+		<div class="popup-add-header">
+			<div class="e-header-text">게임 등록</div>
+    		<div style="cursor:pointer;" onclick="closePopup('ftgameedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+		</div>
+		<div class="popup-add-main">
+			<form name="ftgameaddform" method="post">
+				<table class="table table-borderless" style="color:#fff">
+					<tr>
+						<th><font color="#ff5e5e">*</font> 이름</th>
+						<td><input type="text" name="ftgameTitle" id="ftgameTitle" placeholder="게임 한글 이름을 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>외국어 이름</th>
+						<td><input type="text" name="ftgameSubTitle" id="ftgameSubTitle" placeholder="게임 외국어 이름을 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>장르</th>
+						<td><input type="text" name="ftjangre" id="ftjangre" placeholder="장르를 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>플랫폼</th>
+						<td>
+							<div class="g-buttons" style="margin: 0 auto;">
+			                    <span class="ft-button" data-platform="PC">PC</span>
+			                    <span class="ft-button" data-platform="PS4">PS4</span>
+			                    <span class="ft-button" data-platform="PS5">PS5</span>
+			                    <span class="ft-button" data-platform="XBO">XBO</span>
+			                    <span class="ft-button" data-platform="XSX">XSX</span>
+			                    <span class="ft-button" data-platform="XSS">XSS</span>
+			                    <span class="ft-button" data-platform="Switch">Switch</span>
+			                    <span class="ft-button" data-platform="Android">Android</span>
+			                    <span class="ft-button" data-platform="iOS">iOS</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th><font color="#ff5e5e">*</font> 출시일</th>
+						<td><input type="date" name="ftshowDate" id="ftshowDate" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>가격</th>
+						<td><input type="number" name="ftprice" id="ftprice" placeholder="가격을 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>메타스코어</th>
+						<td><input type="number" name="ftmetascore" id="ftmetascore" placeholder="메타스코어를 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>스팀평가</th>
+						<td><input type="text" name="ftsteamscore" id="ftsteamscore" placeholder="스팀 평가(전체)를 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>스팀링크</th>
+						<td><input type="text" name="ftsteamPage" id="ftsteamPage" placeholder="스팀 스토어 링크를 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>개발사</th>
+						<td><input type="text" name="ftdeveloper" id="ftdeveloper" placeholder="개발사를 입력하세요" class="forminput" /></td>
+					</tr>
+					<tr>
+						<th>게임소개</th>
+						<td><textarea rows="3" name="ftgameInfo" id="ftgameInfo" placeholder="게임소개를 입력하세요" class="form-control textarea"></textarea></td>
+					</tr>
+					<tr>
+						<td colspan="2"><input type="button" class="joinBtn-sm" value="등록 요청" onclick="gameRequest()" /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+  </div>
+</div>

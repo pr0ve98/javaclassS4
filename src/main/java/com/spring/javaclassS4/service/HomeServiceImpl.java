@@ -20,6 +20,7 @@ import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
+import com.spring.javaclassS4.vo.ReviewVO;
 
 @Service
 public class HomeServiceImpl implements HomeService {
@@ -284,6 +285,69 @@ public class HomeServiceImpl implements HomeService {
 		ArrayList<CommunityVO> vos = homeDAO.getGameViewRCList(startIndexNo, pageSize, gameIdx, part);
 		for(CommunityVO vo : vos) {
 			vo = voReVO(vo, mid);
+		}
+		return vos;
+	}
+
+	@Override
+	public ArrayList<ReviewVO> getMyGameList(String mid, String part) {
+		return homeDAO.getMyGameList(mid, part);
+	}
+
+	@Override
+	public ArrayList<CommunityVO> bestReviews(HttpSession session) {
+		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
+		ArrayList<CommunityVO> vos = homeDAO.bestReviews();
+		for(CommunityVO vo:vos) {
+			// 텍스트만 뽑아내기
+	        Document doc = Jsoup.parse(vo.getCmContent());
+	        String ctPreview = doc.text();
+	        if(ctPreview.length() > 200) {
+	        	ctPreview = ctPreview.substring(0, 200);
+	        }
+	        vo.setOnlyText(ctPreview);
+	        
+	        List<String> likeMember = communityDAO.getLikeMember(vo.getCmIdx());
+			if(mid != null && likeMember.size() > 0) {
+				for(int j=0; j<likeMember.size(); j++) {
+					if(mid.equals(likeMember.get(j))) {
+						vo.setLikeSW(1);
+						break;
+					}
+					else vo.setLikeSW(0);
+				}
+			}
+			vo.setLikeMember(likeMember);
+			vo.setLikeCnt(likeMember.size());
+			
+	        ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vo.getCmIdx());
+	        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
+
+	        for (ReplyVO k : parentsReply) {
+	            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
+	            k.setChildReplyCount(childReplyCount);
+
+	            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vo.getCmIdx(), k.getReplyIdx());
+	            
+	            // 자식 댓글을 추가
+	            if (childReplies != null) {
+	                childsReply.addAll(childReplies);
+	            }
+	        }
+		        
+			int replyCount = communityDAO.getReplyCount(vo.getCmIdx());
+			vo.setParentsReply(parentsReply);
+			vo.setChildReply(childsReply);
+			vo.setReplyCount(replyCount);
+			
+			if(vo.getCmGameIdx() != 0) {
+				GameVO vo2 = communityDAO.getGameIdx(vo.getCmGameIdx());
+				vo.setGameImg(vo2.getGameImg());
+			}
+			
+			FollowVO fVO = communityDAO.getFollow(mid, vo.getMid());
+			if(fVO == null) vo.setFollow(0);
+			else vo.setFollow(1);
 		}
 		return vos;
 	}

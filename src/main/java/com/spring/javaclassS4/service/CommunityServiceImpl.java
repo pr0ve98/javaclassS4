@@ -191,6 +191,7 @@ public class CommunityServiceImpl implements CommunityService {
 	        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
 
 	        for (ReplyVO k : parentsReply) {
+	        	k.setReplyContent(k.getReplyContent().replace("\n", "<br/>"));
 	            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
 	            k.setChildReplyCount(childReplyCount);
 
@@ -198,6 +199,9 @@ public class CommunityServiceImpl implements CommunityService {
 	            
 	            // 자식 댓글을 추가
 	            if (childReplies != null) {
+	            	for (ReplyVO c : childReplies) {
+	            		c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
+	            	}
 	                childsReply.addAll(childReplies);
 	            }
 	        }
@@ -268,6 +272,7 @@ public class CommunityServiceImpl implements CommunityService {
 	        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
 
 	        for (ReplyVO k : parentsReply) {
+	        	k.setReplyContent(k.getReplyContent().replace("\n", "<br/>"));
 	            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
 	            k.setChildReplyCount(childReplyCount);
 
@@ -275,6 +280,9 @@ public class CommunityServiceImpl implements CommunityService {
 	            
 	            // 자식 댓글을 추가
 	            if (childReplies != null) {
+	            	for (ReplyVO c : childReplies) {
+	            		c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
+	            	}
 	                childsReply.addAll(childReplies);
 	            }
 	        }
@@ -295,7 +303,169 @@ public class CommunityServiceImpl implements CommunityService {
 		}
 		return vos;
 	}
+	
+	@Override
+	public ArrayList<CommunityVO> getMyReviewList(String mid, String userMid, int startIndexNo, int pageSize) {
+		ArrayList<CommunityVO> vos = communityDAO.getMyReviewList(userMid, startIndexNo, pageSize);
+		// 글 내용이 길다면 조금만 보여주기
+		for(int i=0; i<vos.size(); i++) {
+			Document doc = Jsoup.parse(vos.get(i).getCmContent());
+			Elements ptag = doc.select("p");
+			Elements img = doc.select("img");
+			
+			StringBuilder reContent = new StringBuilder();
+			
+			if(!img.isEmpty()) {
+				Element firstImg = img.first();
+				for (Element e : ptag) {
+					reContent.append(e.outerHtml());
+					if(e.equals(firstImg.parent())) {
+						vos.get(i).setLongContent(1);
+						break;
+					}
+				}
+			}
+			else {
+				if(ptag.size() < 7) {
+					ptag.forEach(p -> reContent.append(p.outerHtml()));
+					vos.get(i).setLongContent(0);
+				}
+				else {
+					ptag.stream().limit(7).forEach(p -> reContent.append(p.outerHtml()));
+					vos.get(i).setLongContent(1);
+				}
+			}
+			vos.get(i).setCmContent(reContent.toString());
+			List<String> likeMember = communityDAO.getLikeMember(vos.get(i).getCmIdx());
+			if(mid != null && likeMember.size() > 0) {
+				for(int j=0; j<likeMember.size(); j++) {
+					if(mid.equals(likeMember.get(j))) {
+						vos.get(i).setLikeSW(1);
+						break;
+					}
+					else vos.get(i).setLikeSW(0);
+				}
+			}
+			vos.get(i).setLikeMember(likeMember);
+			vos.get(i).setLikeCnt(likeMember.size());
+			
+			ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vos.get(i).getCmIdx());
+			ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
+			
+			for (ReplyVO k : parentsReply) {
+	        	k.setReplyContent(k.getReplyContent().replace("\n", "<br/>"));
+	            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
+	            k.setChildReplyCount(childReplyCount);
 
+	            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vos.get(i).getCmIdx(), k.getReplyIdx());
+	            
+	            // 자식 댓글을 추가
+	            if (childReplies != null) {
+	            	for (ReplyVO c : childReplies) {
+	            		c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
+	            	}
+	                childsReply.addAll(childReplies);
+	            }
+	        }
+			
+			int replyCount = communityDAO.getReplyCount(vos.get(i).getCmIdx());
+			vos.get(i).setParentsReply(parentsReply);
+			vos.get(i).setChildReply(childsReply);
+			vos.get(i).setReplyCount(replyCount);
+			
+			if(vos.get(i).getCmGameIdx() != 0) {
+				GameVO vo = communityDAO.getGameIdx(vos.get(i).getCmGameIdx());
+				vos.get(i).setGameImg(vo.getGameImg());
+			}
+			
+			FollowVO fVO = communityDAO.getFollow(mid, vos.get(i).getMid());
+			if(fVO == null) vos.get(i).setFollow(0);
+			else vos.get(i).setFollow(1);
+		}
+		return vos;
+	}
+	
+	@Override
+	public ArrayList<CommunityVO> getMyRecordList(String mid, String userMid, int startIndexNo, int pageSize) {
+		ArrayList<CommunityVO> vos = communityDAO.getMyRecordList(userMid, startIndexNo, pageSize);
+		// 글 내용이 길다면 조금만 보여주기
+		for(int i=0; i<vos.size(); i++) {
+			Document doc = Jsoup.parse(vos.get(i).getCmContent());
+			Elements ptag = doc.select("p");
+			Elements img = doc.select("img");
+			
+			StringBuilder reContent = new StringBuilder();
+			
+			if(!img.isEmpty()) {
+				Element firstImg = img.first();
+				for (Element e : ptag) {
+					reContent.append(e.outerHtml());
+					if(e.equals(firstImg.parent())) {
+						vos.get(i).setLongContent(1);
+						break;
+					}
+				}
+			}
+			else {
+				if(ptag.size() < 7) {
+					ptag.forEach(p -> reContent.append(p.outerHtml()));
+					vos.get(i).setLongContent(0);
+				}
+				else {
+					ptag.stream().limit(7).forEach(p -> reContent.append(p.outerHtml()));
+					vos.get(i).setLongContent(1);
+				}
+			}
+			vos.get(i).setCmContent(reContent.toString());
+			List<String> likeMember = communityDAO.getLikeMember(vos.get(i).getCmIdx());
+			if(mid != null && likeMember.size() > 0) {
+				for(int j=0; j<likeMember.size(); j++) {
+					if(mid.equals(likeMember.get(j))) {
+						vos.get(i).setLikeSW(1);
+						break;
+					}
+					else vos.get(i).setLikeSW(0);
+				}
+			}
+			vos.get(i).setLikeMember(likeMember);
+			vos.get(i).setLikeCnt(likeMember.size());
+			
+			ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vos.get(i).getCmIdx());
+			ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
+			
+			for (ReplyVO k : parentsReply) {
+	        	k.setReplyContent(k.getReplyContent().replace("\n", "<br/>"));
+	            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
+	            k.setChildReplyCount(childReplyCount);
+
+	            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vos.get(i).getCmIdx(), k.getReplyIdx());
+	            
+	            // 자식 댓글을 추가
+	            if (childReplies != null) {
+	            	for (ReplyVO c : childReplies) {
+	            		c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
+	            	}
+	                childsReply.addAll(childReplies);
+	            }
+	        }
+			
+			int replyCount = communityDAO.getReplyCount(vos.get(i).getCmIdx());
+			vos.get(i).setParentsReply(parentsReply);
+			vos.get(i).setChildReply(childsReply);
+			vos.get(i).setReplyCount(replyCount);
+			
+			if(vos.get(i).getCmGameIdx() != 0) {
+				GameVO vo = communityDAO.getGameIdx(vos.get(i).getCmGameIdx());
+				vos.get(i).setGameImg(vo.getGameImg());
+			}
+			
+			FollowVO fVO = communityDAO.getFollow(mid, vos.get(i).getMid());
+			if(fVO == null) vos.get(i).setFollow(0);
+			else vos.get(i).setFollow(1);
+		}
+		return vos;
+	}
+	
 	@Override
 	public CommunityVO showAllContent(int cmIdx) {
 		return communityDAO.showAllContent(cmIdx);
@@ -371,6 +541,7 @@ public class CommunityServiceImpl implements CommunityService {
 		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 		
 		for(ReplyVO p : parent) {
+			p.setReplyContent(p.getReplyContent().replace("\n", "<br/>"));
 			child = communityDAO.getCommunityChildReply(vo.getReplyCmIdx(), p.getReplyIdx());
 			p.setChildReplyCount(communityDAO.getChildReplyCount(p.getReplyIdx()));
 			str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
@@ -394,6 +565,7 @@ public class CommunityServiceImpl implements CommunityService {
 			if(p.getChildReplyCount() > 1) str += "<div id=\"moreRReply"+p.getReplyIdx()+"\" onclick=\"childReplyMore("+p.getReplyIdx()+","+vo.getReplyCmIdx()+")\" class=\"moreReply\"> ──&nbsp;&nbsp;"+p.getChildReplyCount()+"개의 답글 모두 보기</div>";
 			for(ReplyVO c : child) {
 				child = communityDAO.getCommunityChildReply(vo.getReplyCmIdx(), p.getReplyIdx());
+				c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
 				if(c.getReplyParentIdx() == p.getReplyIdx()) {
 					str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
 						+ "<img src=\""+request.getContextPath()+"/member/"+c.getMemImg()+"\" alt=\"프로필\" class=\"reply-pic\"><div>";
@@ -439,6 +611,7 @@ public class CommunityServiceImpl implements CommunityService {
 		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 		
 		for(ReplyVO p : parent) {
+			p.setReplyContent(p.getReplyContent().replace("\n", "<br/>"));
 			child = communityDAO.getCommunityChildReply(replyCmIdx, p.getReplyIdx());
 			p.setChildReplyCount(communityDAO.getChildReplyCount(p.getReplyIdx()));
 			str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
@@ -461,6 +634,7 @@ public class CommunityServiceImpl implements CommunityService {
 					+ "<div id=\"rreplyList"+p.getReplyIdx()+"\" class=\"rreplyList\">";
 			if(p.getChildReplyCount() > 1) str += "<div id=\"moreRReply"+p.getReplyIdx()+"\" onclick=\"childReplyMore("+p.getReplyIdx()+","+replyCmIdx+")\" class=\"moreReply\"> ──&nbsp;&nbsp;"+p.getChildReplyCount()+"개의 답글 모두 보기</div>";
 			for(ReplyVO c : child) {
+				c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
 				if(c.getReplyParentIdx() == p.getReplyIdx()) {
 					str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
 							+ "<img src=\""+request.getContextPath()+"/member/"+c.getMemImg()+"\" alt=\"프로필\" class=\"reply-pic\"><div>";
@@ -507,6 +681,7 @@ public class CommunityServiceImpl implements CommunityService {
 		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 	
 		for(ReplyVO c : child) {
+			c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
 			if(c.getReplyParentIdx() == vo.getReplyParentIdx()) {
 				str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
 						+ "<img src=\""+request.getContextPath()+"/member/"+c.getMemImg()+"\" alt=\"프로필\" class=\"reply-pic\"><div>";
@@ -540,6 +715,7 @@ public class CommunityServiceImpl implements CommunityService {
 		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 		
 		for(ReplyVO c : child) {
+			c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
 			if(c.getReplyParentIdx() == replyParentIdx) {
 				str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
 						+ "<img src=\""+request.getContextPath()+"/member/"+c.getMemImg()+"\" alt=\"프로필\" class=\"reply-pic\"><div>";
@@ -587,6 +763,7 @@ public class CommunityServiceImpl implements CommunityService {
 		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 		
 		for(ReplyVO p : parent) {
+			p.setReplyContent(p.getReplyContent().replace("\n", "<br/>"));
 			child = communityDAO.getCommunityChildReply(vo.getReplyCmIdx(), p.getReplyIdx());
 			p.setChildReplyCount(communityDAO.getChildReplyCount(p.getReplyIdx()));
 			str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
@@ -610,6 +787,7 @@ public class CommunityServiceImpl implements CommunityService {
 			if(p.getChildReplyCount() > 1) str += "<div id=\"moreRReply"+p.getReplyIdx()+"\" onclick=\"childReplyMore("+p.getReplyIdx()+","+vo.getReplyCmIdx()+")\" class=\"moreReply\"> ──&nbsp;&nbsp;"+p.getChildReplyCount()+"개의 답글 모두 보기</div>";
 			for(ReplyVO c : child) {
 				child = communityDAO.getCommunityChildReply(vo.getReplyCmIdx(), p.getReplyIdx());
+				c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
 				if(c.getReplyParentIdx() == p.getReplyIdx()) {
 					str += "<div style=\"display:flex; align-items:flex-start;\" class=\"mb-4\">"
 						+ "<img src=\""+request.getContextPath()+"/member/"+c.getMemImg()+"\" alt=\"프로필\" class=\"reply-pic\"><div>";
@@ -741,14 +919,18 @@ public class CommunityServiceImpl implements CommunityService {
 		        ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vos.get(i).getCmIdx());
 		        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
 	
-		        for (ReplyVO k : parentsReply) {
+				for (ReplyVO k : parentsReply) {
+		        	k.setReplyContent(k.getReplyContent().replace("\n", "<br/>"));
 		            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
 		            k.setChildReplyCount(childReplyCount);
-	
+
 		            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vos.get(i).getCmIdx(), k.getReplyIdx());
 		            
 		            // 자식 댓글을 추가
 		            if (childReplies != null) {
+		            	for (ReplyVO c : childReplies) {
+		            		c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
+		            	}
 		                childsReply.addAll(childReplies);
 		            }
 		        }
@@ -843,7 +1025,8 @@ public class CommunityServiceImpl implements CommunityService {
         ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vo.getCmIdx());
         ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
 
-        for (ReplyVO k : parentsReply) {
+		for (ReplyVO k : parentsReply) {
+        	k.setReplyContent(k.getReplyContent().replace("\n", "<br/>"));
             int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
             k.setChildReplyCount(childReplyCount);
 
@@ -851,6 +1034,9 @@ public class CommunityServiceImpl implements CommunityService {
             
             // 자식 댓글을 추가
             if (childReplies != null) {
+            	for (ReplyVO c : childReplies) {
+            		c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
+            	}
                 childsReply.addAll(childReplies);
             }
         }
@@ -861,6 +1047,97 @@ public class CommunityServiceImpl implements CommunityService {
 		vo.setReplyCount(replyCount);
 		
 		return vo;
+	}
+
+	@Override
+	public int getMygameAndPart(String mid, String part) {
+		return communityDAO.getMygameAndPart(mid, part);
+	}
+
+	@Override
+	public ArrayList<ReviewVO> getRecentMyGame(String mid) {
+		return communityDAO.getRecentMyGame(mid);
+	}
+
+	@Override
+	public ArrayList<CommunityVO> getMyReview(String mid) {
+		ArrayList<CommunityVO> vos = communityDAO.getMyReview(mid);
+		// 글 내용이 길다면 조금만 보여주기
+		for(int i=0; i<vos.size(); i++) {
+			Document doc = Jsoup.parse(vos.get(i).getCmContent());
+			Elements ptag = doc.select("p");
+			Elements img = doc.select("img");
+			
+			StringBuilder reContent = new StringBuilder();
+			
+			if(!img.isEmpty()) {
+				Element firstImg = img.first();
+				for (Element e : ptag) {
+					reContent.append(e.outerHtml());
+					if(e.equals(firstImg.parent())) {
+						vos.get(i).setLongContent(1);
+						break;
+					}
+				}
+			}
+			else {
+				if(ptag.size() < 7) {
+					ptag.forEach(p -> reContent.append(p.outerHtml()));
+					vos.get(i).setLongContent(0);
+				}
+				else {
+					ptag.stream().limit(7).forEach(p -> reContent.append(p.outerHtml()));
+					vos.get(i).setLongContent(1);
+				}
+			}
+			vos.get(i).setCmContent(reContent.toString());
+			List<String> likeMember = communityDAO.getLikeMember(vos.get(i).getCmIdx());
+			if(mid != null && likeMember.size() > 0) {
+				for(int j=0; j<likeMember.size(); j++) {
+					if(mid.equals(likeMember.get(j))) {
+						vos.get(i).setLikeSW(1);
+						break;
+					}
+					else vos.get(i).setLikeSW(0);
+				}
+			}
+			vos.get(i).setLikeMember(likeMember);
+			vos.get(i).setLikeCnt(likeMember.size());
+			
+	        ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vos.get(i).getCmIdx());
+	        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
+
+			for (ReplyVO k : parentsReply) {
+	        	k.setReplyContent(k.getReplyContent().replace("\n", "<br/>"));
+	            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
+	            k.setChildReplyCount(childReplyCount);
+
+	            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vos.get(i).getCmIdx(), k.getReplyIdx());
+	            
+	            // 자식 댓글을 추가
+	            if (childReplies != null) {
+	            	for (ReplyVO c : childReplies) {
+	            		c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
+	            	}
+	                childsReply.addAll(childReplies);
+	            }
+	        }
+		        
+			int replyCount = communityDAO.getReplyCount(vos.get(i).getCmIdx());
+			vos.get(i).setParentsReply(parentsReply);
+			vos.get(i).setChildReply(childsReply);
+			vos.get(i).setReplyCount(replyCount);
+			
+			if(vos.get(i).getCmGameIdx() != 0) {
+				GameVO vo = communityDAO.getGameIdx(vos.get(i).getCmGameIdx());
+				vos.get(i).setGameImg(vo.getGameImg());
+			}
+			
+			FollowVO fVO = communityDAO.getFollow(mid, vos.get(i).getMid());
+			if(fVO == null) vos.get(i).setFollow(0);
+			else vos.get(i).setFollow(1);
+		}
+		return vos;
 	}
 
 }

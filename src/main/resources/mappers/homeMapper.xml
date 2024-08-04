@@ -78,4 +78,16 @@
 	<select id="bestReviews" resultType="com.spring.javaclassS4.vo.CommunityVO">
 		SELECT c.*, TIMESTAMPDIFF(hour, c.cmDate, NOW()) AS hour_diff, TIMESTAMPDIFF(minute, c.cmDate, NOW()) AS min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx LEFT JOIN (SELECT l.likeCmIdx, COUNT(l.likeCmIdx) AS likeCnt FROM itLike l GROUP BY l.likeCmIdx) likes ON c.cmIdx = likes.likeCmIdx WHERE c.part = '리뷰' AND likes.likeCnt >= 5 ORDER BY RAND() LIMIT 3;
 	</select>
+	<select id="homeCommunity" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		<if test="part == '인기'">SELECT c.*, TIMESTAMPDIFF(hour, c.cmDate, NOW()) AS hour_diff, TIMESTAMPDIFF(minute, c.cmDate, NOW()) AS min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx LEFT JOIN (SELECT l.likeCmIdx, COUNT(l.likeCmIdx) AS likeCnt FROM itLike l GROUP BY l.likeCmIdx) likes ON c.cmIdx = likes.likeCmIdx WHERE c.section != '뉴스' and c.part != '리뷰' ORDER BY likes.likeCnt desc LIMIT 5;</if>
+		<if test="part == '세일'">SELECT c.*, TIMESTAMPDIFF(hour, c.cmDate, NOW()) AS hour_diff, TIMESTAMPDIFF(minute, c.cmDate, NOW()) AS min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.section != '뉴스' and (c.cmContent like concat('%','세일','%') or c.cmContent like concat('%','할인','%')) ORDER BY c.cmIdx desc LIMIT 5;</if>
+	</select>
+	<select id="getAlram" resultType="com.spring.javaclassS4.vo.AlramVO">
+		<if test="level != 0">
+			SELECT NULL AS cmIdx, f.myMid AS youMid, '팔로우' AS type, f.followDate AS date, m.nickname AS youName, m.memImg AS youImg, NULL AS gameIdx, NULL AS gameTitle, NULL AS gameImg, NULL AS comType FROM itFollow f JOIN itMember m ON f.myMid = m.mid WHERE f.youMid = #{mid} AND f.followRead = 0 UNION ALL 
+			SELECT l.likeCmIdx AS cmIdx, l.likeMid AS youMid, '좋아요' AS type, l.likeDate AS date, m.nickname AS youName, m.memImg AS youImg, g.gameIdx AS gameIdx, g.gameTitle AS gameTitle, g.gameImg AS gameImg, NULL AS comType FROM itLike l JOIN itMember m ON l.likeMid = m.mid JOIN itCommunity c ON l.likeCmIdx = c.cmIdx JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid = #{mid} AND l.likeMid != #{mid} AND l.likeRead = 0 UNION ALL 
+			SELECT r.replyCmIdx AS cmIdx, r.replyMid AS youMid, '댓글' AS type, r.replyDate AS date, m.nickname AS youName, m.memImg AS youImg, g.gameIdx AS gameIdx, g.gameTitle AS gameTitle, g.gameImg AS gameImg, NULL AS comType FROM itReply r JOIN itMember m ON r.replyMid = m.mid JOIN itCommunity c ON r.replyCmIdx = c.cmIdx LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid = #{mid} AND r.replyRead = 0;
+						 
+		</if>
+	</select>
 </mapper>

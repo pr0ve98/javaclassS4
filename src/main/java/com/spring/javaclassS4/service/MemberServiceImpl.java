@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS4.common.JavaclassProvide;
 import com.spring.javaclassS4.dao.MemberDAO;
+import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.MemberVO;
 
 @Service
@@ -94,5 +95,15 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void pwdChange(String mid, String pwd) {
 		memberDAO.pwdChange(mid, pwd);
+	}
+
+	@Override
+	public int getFollowerAndFollowing(String mid, String part) {
+		return memberDAO.getFollowerAndFollowing(mid, part);
+	}
+
+	@Override
+	public FollowVO isMyFollower(String sMid, String mid) {
+		return memberDAO.isMyFollower(sMid, mid);
 	}
 }

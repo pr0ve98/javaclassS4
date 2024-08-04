@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import com.spring.javaclassS4.vo.AlramVO;
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReviewVO;
@@ -56,5 +57,9 @@ public interface HomeService {
 	public ArrayList<ReviewVO> getMyGameList(String mid, String part);
 
 	public ArrayList<CommunityVO> bestReviews(HttpSession session);
+
+	public ArrayList<CommunityVO> homeCommunity(HttpSession session, String part);
+
+	public ArrayList<AlramVO> getAlram(String mid, int level);
 
 }

@@ -22,8 +22,18 @@
 			<button class="w3-button w3-xxlarge" onclick="w3_open()">&#9776;</button>
 			<img src="${ctp}/resources/images/logo.png" style="cursor:pointer;" alt="로고" height="70px" class="p-2 ml-4" onclick="location.href='${ctp}/'">
 			<div class="right-menu">
-								<c:if test="${sMid != null}">
-					<i class="fa-solid fa-bell fa"></i>
+			<c:if test="${sMid != null}">
+					<i id="alramBtn" class="fa-solid fa-bell fa-lg" style="cursor:pointer;position: relative;" onclick="mtoggleAlramMenu()">
+				    <span id="malramCount"></span>
+				    </i>
+				    <div id="malramDropdown" class="dropdown-content">
+				        <div class="alram-header">
+					        <div style="font-weight: bold;">새 소식</div>
+				        	<div style="color: #00c722;">0</div>
+				        </div>
+				        <hr/>
+				        <div class="scrollbar"></div>
+				    </div>
 					<span class="profile-menu" style="position: relative;">
 						<img src="${ctp}/member/${sMemImg}" style="cursor:pointer;" alt="프로필" width="40px" onclick="mtoggleProfileMenu()">
 						<!-- 일반 프로필 메뉴 드롭다운 -->
@@ -36,11 +46,10 @@
 							            <div class="profile-name">@${sMid}</div>
 						            </div>
 						        </div>
-						        <a href="#">마이페이지 홈</a>
+						        <a href="${ctp}/mypage/${sMid}">마이페이지 홈</a>
 						        <a href="#">내 게임</a>
 						        <a href="#">일지</a>
 						        <a href="#">리뷰</a>
-						        <a href="#">통계</a>
 						        <a href="${ctp}/setting/profile">설정</a>
 						        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>
 						        <c:if test="${sKakao == 'NO'}"><a href="${ctp}/member/memberLogout">로그아웃</a></c:if>
@@ -87,7 +96,19 @@
 			        <input type="text" class="search-bar" placeholder="Search...">
 			    </div>
 			    <c:if test="${sMid != null}">
-					<i class="fa-solid fa-bell fa-lg"></i>
+					<i id="alramBtn" class="fa-solid fa-bell fa-lg" style="cursor:pointer;position: relative;" onclick="toggleAlramMenu()">
+				    	<span id="alramCount">10</span>
+				    </i>
+				    <div id="alramDropdown" class="dropdown-content">
+				        <div class="alram-header">
+					        <div style="font-weight: bold;">새 소식</div>
+				        	<div style="color: #00c722;">0</div>
+				        </div>
+				        <hr/>
+				        <div style="height: 277px;" class="scrollbar">
+				        	<div style="text-align: center; margin: 100px 0;">새 소식이 없습니다.</div>
+				        </div>
+				    </div>
 					<span class="profile-menu" style="position: relative;">
 						<img src="${ctp}/member/${sMemImg}" style="cursor:pointer;" alt="프로필" width="50px" onclick="toggleProfileMenu()">
 						    <!-- 프로필 메뉴 드롭다운 -->
@@ -100,11 +121,10 @@
 								            <div class="profile-name">@${sMid}</div>
 							            </div>
 							        </div>
-							        <a href="#">마이페이지 홈</a>
+							        <a href="${ctp}/mypage/${sMid}">마이페이지 홈</a>
 							        <a href="#">내 게임</a>
 							        <a href="#">일지</a>
 							        <a href="#">리뷰</a>
-							        <a href="#">통계</a>
 							        <a href="${ctp}/setting/profile">설정</a>
 							        <c:if test="${sKakao == 'OK'}"><a href="javascript:kakaoLogout()">로그아웃</a></c:if>
 						        	<c:if test="${sKakao == 'NO'}"><a href="${ctp}/member/memberLogout">로그아웃</a></c:if>

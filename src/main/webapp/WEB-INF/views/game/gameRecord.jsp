@@ -41,11 +41,12 @@
 		// 무한스크롤
 		function rootData() {
 			isFetching = true;
+			let gameIdx = ${gameIdx};
 			
 			$.ajax({
 				url : "${ctp}/community/rootData",
 				type : "post",
-				data : {page : ${page}+totPage, part : 'recent'},
+				data : {page : ${page}+totPage, part : '일지', gameIdx:gameIdx},
 				success : function(res) {
 					if(res) {
 						isFetching = false;
@@ -272,332 +273,6 @@
        return vo;
    }
 
-	function showAllContent(cmIdx) {
-		$.ajax({
-			url : "${ctp}/community/showAllContent",
-			type : "post",
-			data : {cmIdx : cmIdx},
-			success : function(res) {
-				$("#cmContent"+cmIdx).html(res);
-				$("#cmContent"+cmIdx).removeClass("moreGra");
-				$("#cmContent"+cmIdx).addClass("expanded");
-				$("#moreBtn"+cmIdx).hide();
-			},
-			error : function() {
-				alert("전송오류!");
-			}
-		});
-	}
-	
-	function likeAdd(cmIdx) {
-		$.ajax({
-			url : "${ctp}/community/likeAdd",
-			type : "post",
-			data : {cmIdx : cmIdx},
-			success : function(res) {
-				let r = res.split("%");
-				$("#cm-likeCnt"+cmIdx).html(r[0]);
-				$("#cm-like"+cmIdx).html(r[1]);
-			},
-			error : function() {
-				alert("전송오류!");
-			}
-		});
-	}
-	
-	function likeDelete(cmIdx) {
-		let ans = confirm("좋아요를 취소하시겠어요?");
-		
-		if(ans) {
-			$.ajax({
-				url : "${ctp}/community/likeDelete",
-				type : "post",
-				data : {cmIdx : cmIdx},
-				success : function(res) {
-					let r = res.split("%");
-					$("#cm-likeCnt"+cmIdx).html(r[0]);
-					$("#cm-like"+cmIdx).html(r[1]);
-				},
-				error : function() {
-					alert("전송오류!");
-				}
-			});
-		}
-	}
-	
- 	function toggleContentMenu(cmIdx) {
- 	   	const elements = document.querySelectorAll('[id^="contentMenu"]');
- 	   	const otherElements = Array.from(elements).filter(element => element.id !== "contentMenu" + cmIdx); // 필터 적용해 조건부로 가져오기
- 	    let dropdown = document.getElementById("contentMenu"+cmIdx);
- 	    
- 	   otherElements.forEach(element => {
- 	   		element.style.display = "none";
- 		});
- 	    
- 	    if (dropdown.style.display === "block") {
- 	        dropdown.style.display = "none";
- 	    } else {
- 	        dropdown.style.display = "block";
- 	    }
- 	}
- 	
- 	function contentDelete(cmIdx) {
-		let ans = confirm("정말로 삭제하시겠습니까?");
-		if(ans) {
-			$.ajax({
-				url : "${ctp}/community/communityDelete",
-				type : "post",
-				data : {cmIdx:cmIdx},
-				success : function(res) {
-					if(res != "0") location.reload();
-					else alert("삭제실패!");
-				},
-				error : function() {
-					alert("전송오류!");
-				}
-			});
-		}
-	}
- 	
- 	function replyPreview(cmIdx) {
-		document.getElementById("replyPreview"+cmIdx).style.display = "none";
-		document.getElementById("replyWrite"+cmIdx).style.display = "block";
-		document.getElementById("replyContent"+cmIdx).focus();
-	}
- 	
- 	function replyCancel(cmIdx) {
-		document.getElementById("replyPreview"+cmIdx).style.display = "flex";
-		document.getElementById("replyWrite"+cmIdx).style.display = "none";
-	}
- 	
- 	function replyInput(cmIdx) {
- 		let replyContent = $("#replyContent"+cmIdx).val().trim();
- 		
- 		if(replyContent == "") {
- 			alert("댓글을 입력해주세요");
- 			return false;
- 		}
- 		
-		$.ajax({
-			url : "${ctp}/community/replyInput",
-			type : "post",
-			data : {replyCmIdx : cmIdx, replyContent : replyContent},
-			success : function(response) {
-				let res = response.split("|");
-				if(res[0] != "0") {
-					replyCancel(cmIdx);
-					$("#replyList"+cmIdx).html(res[1]);
-					$("#replyContent"+cmIdx).val("");
-				}
-			},
-			error : function() {
-				alert("전송오류!");
-			}
-		});
-	}
- 	
- 	function parentReplyMore(cmIdx) {
-		$.ajax({
-			url : "${ctp}/community/parentReplyMore",
-			type : "post",
-			data : {replyCmIdx : cmIdx},
-			success : function(res) {
-				$("#replyList"+cmIdx).html(res);
-			},
-			error : function() {
-				alert("전송오류!");
-			}
-		});
-	}
- 	
- 	function rreplyPreview(replyIdx) {
- 	   	const elements = document.querySelectorAll('[id^="rreplyWrite"]');
- 	   	const otherElements = Array.from(elements).filter(element => element.id !== "rreplyWrite" + replyIdx); // 필터 적용해 조건부로 가져오기
- 	    let toggle = document.getElementById("rreplyWrite"+replyIdx);
- 	    
- 	   otherElements.forEach(element => {
- 	   		element.style.display = "none";
- 		});
- 	    
- 	    if (toggle.style.display === "block") {
- 	    	toggle.style.display = "none";
- 	    } else {
- 	    	toggle.style.display = "block";
- 	    }
-	}
- 	
- 	function rreplyInput(replyIdx, cmIdx) {
- 		let rreplyContent = $("#rreplyContent"+replyIdx).val().trim();
- 		
- 		if(rreplyContent == "") {
- 			alert("답글을 입력해주세요");
- 			return false;
- 		}
- 		
-		$.ajax({
-			url : "${ctp}/community/rreplyInput",
-			type : "post",
-			data : {replyCmIdx : cmIdx, replyParentIdx : replyIdx, replyContent : rreplyContent},
-			success : function(response) {
-				let res = response.split("|");
-				if(res[0] != "0") {
-					rreplyPreview(replyIdx);
-					$("#rreplyList"+replyIdx).html(res[1]);
-					$("#rreplyContent"+replyIdx).val("");
-				}
-			},
-			error : function() {
-				alert("전송오류!");
-			}
-		});
-	}
- 	
- 	function childReplyMore(replyIdx, cmIdx) {
-		$.ajax({
-			url : "${ctp}/community/childReplyMore",
-			type : "post",
-			data : {replyCmIdx : cmIdx, replyParentIdx : replyIdx},
-			success : function(res) {
-				$("#rreplyList"+replyIdx).html(res);
-			},
-			error : function() {
-				alert("전송오류!");
-			}
-		});
-	}
- 	
- 	function replyEditPopup(replyIdx, replyContent) {
-    	const popup = document.querySelector('#popup-replyedit');
-    	const html = document.querySelector('html');
-        $("#replyedit").val(replyContent);
-        $("#replyIdx").val(replyIdx);
-        popup.classList.remove('hide');
-        html.style.overflow = 'hidden';
-	}
- 	
- 	function replyEdit(cmIdx) {
- 		let replyedit = $("#replyedit").val().trim();
- 		let replyIdx = $("#replyIdx").val();
- 		let replyMid = $("#replyMid").val();
- 		
- 		$.ajax({
- 			url : "${ctp}/community/replyEdit",
- 			type : "post",
- 			data : {replyContent : replyedit, replyIdx : replyIdx, replyMid : replyMid},
- 			success : function(response) {
-				let res = response.split("|");
-				if(res[0] != "0") {
-					$("#replyList"+res[2]).html(res[1]);
-					closePopup('replyedit');
-				}
-			},
- 			error : function() {
-				alert("전송오류!");
-			}
- 		});
-	}
- 	
- 	function replyDelete(replyIdx, sw) {
-		let ans = '';
-		if(sw == 0) ans = confirm("댓글을 삭제하시겠어요?\n답글도 전부 삭제됩니다!");
-		else ans = confirm("답글을 삭제하시겠어요?");
-		
-		if(ans) {
-	 		$.ajax({
-	 			url : "${ctp}/community/replyDelete",
-	 			type : "post",
-	 			data : {replyIdx : replyIdx},
-	 			success : function(res) {
-					if(res != "0") {
-						location.reload();
-					}
-				},
-	 			error : function() {
-					alert("전송오류!");
-				}
-	 		});
-		}
-	}
- 	
- 	function followAdd(youMid) {
- 		$.ajax({
- 			url : "${ctp}/community/followInput",
- 			type : "post",
- 			data : {youMid : youMid},
- 			success : function() {
-				const elements = document.querySelectorAll('.fb'+youMid);
-				elements.forEach(element => {
-		 	   		element.style.display = "none";
-		 		});
-				
-				const elements2 = document.querySelectorAll('.ufb'+youMid);
-				elements2.forEach(element2 => {
-		 	   		element2.style.display = "block";
-		 		});
-			},
- 			error : function() {
-				alert("전송오류!");
-			}
- 		});
-	}
- 	
- 	function followDelete(youMid) {
- 		$.ajax({
- 			url : "${ctp}/community/followDelete",
- 			type : "post",
- 			data : {youMid : youMid},
- 			success : function() {
-				const elements = document.querySelectorAll('.fb'+youMid);
-				elements.forEach(element => {
-		 	   		element.style.display = "block";
-		 		});
-				
-				const elements2 = document.querySelectorAll('.ufb'+youMid);
-				elements2.forEach(element2 => {
-		 	   		element2.style.display = "none";
-		 		});
-			},
- 			error : function() {
-				alert("전송오류!");
-			}
- 		});
-	}
- 	
- 	function reportPopup(contentIdx, contentPart, sufferMid) {
-    	const popup = document.querySelector('#popup-report');
-    	const html = document.querySelector('html');
-        popup.classList.remove('hide');
-        html.style.overflow = 'hidden';
-        $("#contentIdx").val(contentIdx);
-        $("#contentPart").val(contentPart);
-        $("#sufferMid").val(sufferMid);
-	}
- 	
- 	function reportInput() {
-		let reason = $("select[name=reason]").val();
-		let contentIdx = $("#contentIdx").val();
-		let contentPart = $("#contentPart").val();
-		let sufferMid = $("#sufferMid").val();
-		
-		if(reason == '') {
-			alert("신고사유를 선택해주세요");
-			return false;
-		}
-		
- 		$.ajax({
- 			url : "${ctp}/community/reportInput",
- 			type : "post",
- 			data : {reportMid : '${sMid}', sufferMid:sufferMid, contentPart:contentPart, contentIdx:contentIdx, reason:reason},
- 			success : function() {
- 				alert("신고가 정상접수 되었습니다!");
- 				closePopup('report');
-			},
- 			error : function() {
-				alert("전송오류!");
-			}
- 		});
-	}
- 	
  	function showPopupInput(gameIdx, flag) {
 		if(mid == '') {
 			showPopupLogin();
@@ -807,7 +482,7 @@
 	        <button class="editplz-button" onclick="showGameEditPopup()">정보수정요청</button>
 	    </div>
 	    <hr/>
-	    <div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="showPopupWrite()">일지 작성</div>
+	    <c:if test="${fn:length(cmVOS) != 0}"><div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="showPopupWrite()">일지 작성</div></c:if>
 		<div style="width:100%; color:#fff;;" class="mt-2">
 			<c:forEach var="cmVO" items="${cmVOS}">
 				<div class="cm-box" id="cmbox${cmVO.cmIdx}">
@@ -816,7 +491,7 @@
 							<img src="${ctp}/member/${cmVO.memImg}" alt="프로필" class="text-pic">
 							<div>
 								<c:if test="${cmVO.title != '없음'}"><div style="font-size:12px;">${cmVO.title}</div></c:if>
-								<div style="font-weight:bold;">${cmVO.nickname}</div>
+								<div style="font-weight:bold; cursor: pointer;" onclick="location.href='${ctp}/mypage/${cmVO.mid}';">${cmVO.nickname}</div>
 								<div>
 									<c:if test="${cmVO.part == '소식/정보'}"><span class="badge badge-secondary">소식/정보</span>&nbsp;</c:if>
 									<c:if test="${cmVO.part == '자유'}"><span class="badge badge-secondary">자유글</span>&nbsp;</c:if>
@@ -1201,41 +876,6 @@
 		        });
 		 	}
 		</script>
-    </div>
-</div>
-<div id="popup-replyedit" class="hide">
-  <div class="popup-replyedit-content scrollbar">
-  		<div class="popup-replyedit-header mb-4">
-            <span class="e-header-text">댓글 수정</span>
-    		<div style="cursor:pointer;" onclick="closePopup('replyedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
-		</div>
- 		<div><input type="text" id="replyedit" name="replyedit" class="forminput mb-3" style="width:100%" placeholder="수정할 댓글을 입력하세요"></div>
- 		<input type="hidden" id="replyIdx" name="replyIdx" />
- 		<input type="hidden" id="replyMid" name="replyMid" value="${sMid}" />
-	 	<div class="text-right"><button class="edit-button" onclick="replyEdit()">수정하기</button></div>
-    </div>
-</div>
-<div id="popup-report" class="hide">
-  <div class="popup-report-content scrollbar">
-  		<div class="popup-replyedit-header mb-4">
-            <span class="e-header-text">신고하기</span>
-    		<div style="cursor:pointer;" onclick="closePopup('report')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
-		</div>
-		<div class="mb-3">확실히 신고사유가 되는지 확인하고 신고하여 주십시오 무분별한 신고 시 <b style="color:red;">신고자가 제재</b>를 당할 수 있습니다</div>
-		<div class="text-center mb-4"><select class="dropdown-btn" name="reason">
-			<option value="">신고사유 선택</option>
-			<option>스팸</option>
-			<option>스포일러</option>
-			<option value="선정성">나체이미지 또는 성적행위</option>
-			<option>사기</option>
-			<option value="욕설혐오">욕설, 혐오 발언</option>
-			<option>지식재산권 침해</option>
-			<option value="명예훼손">타인의 명예 훼손</option>
-		</select></div>
- 		<input type="hidden" id="contentIdx" name="contentIdx" />
- 		<input type="hidden" id="contentPart" name="contentPart" />
- 		<input type="hidden" id="sufferMid" name="sufferMid" />
-	 	<div class="text-center"><button class="btn btn-danger" onclick="reportInput()">신고하기</button></div>
     </div>
 </div>
 <div id="popup-gameedit" class="hide">

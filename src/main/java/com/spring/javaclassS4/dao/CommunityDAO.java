@@ -93,4 +93,18 @@ public interface CommunityDAO {
 
 	public CommunityVO getNewsContentCmIdx(@Param("cmIdx") int cmIdx);
 
+	public int getMygameAndPart(@Param("mid") String mid, @Param("part") String part);
+
+	public ArrayList<ReviewVO> getRecentMyGame(@Param("mid") String mid);
+
+	public ArrayList<CommunityVO> getMyReview(@Param("mid") String mid);
+
+	public ArrayList<CommunityVO> getMyReviewList(@Param("mid") String mid, @Param("startIndexNo") int startIndexNo,
+			@Param("pageSize") int pageSize);
+	
+	public ArrayList<CommunityVO> getMyRecordList(@Param("mid") String mid, @Param("startIndexNo") int startIndexNo,
+			@Param("pageSize") int pageSize);
+
+	public int getMyReviewCnt(@Param("mid") String mid);
+
 }

@@ -10,6 +10,13 @@
 	<select id="getMemberGamelist" resultType="String">
 		select gamelist from itGamelist where glMid=#{mid};
 	</select>
+	<select id="getFollowerAndFollowing" resultType="int">
+		<if test="part == 'follower'">select count(*) from itFollow where youMid=#{mid};</if>
+		<if test="part == 'following'">select count(*) from itFollow where myMid=#{mid};</if>
+	</select>
+	<select id="isMyFollower" resultType="com.spring.javaclassS4.vo.FollowVO">
+		select * from itFollow where myMid=#{sMid} and youMid=#{mid};
+	</select>
 	
 	<insert id="setMemberInput">
 		insert into itMember values(default,#{vo.mid},#{vo.nickname},#{vo.email},#{vo.pwd},default,default,default,default,default,default);

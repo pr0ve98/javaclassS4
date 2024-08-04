@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.MemberVO;
 
 public interface MemberService {
@@ -27,5 +28,9 @@ public interface MemberService {
 	public void pwdResetOk(String email, String pwd, String pwdEncode);
 
 	public void pwdChange(String mid, String pwd);
+
+	public int getFollowerAndFollowing(String mid, String part);
+
+	public FollowVO isMyFollower(String sMid, String mid);
 
 }

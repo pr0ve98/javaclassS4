@@ -8,7 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
-<title>세일정보 | 인겜토리</title>
+<title>${member.nickname}님의 일지 | 인겜토리</title>
 <link rel="icon" type="image/x-icon" href="${ctp}/images/ingametory.ico">
 <jsp:include page="/WEB-INF/views/include/bs4.jsp" />
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
@@ -44,7 +44,7 @@
 			$.ajax({
 				url : "${ctp}/community/rootData",
 				type : "post",
-				data : {page : ${page}+totPage, part : 'sale'},
+				data : {page : ${page}+totPage, part : 'myRecord', userMid:'${member.mid}'},
 				success : function(res) {
 					if(res) {
 						isFetching = false;
@@ -86,13 +86,13 @@
 	            timeout = setTimeout(() => func.apply(this, args), wait);
 	        };
 	    }
-		
+
 		// 처음 창 뜰 때 첫번째 게임 선택
         const firstGameButton = $('.game-button').first();
         firstGameButton.addClass('active');
         
         const initialGame = firstGameButton.data('game');
-        let initialHtml = '<font color="#00c722"><b>' + initialGame + '</b></font>에 대한 세일 정보';
+        let initialHtml = '<font color="#00c722"><b>' + initialGame + '</b></font>에 대한 일지';
         $(".header-text").html(initialHtml);
         
         const game = document.getElementById('gamesearch');
@@ -287,7 +287,7 @@
 	    });
     });
 	
-	 // 페이지 로드 로딩페이지 제거
+    // 페이지 로드 로딩페이지 제거
     $(window).on('load', function() {
     	removeLoadingPage();
     });
@@ -297,7 +297,7 @@
         $('.mask').hide();
         $('html').css('overflow', 'auto');
     }
-
+    
     // 페이지 떠날 때 이미지 제거
 	let wasSummernoteVisible = false;
 	let wasSummernote2Visible = false;
@@ -491,191 +491,170 @@
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
-<main>
+<main style="padding: 0;">
 	<div class="mask">
 	  <img class="loadingImg" src='${ctp}/images/loding.gif'>
 	</div>
+	<div class="tabs" style="justify-content: center; padding: 0; background-color: #161d25;">
+        <div class="tab-container">
+            <div class="tab" onclick="location.href='${ctp}/mypage/${member.mid}';">
+            	<c:if test="${sMid == member.mid}"><img src="${ctp}/member/${member.memImg}" class="reply-pic" style="width: 25px; height: 25px;">&nbsp;마이페이지</c:if>
+            	<c:if test="${sMid != member.mid}"><img src="${ctp}/member/${member.memImg}" class="reply-pic" style="width: 25px; height: 25px;">&nbsp;${member.nickname}님의 페이지</c:if>
+            </div>
+            <div class="tab" onclick="location.href='${ctp}/mypage/${member.mid}/mygame';">내 게임</div>
+            <div class="tab" onclick="location.href='${ctp}/mypage/${member.mid}/myreview';">리뷰</div>
+            <div class="tab active" style="border-bottom: 5px solid #00c722;" onclick="location.href='${ctp}/mypage/${member.mid}/myrecord';">일지</div>
+        </div>
+    </div>
 	<div class="container">
-		<p></p>
-		<div class="community">
-			<span class="cm-menu">
-				<span class="cb mb-4">
-					<span class="communityBtn cb-active" onclick="location.href='${ctp}/community/recent';">
-			            <img src="https://img.icons8.com/ios-filled/50/ffffff/chat.png" alt="Chat Icon"/>
-			        </span>
-			        <span class="cb-text-active"><b>인겜토리</b></span>
-				</span>
-				<span class="cn">
-			        <span class="communityBtn" onclick="location.href='${ctp}/news/newsRecent';">
-			            <img src="https://img.icons8.com/ios-filled/50/b2bdce/news.png" alt="News Icon"/>
-			        </span>
-			        <span class="cb-text"><b>뉴스</b></span>
-				</span>
-			</span>
-			<div style="width:100%;">
-				<div class="c-buttons">
-					<c:if test="${sMid != null}"><span class="c-button" onclick="location.href='${ctp}/community/follow';">팔로우</span></c:if>
-					<span class="c-button" onclick="location.href='${ctp}/community/recent';">최신</span>
-					<span class="c-button" onclick="location.href='${ctp}/community/review';">리뷰</span>
-					<span class="c-button" onclick="location.href='${ctp}/community/info';">소식/정보</span>
-					<span class="c-button c-button-active" onclick="location.href='${ctp}/community/sale';">세일</span>
-					<c:if test="${sMid != null}"><span class="c-button" onclick="location.href='${ctp}/community/my';">내글</span></c:if>
-				</div>
-				<c:if test="${sMid != null}">
-					<div class="cm-box">
-						<div style="display:flex; align-items: center; justify-content: center;">
-							<img src="${ctp}/member/${sMemImg}" alt="프로필" class="text-pic">
-							<div class="text-input" onclick="showPopupWrite()">요즘 관심있는 게임은 무엇인가요?</div>
-						</div>
-					</div>
-				</c:if>
-				<c:forEach var="cmVO" items="${cmVOS}">
-					<div class="cm-box" id="cmbox${cmVO.cmIdx}">
-						<div style="display:flex;justify-content: space-between;">
-							<div style="display:flex; align-items:center;">
-								<img src="${ctp}/member/${cmVO.memImg}" alt="프로필" class="text-pic">
+		<p><br/></p>
+		<div>
+			<c:forEach var="cmVO" items="${cmVOS}">
+				<div class="cm-box" id="cmbox${cmVO.cmIdx}">
+					<div style="display:flex;justify-content: space-between;">
+						<div style="display:flex; align-items:center;">
+							<img src="${ctp}/member/${cmVO.memImg}" alt="프로필" class="text-pic">
+							<div>
+								<c:if test="${cmVO.title != '없음'}"><div style="font-size:12px;">${cmVO.title}</div></c:if>
+								<div style="font-weight:bold; cursor: pointer;" onclick="location.href='${ctp}/mypage/${cmVO.mid}';">${cmVO.nickname}</div>
 								<div>
-									<c:if test="${cmVO.title != '없음'}"><div style="font-size:12px;">${cmVO.title}</div></c:if>
-									<div style="font-weight:bold; cursor: pointer;" onclick="location.href='${ctp}/mypage/${cmVO.mid}';">${cmVO.nickname}</div>
-									<div>
-										<c:if test="${cmVO.part == '소식/정보'}"><span class="badge badge-secondary">소식/정보</span>&nbsp;</c:if>
-										<c:if test="${cmVO.part == '자유'}"><span class="badge badge-secondary">자유글</span>&nbsp;</c:if>
-										<c:if test="${cmVO.part == '세일'}"><span class="badge badge-secondary">세일정보</span>&nbsp;</c:if>
-										<c:if test="${cmVO.part != '자유'}">
-										<div style="color:#b2bdce; font-size:12px; cursor:pointer;" onclick="location.href='${ctp}/gameview/${cmVO.cmGameIdx}';">
-											<i class="fa-solid fa-gamepad fa-xs" style="color: #b2bdce;"></i>&nbsp;
-											${cmVO.gameTitle}
-										</div>
-										</c:if>
+									<c:if test="${cmVO.part == '소식/정보'}"><span class="badge badge-secondary">소식/정보</span>&nbsp;</c:if>
+									<c:if test="${cmVO.part == '자유'}"><span class="badge badge-secondary">자유글</span>&nbsp;</c:if>
+									<c:if test="${cmVO.part == '세일'}"><span class="badge badge-secondary">세일정보</span>&nbsp;</c:if>
+									<c:if test="${cmVO.part != '자유'}">
+									<div style="color:#b2bdce; font-size:12px; cursor:pointer;" onclick="location.href='${ctp}/gameview/${cmVO.cmGameIdx}';">
+										<i class="fa-solid fa-gamepad fa-xs" style="color: #b2bdce;"></i>&nbsp;
+										${cmVO.gameTitle}
 									</div>
+									</c:if>
 								</div>
 							</div>
-							<c:if test="${sMid != null}">
-								<div style="display: flex; align-items: center;">
-									<c:if test="${sMid != cmVO.mid && cmVO.follow == 0}"><div class="replyok-button mr-4 fb${cmVO.mid}" onclick="followAdd('${cmVO.mid}')"><i class="fa-solid fa-plus fa-sm"></i>&nbsp;팔로우</div></c:if>
-									<div style="position:relative;">
-										<i class="fa-solid fa-bars fa-xl" onclick="toggleContentMenu(${cmVO.cmIdx})" style="color: #D5D5D5;cursor:pointer;"></i>
-							 			<div id="contentMenu${cmVO.cmIdx}" class="content-menu">
-									        <c:if test="${sMid == cmVO.mid}"><div onclick="showPopupEdit('${fn:replace(fn:replace(cmVO, newLine, '<br>'), '\"', '&quot;')}')">수정</div></c:if>
-										    <c:if test="${sMid == cmVO.mid || sLevel == 0}"><div onclick="contentDelete(${cmVO.cmIdx})"><font color="red">삭제</font></div></c:if>
-									        <c:if test="${sLevel == 0}"><div onclick="location.href='${ctp}/admin/userlist?page=1&viewpart=all&searchpart=아이디&search=${cmVO.mid}';">사용자 제재</div></c:if>
-									        <c:if test="${sMid != cmVO.mid && sLevel != 0}">
-									        	<div class="ufb${cmVO.mid}" style="display:${cmVO.follow == 1 ? 'block' : 'none'};" onclick="followDelete('${cmVO.mid}')">언팔로우</div>
-									        	<div onclick="reportPopup(${cmVO.cmIdx}, '게시글', '${cmVO.mid}')">신고</div>
-									        </c:if>
-								    	</div>
-						 			</div>
-						 		</div>
-					 		</c:if>
-						</div>
-						<div class="community-content">
-							<div class="cm-content ${cmVO.longContent == 1 ? 'moreGra' : ''}" id="cmContent${cmVO.cmIdx}">${cmVO.cmContent}</div>
-							<c:if test="${cmVO.longContent == 1}"><div onclick="showAllContent(${cmVO.cmIdx})" id="moreBtn${cmVO.cmIdx}" style="cursor:pointer; color:#00c722; font-weight:bold;">더 보기</div></c:if>
-							<div style="color:#b2bdce; font-size:12px;" class="mt-2">
-								<c:if test="${cmVO.hour_diff < 1}">${cmVO.min_diff}분 전</c:if>
-								<c:if test="${cmVO.hour_diff < 24 && cmVO.hour_diff >= 1}">${cmVO.hour_diff}시간 전</c:if>
-								<c:if test="${cmVO.hour_diff >= 24}">${fn:substring(cmVO.cmDate, 0, 10)}</c:if>
-							</div>
-							<div style="color:#b2bdce; font-size:12px;" class="mt-2"><span id="cm-likeCnt${cmVO.cmIdx}">이 글을 ${cmVO.likeCnt}명이 좋아합니다.</span></div>
 						</div>
 						<c:if test="${sMid != null}">
-							<hr/>
-							<div class="community-footer">
-								<span id="cm-like${cmVO.cmIdx}">
-									<c:if test="${cmVO.likeSW == 0}"><span onclick="likeAdd(${cmVO.cmIdx})"><i class="fa-solid fa-heart"></i>&nbsp;&nbsp;좋아요</span></c:if>
-									<c:if test="${cmVO.likeSW == 1}"><span style="color:#00c722;" onclick="likeDelete(${cmVO.cmIdx})"><i class="fa-solid fa-heart"></i>&nbsp;&nbsp;좋아요</span></c:if>
-								</span>
-								<span onclick="replyPreview(${cmVO.cmIdx})"><i class="fa-solid fa-comment-dots"></i>&nbsp;&nbsp;댓글</span>
-							</div>
-							<hr/>
-						</c:if>
-						<div id="replyList${cmVO.cmIdx}" class="replyList">
-							<c:if test="${cmVO.replyCount > 2}"><div id="moreReply${cmVO.cmIdx}" onclick="parentReplyMore(${cmVO.cmIdx})" class="moreReply">${cmVO.replyCount}개의 댓글 모두 보기</div></c:if>
-							<c:forEach var="parentReply" items="${cmVO.parentsReply}">
-								<div style="display:flex; align-items:flex-start;" class="mb-4">
-									<img src="${ctp}/member/${parentReply.memImg}" alt="프로필" class="reply-pic">
-									<div>
-										<c:if test="${parentReply.title != '없음'}"><div style="font-size:12px;">${parentReply.title}</div></c:if>
-										<div style="font-weight:bold;">${parentReply.nickname}</div>
-										<div>${fn:replace(parentReply.replyContent, newLine, "<br/>")}</div>
-										<div style="color:#b2bdce; font-size:12px;" class="mt-2">
-											<c:if test="${parentReply.hour_diff < 1}">${parentReply.min_diff}분 전</c:if>
-											<c:if test="${parentReply.hour_diff < 24 && parentReply.hour_diff >= 1}">${parentReply.hour_diff}시간 전</c:if>
-											<c:if test="${parentReply.hour_diff >= 24}">${fn:substring(parentReply.replyDate, 0, 10)}</c:if>
-											<c:if test="${sMid != null}">
-												<div class="replymenu">
-													<span class="mr-2" onclick="rreplyPreview(${parentReply.replyIdx})">답글</span>
-													<c:if test="${sMid == parentReply.replyMid}"><span class="mr-2" onclick="replyEditPopup(${parentReply.replyIdx}, '${parentReply.replyContent}')">수정</span></c:if>
-													<c:if test="${(sMid == parentReply.replyMid && sLevel != 0) || sLevel == 0}"><span class="mr-2" onclick="replyDelete(${parentReply.replyIdx}, 0)">삭제</span></c:if>
-													<span class="mr-2" onclick="reportPopup(${parentReply.replyIdx}, '댓글', '${parentReply.replyMid}')">신고</span>
-												</div>
-											</c:if>
-										</div>
-									</div>
-								</div>
-								<div id="rreplyList${parentReply.replyIdx}" class="rreplyList">
-									<c:if test="${parentReply.childReplyCount > 1}"><div id="moreRReply${parentReply.replyIdx}" onclick="childReplyMore(${parentReply.replyIdx},${cmVO.cmIdx})" class="moreReply"> ──&nbsp;&nbsp;${parentReply.childReplyCount}개의 답글 모두 보기</div></c:if>
-									<c:forEach var="childReply" items="${cmVO.childReply}">
-										<c:if test="${childReply.replyParentIdx == parentReply.replyIdx}">
-											<div style="display:flex; align-items:flex-start;" class="mb-4">
-												<img src="${ctp}/member/${childReply.memImg}" alt="프로필" class="reply-pic">
-												<div>
-													<c:if test="${childReply.title != '없음'}"><div style="font-size:12px;">${childReply.title}</div></c:if>
-													<div style="font-weight:bold;">${childReply.nickname}</div>
-													<div>${fn:replace(childReply.replyContent, newLine, "<br/>")}</div>
-													<div style="color:#b2bdce; font-size:12px;" class="mt-2">
-														<c:if test="${childReply.hour_diff < 1}">${childReply.min_diff}분 전</c:if>
-														<c:if test="${childReply.hour_diff < 24 && childReply.hour_diff >= 1}">${childReply.hour_diff}시간 전</c:if>
-														<c:if test="${childReply.hour_diff >= 24}">${fn:substring(childReply.replyDate, 0, 10)}</c:if>
-														<c:if test="${sMid != null}">
-															<div class="replymenu">
-																<span class="mr-2" onclick="rreplyPreview(${parentReply.replyIdx})">답글</span>
-																<c:if test="${sMid == childReply.replyMid}"><span class="mr-2" onclick="replyEditPopup(${childReply.replyIdx}, '${childReply.replyContent}')">수정</span></c:if>
-																<c:if test="${(sMid == childReply.replyMid && sLevel != 0) || sLevel == 0}"><span class="mr-2" onclick="replyDelete(${childReply.replyIdx}, 1)">삭제</span></c:if>
-																<span class="mr-2" onclick="reportPopup(${childReply.replyIdx}, '댓글', '${childReply.replyMid}')">신고</span>
-															</div>
-														</c:if>
-													</div>
-												</div>
+							<div style="display: flex; align-items: center;">
+								<c:if test="${sMid != cmVO.mid && cmVO.follow == 0}"><div class="replyok-button mr-4 fb${cmVO.mid}" onclick="followAdd('${cmVO.mid}')"><i class="fa-solid fa-plus fa-sm"></i>&nbsp;팔로우</div></c:if>
+								<div style="position:relative;">
+									<i class="fa-solid fa-bars fa-xl" onclick="toggleContentMenu(${cmVO.cmIdx})" style="color: #D5D5D5;cursor:pointer;"></i>
+						 			<div id="contentMenu${cmVO.cmIdx}" class="content-menu">
+								        <c:if test="${sMid == cmVO.mid}"><div onclick="showPopupEdit('${fn:replace(fn:replace(cmVO, newLine, '<br>'), '\"', '&quot;')}')">수정</div></c:if>
+									    <c:if test="${sMid == cmVO.mid || sLevel == 0}"><div onclick="contentDelete(${cmVO.cmIdx})"><font color="red">삭제</font></div></c:if>
+								        <c:if test="${sLevel == 0}"><div onclick="location.href='${ctp}/admin/userlist?page=1&viewpart=all&searchpart=아이디&search=${cmVO.mid}';">사용자 제재</div></c:if>
+								        <c:if test="${sMid != cmVO.mid && sLevel != 0}">
+								        	<div class="ufb${cmVO.mid}" style="display:${cmVO.follow == 1 ? 'block' : 'none'};" onclick="followDelete('${cmVO.mid}')">언팔로우</div>
+								        	<div onclick="reportPopup(${cmVO.cmIdx}, '게시글', '${cmVO.mid}')">신고</div>
+								        </c:if>
+							    	</div>
+					 			</div>
+					 		</div>
+				 		</c:if>
+					</div>
+					<div class="community-content">
+						<div class="cm-content ${cmVO.longContent == 1 ? 'moreGra' : ''}" id="cmContent${cmVO.cmIdx}">${cmVO.cmContent}</div>
+						<c:if test="${cmVO.longContent == 1}"><div onclick="showAllContent(${cmVO.cmIdx})" id="moreBtn${cmVO.cmIdx}" style="cursor:pointer; color:#00c722; font-weight:bold;">더 보기</div></c:if>
+						<div style="color:#b2bdce; font-size:12px;" class="mt-2">
+							<c:if test="${cmVO.hour_diff < 1}">${cmVO.min_diff}분 전</c:if>
+							<c:if test="${cmVO.hour_diff < 24 && cmVO.hour_diff >= 1}">${cmVO.hour_diff}시간 전</c:if>
+							<c:if test="${cmVO.hour_diff >= 24}">${fn:substring(cmVO.cmDate, 0, 10)}</c:if>
+						</div>
+						<div style="color:#b2bdce; font-size:12px;" class="mt-2"><span id="cm-likeCnt${cmVO.cmIdx}">이 글을 ${cmVO.likeCnt}명이 좋아합니다.</span></div>
+					</div>
+					<c:if test="${sMid != null}">
+						<hr/>
+						<div class="community-footer">
+							<span id="cm-like${cmVO.cmIdx}">
+								<c:if test="${cmVO.likeSW == 0}"><span onclick="likeAdd(${cmVO.cmIdx})"><i class="fa-solid fa-heart"></i>&nbsp;&nbsp;좋아요</span></c:if>
+								<c:if test="${cmVO.likeSW == 1}"><span style="color:#00c722;" onclick="likeDelete(${cmVO.cmIdx})"><i class="fa-solid fa-heart"></i>&nbsp;&nbsp;좋아요</span></c:if>
+							</span>
+							<span onclick="replyPreview(${cmVO.cmIdx})"><i class="fa-solid fa-comment-dots"></i>&nbsp;&nbsp;댓글</span>
+						</div>
+						<hr/>
+					</c:if>
+					<div id="replyList${cmVO.cmIdx}" class="replyList">
+						<c:if test="${cmVO.replyCount > 2}"><div id="moreReply${cmVO.cmIdx}" onclick="parentReplyMore(${cmVO.cmIdx})" class="moreReply">${cmVO.replyCount}개의 댓글 모두 보기</div></c:if>
+						<c:forEach var="parentReply" items="${cmVO.parentsReply}">
+							<div style="display:flex; align-items:flex-start;" class="mb-4">
+								<img src="${ctp}/member/${parentReply.memImg}" alt="프로필" class="reply-pic">
+								<div>
+									<c:if test="${parentReply.title != '없음'}"><div style="font-size:12px;">${parentReply.title}</div></c:if>
+									<div style="font-weight:bold;">${parentReply.nickname}</div>
+									<div>${fn:replace(parentReply.replyContent, newLine, "<br/>")}</div>
+									<div style="color:#b2bdce; font-size:12px;" class="mt-2">
+										<c:if test="${parentReply.hour_diff < 1}">${parentReply.min_diff}분 전</c:if>
+										<c:if test="${parentReply.hour_diff < 24 && parentReply.hour_diff >= 1}">${parentReply.hour_diff}시간 전</c:if>
+										<c:if test="${parentReply.hour_diff >= 24}">${fn:substring(parentReply.replyDate, 0, 10)}</c:if>
+										<c:if test="${sMid != null}">
+											<div class="replymenu">
+												<span class="mr-2" onclick="rreplyPreview(${parentReply.replyIdx})">답글</span>
+												<c:if test="${sMid == parentReply.replyMid}"><span class="mr-2" onclick="replyEditPopup(${parentReply.replyIdx}, '${parentReply.replyContent}')">수정</span></c:if>
+												<c:if test="${(sMid == parentReply.replyMid && sLevel != 0) || sLevel == 0}"><span class="mr-2" onclick="replyDelete(${parentReply.replyIdx}, 0)">삭제</span></c:if>
+												<span class="mr-2" onclick="reportPopup(${parentReply.replyIdx}, '댓글', '${parentReply.replyMid}')">신고</span>
 											</div>
 										</c:if>
-									</c:forEach>
-								</div>
-								<div id="rreplyWrite${parentReply.replyIdx}" style="display:none; justify-content: center;">
-									<div style="display:flex;">
-										<img src="${ctp}/member/${sMemImg}" alt="프로필" class="reply-pic">
-										<textarea id="rreplyContent${parentReply.replyIdx}" name="rreplyContent" rows="2" placeholder="답글을 작성해 보세요." class="form-control textarea" style="background-color:#32373d;"></textarea>
-									</div>
-									<div style="display:flex; justify-content: flex-end; margin-top: 5px;">
-										<div class="replyno-button mr-2" onclick="rreplyPreview(${parentReply.replyIdx})">취소</div>
-										<div class="replyok-button" onclick="rreplyInput(${parentReply.replyIdx}, ${cmVO.cmIdx})">작성</div>
 									</div>
 								</div>
-							</c:forEach>
-						</div>
-						<c:if test="${sMid != null}">
-							<div id="replyPreview${cmVO.cmIdx}" style="display:flex; align-items: center; justify-content: center;">
-								<img src="${ctp}/member/${sMemImg}" alt="프로필" class="reply-pic">
-								<div class="text-input" onclick="replyPreview(${cmVO.cmIdx})">댓글을 작성해 보세요.</div>
 							</div>
-							<div id="replyWrite${cmVO.cmIdx}" style="display:none; justify-content: center;">
+							<div id="rreplyList${parentReply.replyIdx}" class="rreplyList">
+								<c:if test="${parentReply.childReplyCount > 1}"><div id="moreRReply${parentReply.replyIdx}" onclick="childReplyMore(${parentReply.replyIdx},${cmVO.cmIdx})" class="moreReply"> ──&nbsp;&nbsp;${parentReply.childReplyCount}개의 답글 모두 보기</div></c:if>
+								<c:forEach var="childReply" items="${cmVO.childReply}">
+									<c:if test="${childReply.replyParentIdx == parentReply.replyIdx}">
+										<div style="display:flex; align-items:flex-start;" class="mb-4">
+											<img src="${ctp}/member/${childReply.memImg}" alt="프로필" class="reply-pic">
+											<div>
+												<c:if test="${childReply.title != '없음'}"><div style="font-size:12px;">${childReply.title}</div></c:if>
+												<div style="font-weight:bold;">${childReply.nickname}</div>
+												<div>${fn:replace(childReply.replyContent, newLine, "<br/>")}</div>
+												<div style="color:#b2bdce; font-size:12px;" class="mt-2">
+													<c:if test="${childReply.hour_diff < 1}">${childReply.min_diff}분 전</c:if>
+													<c:if test="${childReply.hour_diff < 24 && childReply.hour_diff >= 1}">${childReply.hour_diff}시간 전</c:if>
+													<c:if test="${childReply.hour_diff >= 24}">${fn:substring(childReply.replyDate, 0, 10)}</c:if>
+													<c:if test="${sMid != null}">
+														<div class="replymenu">
+															<span class="mr-2" onclick="rreplyPreview(${parentReply.replyIdx})">답글</span>
+															<c:if test="${sMid == childReply.replyMid}"><span class="mr-2" onclick="replyEditPopup(${childReply.replyIdx}, '${childReply.replyContent}')">수정</span></c:if>
+															<c:if test="${(sMid == childReply.replyMid && sLevel != 0) || sLevel == 0}"><span class="mr-2" onclick="replyDelete(${childReply.replyIdx}, 1)">삭제</span></c:if>
+															<span class="mr-2" onclick="reportPopup(${childReply.replyIdx}, '댓글', '${childReply.replyMid}')">신고</span>
+														</div>
+													</c:if>
+												</div>
+											</div>
+										</div>
+									</c:if>
+								</c:forEach>
+							</div>
+							<div id="rreplyWrite${parentReply.replyIdx}" style="display:none; justify-content: center;">
 								<div style="display:flex;">
 									<img src="${ctp}/member/${sMemImg}" alt="프로필" class="reply-pic">
-									<textarea id="replyContent${cmVO.cmIdx}" name="replyContent" rows="2" placeholder="댓글을 작성해 보세요." class="form-control textarea" style="background-color:#32373d;"></textarea>
+									<textarea id="rreplyContent${parentReply.replyIdx}" name="rreplyContent" rows="2" placeholder="답글을 작성해 보세요." class="form-control textarea" style="background-color:#32373d;"></textarea>
 								</div>
 								<div style="display:flex; justify-content: flex-end; margin-top: 5px;">
-									<div class="replyno-button mr-2" onclick="replyCancel(${cmVO.cmIdx})">취소</div>
-									<div class="replyok-button" onclick="replyInput(${cmVO.cmIdx})">작성</div>
+									<div class="replyno-button mr-2" onclick="rreplyPreview(${parentReply.replyIdx})">취소</div>
+									<div class="replyok-button" onclick="rreplyInput(${parentReply.replyIdx}, ${cmVO.cmIdx})">작성</div>
 								</div>
 							</div>
-						</c:if>
+						</c:forEach>
 					</div>
-				</c:forEach>
-				<span id="root"></span>
-			</div>
+					<c:if test="${sMid != null}">
+						<div id="replyPreview${cmVO.cmIdx}" style="display:flex; align-items: center; justify-content: center;">
+							<img src="${ctp}/member/${sMemImg}" alt="프로필" class="reply-pic">
+							<div class="text-input" onclick="replyPreview(${cmVO.cmIdx})">댓글을 작성해 보세요.</div>
+						</div>
+						<div id="replyWrite${cmVO.cmIdx}" style="display:none; justify-content: center;">
+							<div style="display:flex;">
+								<img src="${ctp}/member/${sMemImg}" alt="프로필" class="reply-pic">
+								<textarea id="replyContent${cmVO.cmIdx}" name="replyContent" rows="2" placeholder="댓글을 작성해 보세요." class="form-control textarea" style="background-color:#32373d;"></textarea>
+							</div>
+							<div style="display:flex; justify-content: flex-end; margin-top: 5px;">
+								<div class="replyno-button mr-2" onclick="replyCancel(${cmVO.cmIdx})">취소</div>
+								<div class="replyok-button" onclick="replyInput(${cmVO.cmIdx})">작성</div>
+							</div>
+						</div>
+					</c:if>
+				</div>
+			</c:forEach>
+			<span id="root"></span>
 		</div>
 	</div>
-	<p></p>
+	<p><br/></p>
 </main>
 <jsp:include page="/WEB-INF/views/include/footer.jsp" />
 <jsp:include page="/WEB-INF/views/include/navPopup.jsp" />
@@ -686,10 +665,10 @@
     		<div style="cursor:pointer;" onclick="closePopupBefore('write')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
         <div class="category-selection">
-            <button class="community-category" data-category="일지">일지</button>
+            <button class="community-category active" data-category="일지">일지</button>
             <button class="community-category" data-category="소식/정보">소식/정보</button>
             <button class="community-category" data-category="자유">자유 주제</button>
-            <button class="community-category active" data-category="세일">세일 글</button>
+            <button class="community-category" data-category="세일">세일 글</button>
         </div>
         <div class="game-selection scrollbar" id="game-selection">
             <button class="gamesearch-button" onclick="showPopupGameSearch()">
@@ -878,6 +857,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>
 	    
 	    <script>
+	
 			// 이미지 업로드
 		    function uploadImage2(file) {
 				let fileSize = file.size;

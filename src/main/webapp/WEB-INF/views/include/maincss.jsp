@@ -150,6 +150,7 @@
 	  	-webkit-line-clamp: 1;
 	  	-webkit-box-orient: vertical;
 	}
+	.news-text, .popcommunity-text {cursor: pointer;}
 	.news hr {
 		border-top: 1px solid #b2bdce30;
     	margin: 10px 0;
@@ -565,7 +566,8 @@
 	#popup-join .popup-join-content, #popup-login .popup-login-content, #popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
 	 #popup-edit .popup-edit-content, #popup-replyedit .popup-replyedit-content, #popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content,
 	 #popup-report .popup-report-content, #popup-support .popup-support-content, #popup-reviewwrite .popup-reviewwrite-content,
-	 #popup-pwdreset .popup-pwdreset-content, #popup-ftgameedit .popup-ftgameedit-content {
+	 #popup-pwdreset .popup-pwdreset-content, #popup-ftgameedit .popup-ftgameedit-content, 
+	 #popup-cmview .popup-cmview-content{
 	  padding: 20px;
 	  background: #32373d;
 	  border-radius: 5px;
@@ -576,7 +578,8 @@
 	}
 	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
 	#popup-edit .popup-edit-content, #popup-reviewwrite .popup-reviewwrite-content {width: 700px;}
-	#popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content, #popup-ftgameedit .popup-ftgameedit-content{width:500px;}
+	#popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content, #popup-ftgameedit .popup-ftgameedit-content, 
+	#popup-cmview .popup-cmview-content {width:500px;}
 	#popup-report .popup-report-content, #popup-support .popup-support-content, #popup-pwdreset .popup-pwdreset-content {width: 330px;}
 	
 	.popup-open {
@@ -767,7 +770,20 @@
 	    font-family: 'SUITE-Regular';
 	    width: 260px;
 	}
-	#mprofileDropdown {
+	#alramDropdown {
+		display: none;
+	    position: absolute;
+	    top: 80px;
+	    background-color: #32373d;
+	    color: #b2bdce;
+	    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	    z-index: 1;
+	    border-radius: 5px;
+	    padding: 10px;
+	    font-family: 'SUITE-Regular';
+	    width: 300px;
+	}
+	#mprofileDropdown, #malramDropdown {
 	    display: none;
 	    position: absolute;
 	    right: 1px;
@@ -782,14 +798,20 @@
 	    width: 200px;
 	}
 	
-	#profileDropdown a, #mprofileDropdown a {
+	#malramDropdown{
+		width: 300px;
+		right: 21px;
+		top: 65px;
+	}
+	
+	#profileDropdown a, #mprofileDropdown a, #malramDropdown a, #alramDropdown a {
 	    color: #b2bdce;
 	    padding: 12px 16px;
 	    text-decoration: none;
 	    display: block;
 	}
 	
-	#profileDropdown a:hover, #mprofileDropdown a:hover {
+	#profileDropdown a:hover, #mprofileDropdown a:hover, #malramDropdown a:hover, #alramDropdown a:hover {
 	    background-color: #161d25;
 	}
 	
@@ -805,6 +827,28 @@
 	    height: 50px;
 	    margin-right: 10px;
 	    object-fit: cover;
+	}
+	#alramCount, #malramCount {
+		display: none;
+        position: absolute;
+        top: -20px;
+        right: -10px;
+        background-color: #ff3737;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px; /* 글자 크기 */
+        line-height: 20px; /* 높이와 일치시켜 수직 정렬 */
+	}
+	.alram-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 2px 5px;
+		font-size: 18px;
 	}
 	.community {
 		color: #fff;
@@ -1161,7 +1205,8 @@
     }
     .content-menu > div {cursor: pointer; margin-bottom: 3px;}
     .replyList {
-    	margin: 20px; 
+    	margin: 20px;
+    	color:#fff;
     }
     .reply-pic {
 		border-radius: 50%;
@@ -1562,6 +1607,7 @@
 	.newsviewContainer {
 		width: 65%;
 		margin: 50px auto;
+		color:#fff;
 	}
 	.newsCmBox {
 		display:flex;
@@ -1583,6 +1629,24 @@
 	.left-menu-box:hover {
 		background-color: #161d25;
 	}
+	.stats-box {
+	    display: flex;
+	    justify-content: space-around;
+	    align-items: center;
+	    border-radius: 10px;
+	    padding: 20px;
+	    width: 100%;
+	    color: #fff;
+	    border: 1px solid #70767a99;
+    }
+    .stat-item {
+        text-align: center;
+    }
+    .stat-item span {
+        display: block;
+        font-size: 24px;
+        font-weight: bold;
+    }
 	@media screen and (min-width: 1200px) {
 		.game-item {
 			width: 110px;

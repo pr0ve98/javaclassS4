@@ -9,15 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.spring.javaclassS4.service.MemberService;
-import com.spring.javaclassS4.service.SettingService;
 import com.spring.javaclassS4.vo.MemberVO;
 
 @Controller
 @RequestMapping("/setting")
 public class SettingController {
-	
-	@Autowired
-	SettingService settingService;
 	
 	@Autowired
 	MemberService memberService;

@@ -11,6 +11,7 @@ import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
 import com.spring.javaclassS4.vo.ReportVO;
+import com.spring.javaclassS4.vo.ReviewVO;
 
 public interface CommunityService {
 
@@ -83,5 +84,15 @@ public interface CommunityService {
 	public ArrayList<CommunityVO> getNewsList(int startIndexNo, int pageSize, String part);
 
 	public CommunityVO getNewsContentCmIdx(int cmIdx, String mid);
+
+	public int getMygameAndPart(String mid, String string);
+
+	public ArrayList<ReviewVO> getRecentMyGame(String mid);
+
+	public ArrayList<CommunityVO> getMyReview(String mid);
+
+	public ArrayList<CommunityVO> getMyReviewList(String mid, String userMid, int startIndexNo, int pageSize);
+	
+	public ArrayList<CommunityVO> getMyRecordList(String mid, String userMid, int startIndexNo, int pageSize);
 
 }

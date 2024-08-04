@@ -152,6 +152,7 @@
     	else if(flag == 'support') popup = document.querySelector('#popup-support');
     	else if(flag == 'reviewwrite') popup = document.querySelector('#popup-reviewwrite');
     	else if(flag == 'pwdreset') popup = document.querySelector('#popup-pwdreset');
+    	else if(flag == 'cmview') popup = document.querySelector('#popup-cmview');
     	const html = document.querySelector('html');
     	popup.classList.add('hide');
     	html.style.overflow = 'auto';
@@ -258,9 +259,51 @@
         else loginform.submit();
 	}
 	
+ 	function getAlram() {
+ 		$.ajax({
+			url : "${ctp}/getAlram",
+			type : "post",
+			success : function(response) {
+				let res = response.split("|");
+				if(res[0] != "0") {
+					$("#alramCount").text(res[0]);
+					$("#malramCount").text(res[0]);
+					document.getElementById('alramCount').style.display = 'flex';
+					document.getElementById('malramCount').style.display = 'flex';
+				}
+				$("#alramDropdown").text(res[1]);
+				$("#malramDropdown").text(res[1]);
+			},
+			error : function() {
+				alert("오류!!");
+			}
+		});
+	}
+ 	
+ 	document.addEventListener('DOMContentLoaded', getAlram);
+ 	
  	// PC
+	function toggleAlramMenu() {
+ 		let p = document.getElementById("profileDropdown");
+ 		if (p.style.display === "block") {
+ 	        p.style.display = "none";
+ 	    }
+ 		
+ 	    let dropdown = document.getElementById("alramDropdown");
+ 	    if (dropdown.style.display === "block") {
+ 	        dropdown.style.display = "none";
+ 	    } else {
+ 	        dropdown.style.display = "block";
+ 	    }
+ 	}
+ 	
  	function toggleProfileMenu() {
- 	    var dropdown = document.getElementById("profileDropdown");
+ 		let a = document.getElementById("alramDropdown");
+ 		if (a.style.display === "block") {
+ 	        a.style.display = "none";
+ 	    }
+ 		
+ 		let dropdown = document.getElementById("profileDropdown");
  	    if (dropdown.style.display === "block") {
  	        dropdown.style.display = "none";
  	    } else {
@@ -269,8 +312,27 @@
  	}
  	
  	// 모바일
+ 	function mtoggleAlramMenu() {
+ 		let p = document.getElementById("mprofileDropdown");
+ 		if (p.style.display === "block") {
+ 	        p.style.display = "none";
+ 	    }
+ 		
+ 	    let dropdown = document.getElementById("malramDropdown");
+ 	    if (dropdown.style.display === "block") {
+ 	        dropdown.style.display = "none";
+ 	    } else {
+ 	        dropdown.style.display = "block";
+ 	    }
+ 	}
+ 	
  	function mtoggleProfileMenu() {
- 	    var dropdown = document.getElementById("mprofileDropdown");
+ 		let a = document.getElementById("malramDropdown");
+ 		if (a.style.display === "block") {
+ 	        a.style.display = "none";
+ 	    }
+ 		
+ 		let dropdown = document.getElementById("mprofileDropdown");
  	    if (dropdown.style.display === "block") {
  	        dropdown.style.display = "none";
  	    } else {
@@ -280,7 +342,7 @@
 
  	// 페이지의 다른 부분을 클릭하면 드롭다운이 닫히도록 이벤트 리스너 추가
  	window.onclick = function(event) {
- 	    if (!event.target.matches('.profile-menu img')) {
+ 	    if (!event.target.matches('.profile-menu img') && !event.target.matches('#alramBtn')) {
  	        var dropdowns = document.getElementsByClassName("dropdown-content");
  	        for (var i = 0; i < dropdowns.length; i++) {
  	            var openDropdown = dropdowns[i];
@@ -454,6 +516,366 @@
  			success : function() {
  				alert("요청이 정상접수 되었습니다!");
  				closePopup('gameedit');
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
+	}
+ 	
+	function gameViewCommunityView(cmIdx) {
+    	const popup = document.querySelector('#popup-cmview');
+    	const html = document.querySelector('html');
+    	const popupContent = document.querySelector('.popup-cmview-content');
+    	
+    	$.ajax({
+            url: "${ctp}/gameViewCommunityView",
+            type: "post",
+            data: {cmIdx : cmIdx},
+            success: function(res) {
+				$("#communityView").html(res);
+		        popup.classList.remove('hide');
+		        html.style.overflow = 'hidden';
+		        
+	            popupContent.scrollTop = 0; // 스크롤 상단으로!
+		        
+		     	// 팝업 배경을 클릭했을 때 팝업 닫기
+	            popup.addEventListener('click', function(e) {
+	                // 팝업 내용 내부를 클릭한 경우 팝업 닫히지 않도록
+	                if (e.target === popup) {
+	                    popup.classList.add('hide');
+	                    html.style.overflow = ''; // 스크롤 복원
+	                }
+	            });
+            },
+            error: function() {
+               alert("전송오류!");
+            }
+    	});
+	}
+	
+	function showAllContent(cmIdx) {
+		$.ajax({
+			url : "${ctp}/community/showAllContent",
+			type : "post",
+			data : {cmIdx : cmIdx},
+			success : function(res) {
+				$("#cmContent"+cmIdx).html(res);
+				$("#cmContent"+cmIdx).removeClass("moreGra");
+				$("#cmContent"+cmIdx).addClass("expanded");
+				$("#moreBtn"+cmIdx).hide();
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
+	
+	function likeAdd(cmIdx) {
+		$.ajax({
+			url : "${ctp}/community/likeAdd",
+			type : "post",
+			data : {cmIdx : cmIdx},
+			success : function(res) {
+				let r = res.split("%");
+				$("#cm-likeCnt"+cmIdx).html(r[0]);
+				$("#viewLike"+cmIdx).html(r[0]);
+				$("#cm-like"+cmIdx).html(r[1]);
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
+	
+	function likeDelete(cmIdx) {
+		let ans = confirm("좋아요를 취소하시겠어요?");
+		
+		if(ans) {
+			$.ajax({
+				url : "${ctp}/community/likeDelete",
+				type : "post",
+				data : {cmIdx : cmIdx},
+				success : function(res) {
+					let r = res.split("%");
+					$("#cm-likeCnt"+cmIdx).html(r[0]);
+					$("#viewLike"+cmIdx).html(r[0]);
+					$("#cm-like"+cmIdx).html(r[1]);
+				},
+				error : function() {
+					alert("전송오류!");
+				}
+			});
+		}
+	}
+	
+ 	function toggleContentMenu(cmIdx) {
+ 	   	const elements = document.querySelectorAll('[id^="contentMenu"]');
+ 	   	const otherElements = Array.from(elements).filter(element => element.id !== "contentMenu" + cmIdx); // 필터 적용해 조건부로 가져오기
+ 	    let dropdown = document.getElementById("contentMenu"+cmIdx);
+ 	    
+ 	   otherElements.forEach(element => {
+ 	   		element.style.display = "none";
+ 		});
+ 	    
+ 	    if (dropdown.style.display === "block") {
+ 	        dropdown.style.display = "none";
+ 	    } else {
+ 	        dropdown.style.display = "block";
+ 	    }
+ 	}
+ 	
+ 	function contentDelete(cmIdx) {
+		let ans = confirm("정말로 삭제하시겠습니까?");
+		if(ans) {
+			$.ajax({
+				url : "${ctp}/community/communityDelete",
+				type : "post",
+				data : {cmIdx:cmIdx},
+				success : function(res) {
+					if(res != "0") location.reload();
+					else alert("삭제실패!");
+				},
+				error : function() {
+					alert("전송오류!");
+				}
+			});
+		}
+	}
+ 	
+ 	function replyPreview(cmIdx) {
+		document.getElementById("replyPreview"+cmIdx).style.display = "none";
+		document.getElementById("replyWrite"+cmIdx).style.display = "block";
+		document.getElementById("replyContent"+cmIdx).focus();
+	}
+ 	
+ 	function replyCancel(cmIdx) {
+		document.getElementById("replyPreview"+cmIdx).style.display = "flex";
+		document.getElementById("replyWrite"+cmIdx).style.display = "none";
+	}
+ 	
+ 	function replyInput(cmIdx) {
+ 		let replyContent = $("#replyContent"+cmIdx).val().trim();
+ 		
+ 		if(replyContent == "") {
+ 			alert("댓글을 입력해주세요");
+ 			return false;
+ 		}
+ 		
+		$.ajax({
+			url : "${ctp}/community/replyInput",
+			type : "post",
+			data : {replyCmIdx : cmIdx, replyContent : replyContent},
+			success : function(response) {
+				let res = response.split("|");
+				if(res[0] != "0") {
+					replyCancel(cmIdx);
+					$("#replyList"+cmIdx).html(res[1]);
+					$("#replyContent"+cmIdx).val("");
+				}
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
+ 	
+ 	function parentReplyMore(cmIdx) {
+		$.ajax({
+			url : "${ctp}/community/parentReplyMore",
+			type : "post",
+			data : {replyCmIdx : cmIdx},
+			success : function(res) {
+				$("#replyList"+cmIdx).html(res);
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
+ 	
+ 	function rreplyPreview(replyIdx) {
+ 	   	const elements = document.querySelectorAll('[id^="rreplyWrite"]');
+ 	   	const otherElements = Array.from(elements).filter(element => element.id !== "rreplyWrite" + replyIdx); // 필터 적용해 조건부로 가져오기
+ 	    let toggle = document.getElementById("rreplyWrite"+replyIdx);
+ 	    
+ 	   otherElements.forEach(element => {
+ 	   		element.style.display = "none";
+ 		});
+ 	    
+ 	    if (toggle.style.display === "block") {
+ 	    	toggle.style.display = "none";
+ 	    } else {
+ 	    	toggle.style.display = "block";
+ 	    }
+	}
+ 	
+ 	function rreplyInput(replyIdx, cmIdx) {
+ 		let rreplyContent = $("#rreplyContent"+replyIdx).val().trim();
+ 		
+ 		if(rreplyContent == "") {
+ 			alert("답글을 입력해주세요");
+ 			return false;
+ 		}
+ 		
+		$.ajax({
+			url : "${ctp}/community/rreplyInput",
+			type : "post",
+			data : {replyCmIdx : cmIdx, replyParentIdx : replyIdx, replyContent : rreplyContent},
+			success : function(response) {
+				let res = response.split("|");
+				if(res[0] != "0") {
+					rreplyPreview(replyIdx);
+					$("#rreplyList"+replyIdx).html(res[1]);
+					$("#rreplyContent"+replyIdx).val("");
+				}
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
+ 	
+ 	function childReplyMore(replyIdx, cmIdx) {
+		$.ajax({
+			url : "${ctp}/community/childReplyMore",
+			type : "post",
+			data : {replyCmIdx : cmIdx, replyParentIdx : replyIdx},
+			success : function(res) {
+				$("#rreplyList"+replyIdx).html(res);
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
+ 	
+ 	function replyEditPopup(replyIdx, replyContent) {
+    	const popup = document.querySelector('#popup-replyedit');
+    	const html = document.querySelector('html');
+    	replyContent = replyContent.replaceAll('<br/>', '\n');
+        $("#replyedit").val(replyContent);
+        $("#replyIdx").val(replyIdx);
+        popup.classList.remove('hide');
+        html.style.overflow = 'hidden';
+	}
+ 	
+ 	function replyEdit(cmIdx) {
+ 		let replyedit = $("#replyedit").val().trim();
+ 		let replyIdx = $("#replyIdx").val();
+ 		let replyMid = $("#replyMid").val();
+ 		
+ 		$.ajax({
+ 			url : "${ctp}/community/replyEdit",
+ 			type : "post",
+ 			data : {replyContent : replyedit, replyIdx : replyIdx, replyMid : replyMid},
+ 			success : function(response) {
+				let res = response.split("|");
+				if(res[0] != "0") {
+					$("#replyList"+res[2]).html(res[1]);
+					closePopup('replyedit');
+				}
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
+	}
+ 	
+ 	function replyDelete(replyIdx, sw) {
+		let ans = '';
+		if(sw == 0) ans = confirm("댓글을 삭제하시겠어요?\n답글도 전부 삭제됩니다!");
+		else ans = confirm("답글을 삭제하시겠어요?");
+		
+		if(ans) {
+	 		$.ajax({
+	 			url : "${ctp}/community/replyDelete",
+	 			type : "post",
+	 			data : {replyIdx : replyIdx},
+	 			success : function(res) {
+					if(res != "0") {
+						location.reload();
+					}
+				},
+	 			error : function() {
+					alert("전송오류!");
+				}
+	 		});
+		}
+	}
+ 	
+ 	function followAdd(youMid) {
+ 		$.ajax({
+ 			url : "${ctp}/community/followInput",
+ 			type : "post",
+ 			data : {youMid : youMid},
+ 			success : function() {
+				const elements = document.querySelectorAll('.fb'+youMid);
+				elements.forEach(element => {
+		 	   		element.style.display = "none";
+		 		});
+				
+				const elements2 = document.querySelectorAll('.ufb'+youMid);
+				elements2.forEach(element2 => {
+		 	   		element2.style.display = "block";
+		 		});
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
+	}
+ 	
+ 	function followDelete(youMid) {
+ 		$.ajax({
+ 			url : "${ctp}/community/followDelete",
+ 			type : "post",
+ 			data : {youMid : youMid},
+ 			success : function() {
+				const elements = document.querySelectorAll('.fb'+youMid);
+				elements.forEach(element => {
+		 	   		element.style.display = "block";
+		 		});
+				
+				const elements2 = document.querySelectorAll('.ufb'+youMid);
+				elements2.forEach(element2 => {
+		 	   		element2.style.display = "none";
+		 		});
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
+	}
+ 	
+ 	function reportPopup(contentIdx, contentPart, sufferMid) {
+    	const popup = document.querySelector('#popup-report');
+    	const html = document.querySelector('html');
+        popup.classList.remove('hide');
+        html.style.overflow = 'hidden';
+        $("#contentIdx").val(contentIdx);
+        $("#contentPart").val(contentPart);
+        $("#sufferMid").val(sufferMid);
+	}
+ 	
+ 	function reportInput() {
+		let reason = $("select[name=reason]").val();
+		let contentIdx = $("#contentIdx").val();
+		let contentPart = $("#contentPart").val();
+		let sufferMid = $("#sufferMid").val();
+		
+		if(reason == '') {
+			alert("신고사유를 선택해주세요");
+			return false;
+		}
+		
+ 		$.ajax({
+ 			url : "${ctp}/community/reportInput",
+ 			type : "post",
+ 			data : {reportMid : '${sMid}', sufferMid:sufferMid, contentPart:contentPart, contentIdx:contentIdx, reason:reason},
+ 			success : function() {
+ 				alert("신고가 정상접수 되었습니다!");
+ 				closePopup('report');
 			},
  			error : function() {
 				alert("전송오류!");

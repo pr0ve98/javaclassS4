@@ -189,3 +189,48 @@
 		</div>
   </div>
 </div>
+<div id="popup-cmview" class="hide">
+  <div class="popup-cmview-content scrollbar" style="background-color: #161d25;">
+  		<div class="popup-write-header">
+            <span class="header-text"></span>
+    		<div style="cursor:pointer;" onclick="closePopup('cmview')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+		</div>
+		<hr/>
+        <div id="communityView"></div>
+    </div>
+</div>
+<div id="popup-replyedit" class="hide">
+  <div class="popup-replyedit-content scrollbar">
+  		<div class="popup-replyedit-header mb-4">
+            <span class="e-header-text">댓글 수정</span>
+    		<div style="cursor:pointer;" onclick="closePopup('replyedit')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+		</div>
+ 		<div><textarea id="replyedit" name="replyedit" rows="5" class="textarea mb-3" style="width:100%" placeholder="수정할 댓글을 입력하세요"></textarea></div>
+ 		<input type="hidden" id="replyIdx" name="replyIdx" />
+ 		<input type="hidden" id="replyMid" name="replyMid" value="${sMid}" />
+	 	<div class="text-right"><button class="edit-button" onclick="replyEdit()">수정하기</button></div>
+    </div>
+</div>
+<div id="popup-report" class="hide">
+  <div class="popup-report-content scrollbar">
+  		<div class="popup-replyedit-header mb-4">
+            <span class="e-header-text">신고하기</span>
+    		<div style="cursor:pointer;" onclick="closePopup('report')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+		</div>
+		<div class="mb-3">확실히 신고사유가 되는지 확인하고 신고하여 주십시오 무분별한 신고 시 <b style="color:red;">신고자가 제재</b>를 당할 수 있습니다</div>
+		<div class="text-center mb-4"><select class="dropdown-btn" name="reason">
+			<option value="">신고사유 선택</option>
+			<option>스팸</option>
+			<option>스포일러</option>
+			<option value="선정성">나체이미지 또는 성적행위</option>
+			<option>사기</option>
+			<option value="욕설혐오">욕설, 혐오 발언</option>
+			<option>지식재산권 침해</option>
+			<option value="명예훼손">타인의 명예 훼손</option>
+		</select></div>
+ 		<input type="hidden" id="contentIdx" name="contentIdx" />
+ 		<input type="hidden" id="contentPart" name="contentPart" />
+ 		<input type="hidden" id="sufferMid" name="sufferMid" />
+	 	<div class="text-center"><button class="btn btn-danger" onclick="reportInput()">신고하기</button></div>
+    </div>
+</div>

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.spring.javaclassS4.dao.CommunityDAO;
 import com.spring.javaclassS4.dao.HomeDAO;
+import com.spring.javaclassS4.vo.AlramVO;
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.GameVO;
@@ -208,6 +209,59 @@ public class HomeServiceImpl implements HomeService {
         ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vo.getCmIdx());
         ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
 
+		for (ReplyVO k : parentsReply) {
+        	k.setReplyContent(k.getReplyContent().replace("\n", "<br/>"));
+            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
+            k.setChildReplyCount(childReplyCount);
+
+            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vo.getCmIdx(), k.getReplyIdx());
+            
+            // 자식 댓글을 추가
+            if (childReplies != null) {
+            	for (ReplyVO c : childReplies) {
+            		c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
+            	}
+                childsReply.addAll(childReplies);
+            }
+        }
+	        
+		int replyCount = communityDAO.getReplyCount(vo.getCmIdx());
+		vo.setParentsReply(parentsReply);
+		vo.setChildReply(childsReply);
+		vo.setReplyCount(replyCount);
+		
+		if(vo.getCmGameIdx() != 0) {
+			GameVO vo2 = communityDAO.getGameIdx(vo.getCmGameIdx());
+			vo.setGameImg(vo2.getGameImg());
+		}
+		
+		FollowVO fVO = communityDAO.getFollow(mid, vo.getMid());
+		if(fVO == null) vo.setFollow(0);
+		else vo.setFollow(1);
+		return vo;
+	}
+
+	@Override
+	public CommunityVO gameViewCommunityView(int cmIdx, HttpSession session) {
+		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
+		CommunityVO vo = homeDAO.showAllContent(cmIdx);
+		
+		List<String> likeMember = communityDAO.getLikeMember(vo.getCmIdx());
+		if(mid != null && likeMember.size() > 0) {
+			for(int j=0; j<likeMember.size(); j++) {
+				if(mid.equals(likeMember.get(j))) {
+					vo.setLikeSW(1);
+					break;
+				}
+				else vo.setLikeSW(0);
+			}
+		}
+		vo.setLikeMember(likeMember);
+		vo.setLikeCnt(likeMember.size());
+		
+        ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vo.getCmIdx());
+        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
+
         for (ReplyVO k : parentsReply) {
             int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
             k.setChildReplyCount(childReplyCount);
@@ -233,14 +287,6 @@ public class HomeServiceImpl implements HomeService {
 		FollowVO fVO = communityDAO.getFollow(mid, vo.getMid());
 		if(fVO == null) vo.setFollow(0);
 		else vo.setFollow(1);
-		return vo;
-	}
-
-	@Override
-	public CommunityVO gameViewCommunityView(int cmIdx, HttpSession session) {
-		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
-		CommunityVO vo = homeDAO.showAllContent(cmIdx);
-		if(vo != null) vo = voReVO(vo, mid);
 		return vo;
 	}
 
@@ -323,6 +369,88 @@ public class HomeServiceImpl implements HomeService {
 	        ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vo.getCmIdx());
 	        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
 
+			for (ReplyVO k : parentsReply) {
+	        	k.setReplyContent(k.getReplyContent().replace("\n", "<br/>"));
+	            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
+	            k.setChildReplyCount(childReplyCount);
+
+	            ArrayList<ReplyVO> childReplies = communityDAO.getCommunityChildReply(vo.getCmIdx(), k.getReplyIdx());
+	            
+	            // 자식 댓글을 추가
+	            if (childReplies != null) {
+	            	for (ReplyVO c : childReplies) {
+	            		c.setReplyContent(c.getReplyContent().replace("\n", "<br/>"));
+	            	}
+	                childsReply.addAll(childReplies);
+	            }
+	        }
+		        
+			int replyCount = communityDAO.getReplyCount(vo.getCmIdx());
+			vo.setParentsReply(parentsReply);
+			vo.setChildReply(childsReply);
+			vo.setReplyCount(replyCount);
+			
+			if(vo.getCmGameIdx() != 0) {
+				GameVO vo2 = communityDAO.getGameIdx(vo.getCmGameIdx());
+				vo.setGameImg(vo2.getGameImg());
+			}
+			
+			FollowVO fVO = communityDAO.getFollow(mid, vo.getMid());
+			if(fVO == null) vo.setFollow(0);
+			else vo.setFollow(1);
+		}
+		return vos;
+	}
+
+	@Override
+	public ArrayList<CommunityVO> homeCommunity(HttpSession session, String part) {
+		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
+		ArrayList<CommunityVO> vos = homeDAO.homeCommunity(part);
+		for(CommunityVO vo:vos) {
+			Document doc = Jsoup.parse(vo.getCmContent());
+			// 텍스트만 뽑아내기
+	        String ctPreview = doc.text();
+	        if(ctPreview.length() > 200) {
+	        	ctPreview = ctPreview.substring(0, 200);
+	        }
+	        vo.setOnlyText(ctPreview);
+			
+	        Elements img = doc.select("img");
+			if(!img.isEmpty()) {
+				Element firstImg = img.first();
+			    String imgSrc = firstImg.attr("src");
+
+			    String imgName;
+
+			    if (imgSrc.startsWith("http")) {
+			        imgName = imgSrc;
+			    } else {
+			        imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+			    }
+
+			    vo.setNewsThumnail(imgName);
+			}
+			else {
+				if(part.equals("인기")) vo.setNewsThumnail("thumnailNot.jpg");
+				else vo.setNewsThumnail("sale_thumbnail.png");
+			}
+	        
+	        List<String> likeMember = communityDAO.getLikeMember(vo.getCmIdx());
+			if(mid != null && likeMember.size() > 0) {
+				for(int j=0; j<likeMember.size(); j++) {
+					if(mid.equals(likeMember.get(j))) {
+						vo.setLikeSW(1);
+						break;
+					}
+					else vo.setLikeSW(0);
+				}
+			}
+			vo.setLikeMember(likeMember);
+			vo.setLikeCnt(likeMember.size());
+			
+	        ArrayList<ReplyVO> parentsReply = communityDAO.getCommunityReply(vo.getCmIdx());
+	        ArrayList<ReplyVO> childsReply = new ArrayList<>(); // 자식 댓글 리스트를 반복문 밖에서 초기화
+
 	        for (ReplyVO k : parentsReply) {
 	            int childReplyCount = communityDAO.getChildReplyCount(k.getReplyIdx());
 	            k.setChildReplyCount(childReplyCount);
@@ -350,6 +478,11 @@ public class HomeServiceImpl implements HomeService {
 			else vo.setFollow(1);
 		}
 		return vos;
+	}
+
+	@Override
+	public ArrayList<AlramVO> getAlram(String mid, int level) {
+		return homeDAO.getAlram(mid, level);
 	}
 
 

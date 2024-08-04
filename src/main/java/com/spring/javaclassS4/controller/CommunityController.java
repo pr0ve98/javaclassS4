@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS4.service.CommunityService;
+import com.spring.javaclassS4.service.HomeService;
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
@@ -28,6 +29,9 @@ public class CommunityController {
 	
 	@Autowired
 	CommunityService communityService;
+	
+	@Autowired
+	HomeService homeService;
 	
 	@RequestMapping(value = "/recent", method = RequestMethod.GET)
 	public String recentGet(Model model, HttpSession session,
@@ -285,7 +289,10 @@ public class CommunityController {
 		String hostIp = request.getRemoteAddr();
 		vo.setCmHostIp(hostIp);
 		int sw = 0;
-		if(vo.getPart().equals("자유") || vo.getSection().equals("뉴스")) sw = 1;
+		if(vo.getPart().equals("자유")) sw = 1;
+		else if(vo.getSection() != null) {
+			if(vo.getSection().equals("뉴스")) sw = 1;
+		}
 		return communityService.communityEdit(vo, sw)+"";
 	}
 	
@@ -326,6 +333,8 @@ public class CommunityController {
 	@ResponseBody
 	@RequestMapping(value = "/rootData", method = RequestMethod.POST, produces = "application/text; charset=utf8")
 	public String rootDataPost(HttpSession session, HttpServletRequest request, String part,
+			@RequestParam(name="gameIdx", defaultValue = "0", required = false) int gameIdx,
+			@RequestParam(name="userMid", defaultValue = "", required = false) String userMid,
 			@RequestParam(name="page", defaultValue = "1", required = false) int page,
 			@RequestParam(name="pageSize", defaultValue = "10", required = false) int pageSize) {
 		String mid = session.getAttribute("sMid")==null ? "" : (String) session.getAttribute("sMid");
@@ -336,7 +345,11 @@ public class CommunityController {
 		
 		if(part.equals("recent")) cmVOS = communityService.getCommunityList(mid, startIndexNo, pageSize);
 		else if(part.equals("follow")) cmVOS = communityService.getCommunityFollowList(mid, startIndexNo, pageSize);
-		else cmVOS = communityService.getCommunityPartList(mid, startIndexNo, pageSize, part);
+		else if(part.equals("myRecord")) cmVOS = communityService.getMyRecordList(mid, userMid, startIndexNo, pageSize);
+		else {
+			if(gameIdx == 0) cmVOS = communityService.getCommunityPartList(mid, startIndexNo, pageSize, part);
+			else cmVOS = homeService.getGameViewRCList(mid, startIndexNo, pageSize, gameIdx, part);
+		}
 		
 		
 		String str = "";
@@ -366,7 +379,7 @@ public class CommunityController {
 			        + "<div id=\"contentMenu" + vo.getCmIdx() + "\" class=\"content-menu\">";
 			    
 			    if (mid.equals(vo.getMid())) {
-			    	str += "<div onclick=\"showPopupEdit('" + vo.toString().replace("\"", "quot;") + "')\">수정</div>";
+			    	if(gameIdx == 0) str += "<div onclick=\"showPopupEdit('" + vo.toString().replace("\"", "quot;") + "')\">수정</div>";
 			    	str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
 			    }
 			    else if (level == 0) {
@@ -480,14 +493,20 @@ public class CommunityController {
 	@ResponseBody
 	@RequestMapping(value = "/rootDataReview", method = RequestMethod.POST, produces = "application/text; charset=utf8")
 	public String rootDataReview(HttpSession session, HttpServletRequest request, String part,
+			@RequestParam(name="gameIdx", defaultValue = "0", required = false) int gameIdx,
+			@RequestParam(name="userMid", defaultValue = "", required = false) String userMid,
 			@RequestParam(name="page", defaultValue = "1", required = false) int page,
 			@RequestParam(name="pageSize", defaultValue = "10", required = false) int pageSize) {
 		String mid = session.getAttribute("sMid")==null ? "" : (String) session.getAttribute("sMid");
 		String memImg = session.getAttribute("sMemImg")==null ? "" : (String) session.getAttribute("sMemImg");
 		int level = session.getAttribute("sLevel")==null ? 2 : (int) session.getAttribute("sLevel");
 		int startIndexNo = (page - 1) * pageSize;
-		ArrayList<CommunityVO> cmVOS = communityService.getCommunityPartList(mid, startIndexNo, pageSize, "review");
-		
+		ArrayList<CommunityVO> cmVOS = null;
+		if(part.equals("myReview")) cmVOS = communityService.getMyReviewList(mid, userMid, startIndexNo, pageSize);
+		else {
+			if(gameIdx == 0) cmVOS = communityService.getCommunityPartList(mid, startIndexNo, pageSize, "review");
+			else cmVOS = homeService.getGameViewRCList(mid, startIndexNo, pageSize, gameIdx, "리뷰");
+		}
 		
 		String str = "";
 		for (CommunityVO vo : cmVOS) {
@@ -507,7 +526,7 @@ public class CommunityController {
 						+ "<div id=\"contentMenu" + vo.getCmIdx() + "\" class=\"content-menu\">";
 				
 				if (mid.equals(vo.getMid())) {
-					str += "<div onclick=\"reviewGameEdit("+vo.getGameIdx()+", '"+vo.getGameImg()+"', '"+vo.getGameTitle()+"', "+vo.getRating()+", '"+vo.getState()+"','"+vo.getCmContent()+"')\">수정</div>";
+					if(gameIdx == 0) str += "<div onclick=\"reviewGameEdit("+vo.getGameIdx()+", '"+vo.getGameImg()+"', '"+vo.getGameTitle()+"', "+vo.getRating()+", '"+vo.getState()+"','"+vo.getCmContent()+"')\">수정</div>";
 					str += "<div onclick=\"contentDelete("+vo.getCmIdx()+")\"><font color=\"red\">삭제</font></div>";
 				}
 				else if (level == 0) {

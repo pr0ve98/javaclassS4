@@ -24,6 +24,12 @@
 			SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid=#{mid} and c.section!='뉴스' and c.part!='리뷰' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
 		</if>
 	</select>
+	<select id="getMyReviewList" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid=#{mid} and c.part='리뷰' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
+	</select>
+	<select id="getMyRecordList" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid=#{mid} and c.part='일지' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
+	</select>
 	<select id="showAllContent" resultType="com.spring.javaclassS4.vo.CommunityVO">
 		select * from itCommunity where cmIdx=#{cmIdx};
 	</select>
@@ -105,6 +111,17 @@
 	<select id="getNewsContentCmIdx" resultType="com.spring.javaclassS4.vo.CommunityVO">
 		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg FROM itCommunity c JOIN itMember m ON c.mid = m.mid WHERE c.cmIdx=#{cmIdx};
 	</select>
+	<select id="getMygameAndPart" resultType="int">
+		<if test="part == 'game'">select count(*) from itReview where revMid=#{mid};</if>
+		<if test="part == 'review'">select count(*) from itCommunity where mid=#{mid} and part='리뷰';</if>
+		<if test="part == 'ilji'">select count(*) from itCommunity where mid=#{mid} and part='일지';</if>
+	</select>
+	<select id="getRecentMyGame" resultType="com.spring.javaclassS4.vo.ReviewVO">
+		SELECT r.*, g.gameImg, g.gameIdx FROM itReview r LEFT JOIN itGame g ON r.revGameIdx = g.gameIdx WHERE r.revMid=#{mid} ORDER BY r.revIdx desc limit 6;
+	</select>
+	<select id="getMyReview" resultType="com.spring.javaclassS4.vo.CommunityVO">
+		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, c.cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.part = '리뷰' AND c.mid=#{mid} order by cmDate desc limit 3;
+	</select>
 	
 	
 	
@@ -133,7 +150,7 @@
 		insert into itCommunity values(default,#{vo.mid},#{vo.section},#{vo.part},<if test="vo.part == '자유' or vo.cmGameIdx == 0">default,</if><if test="vo.part != '자유' and vo.cmGameIdx != 0">#{vo.cmGameIdx},</if>#{vo.cmContent},default,#{vo.cmHostIp},#{vo.publicType},default,default,#{vo.newsTitle});
 	</insert>
 	<insert id="setLikeAdd">
-		insert into itLike values(default, #{cmIdx}, #{mid}, default);
+		insert into itLike values(default, #{cmIdx}, #{mid}, default, default);
 	</insert>
 	<insert id="replyInput">
 		insert into itReply values(default, #{vo.replyCmIdx}, #{vo.replyMid}, null, #{vo.replyContent}, #{vo.replyHostIp}, default, default);
@@ -142,10 +159,10 @@
 		insert into itReply values(default, #{vo.replyCmIdx}, #{vo.replyMid}, #{vo.replyParentIdx}, #{vo.replyContent}, #{vo.replyHostIp}, default, default);
 	</insert>
 	<insert id="followInput">
-		insert into itFollow values(#{myMid}, #{youMid}, default);
+		insert into itFollow values(#{myMid}, #{youMid}, default, default);
 	</insert>
 	<insert id="reportInput">
-		insert into itReport values(default, #{vo.reportMid}, #{vo.sufferMid}, #{vo.contentPart}, #{vo.contentIdx}, #{vo.reason}, default);
+		insert into itReport values(default, #{vo.reportMid}, #{vo.sufferMid}, #{vo.contentPart}, #{vo.contentIdx}, #{vo.reason}, default, default);
 	</insert>
 	
 	

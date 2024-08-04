@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.spring.javaclassS4.vo.AlramVO;
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReviewVO;
@@ -53,4 +54,8 @@ public interface HomeDAO {
 	public ArrayList<ReviewVO> getMyGameList(@Param("mid") String mid, @Param("part") String part);
 
 	public ArrayList<CommunityVO> bestReviews();
+
+	public ArrayList<CommunityVO> homeCommunity(@Param("part") String part);
+
+	public ArrayList<AlramVO> getAlram(@Param("mid") String mid, @Param("level") int level);
 }

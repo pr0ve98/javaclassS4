@@ -2,6 +2,7 @@ package com.spring.javaclassS4.dao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.spring.javaclassS4.vo.FollowVO;
 import com.spring.javaclassS4.vo.MemberVO;
 
 public interface MemberDAO {
@@ -27,5 +28,9 @@ public interface MemberDAO {
 	public void pwdResetOk(@Param("email") String email, @Param("pwdEncode") String pwdEncode);
 
 	public void pwdChange(@Param("mid") String mid, @Param("pwd") String pwd);
+
+	public int getFollowerAndFollowing(@Param("mid") String mid, @Param("part") String part);
+
+	public FollowVO isMyFollower(@Param("sMid") String sMid, @Param("mid") String mid);
 
 }

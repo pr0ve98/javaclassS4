@@ -21,6 +21,7 @@ import com.spring.javaclassS4.dao.CommunityDAO;
 import com.spring.javaclassS4.service.CommunityService;
 import com.spring.javaclassS4.service.HomeService;
 import com.spring.javaclassS4.service.ReviewService;
+import com.spring.javaclassS4.vo.AlramVO;
 import com.spring.javaclassS4.vo.CommunityVO;
 import com.spring.javaclassS4.vo.GameVO;
 import com.spring.javaclassS4.vo.ReplyVO;
@@ -66,6 +67,18 @@ public class HomeController {
 		model.addAttribute("myGameFolder", myGameFolder);
 		model.addAttribute("myGameNone", myGameNone);
 		
+		// 뉴스
+		int page = 1;
+		int pageSize = 6;
+		int totRecCnt = communityService.getNewsCnt("전체");
+		int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+		int startIndexNo = (page - 1) * pageSize;
+		model.addAttribute("page", page);
+		model.addAttribute("totPage", totPage);
+		
+		ArrayList<CommunityVO> newslists = communityService.getNewsList(startIndexNo, pageSize, "전체");
+		model.addAttribute("newslists", newslists);
+		
 		// 최근 담은 게임
 		ArrayList<ReviewVO> mygameVOS = homeService.getMyGameList(mid, "recent");
 		model.addAttribute("mygameVOS", mygameVOS);
@@ -78,6 +91,13 @@ public class HomeController {
 		ArrayList<CommunityVO> bestReviews = homeService.bestReviews(session);
 		model.addAttribute("bestReviews", bestReviews);
 		
+		// 인기글
+		ArrayList<CommunityVO> hotCommunity = homeService.homeCommunity(session, "인기");
+		model.addAttribute("hotCommunity", hotCommunity);
+		
+		// 세일글
+		ArrayList<CommunityVO> saleCommunity = homeService.homeCommunity(session, "세일");
+		model.addAttribute("saleCommunity", saleCommunity);
 		
 		model.addAttribute("flag", "main");
 		return "home";
@@ -171,7 +191,7 @@ public class HomeController {
 			str += "<div style=\"display:flex; justify-content:space-between;\">"
 					+ "<div>";
 			str += "<img src=\"" + request.getContextPath() + "/member/" + vo.getMemImg() + "\" alt=\"프로필\" class=\"text-pic\" style=\"width:20px; height:20px;\">"
-					+ "<b>"+vo.getNickname()+"</b>님이 평가를 남기셨습니다</div>";
+					+ "<b style=\"font-weight:bold; cursor: pointer;\" onclick=\"location.href='"+request.getContextPath()+"/mypage/"+vo.getMid()+"';\">"+vo.getNickname()+"</b>님이 평가를 남기셨습니다</div>";
 			
 			if(!mid.equals("")) {
 				str += "<div style=\"display: flex; align-items: center;\">";
@@ -213,7 +233,7 @@ public class HomeController {
 		        + "<div style=\"display:flex; align-items:center;\">";
 		    str += "<img src=\"" + request.getContextPath() + "/member/" + vo.getMemImg() + "\" alt=\"프로필\" class=\"text-pic\"><div>";
 		    if(!vo.getTitle().equals("없음")) str += "<div style=\"font-size:12px;\">" + vo.getTitle() + "</div>";
-		    str += "<div style=\"font-weight:bold;\">" + vo.getNickname() + "</div><div>";
+		    str += "<div style=\"font-weight:bold; cursor: pointer;\" onclick=\"location.href='"+request.getContextPath()+"/mypage/"+vo.getMid()+"';\">" + vo.getNickname() + "</div><div>";
 		    
 		    if (vo.getPart().equals("소식/정보")) str += "<span class=\"badge badge-secondary\">소식/정보</span>&nbsp;";
 		    else if (vo.getPart().equals("자유")) str += "<span class=\"badge badge-secondary\">자유글</span>&nbsp;";
@@ -344,6 +364,7 @@ public class HomeController {
 		String mid = (String) session.getAttribute("sMid");
 		GameVO vo = homeService.getGame(gameIdx);
 		model.addAttribute("vo", vo);
+		model.addAttribute("gameIdx", gameIdx);
 		
 		int totRecCnt = homeService.getGameViewRCTotRecCnt(gameIdx, "리뷰");
 		int totPage = (totRecCnt % pageSize)== 0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
@@ -376,6 +397,7 @@ public class HomeController {
 		String mid = (String) session.getAttribute("sMid");
 		GameVO vo = homeService.getGame(gameIdx);
 		model.addAttribute("vo", vo);
+		model.addAttribute("gameIdx", gameIdx);
 		
 		int totRecCnt = homeService.getGameViewRCTotRecCnt(gameIdx, "일지");
 		int totPage = (totRecCnt % pageSize)== 0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
@@ -403,6 +425,7 @@ public class HomeController {
 		String mid = (String) session.getAttribute("sMid");
 		GameVO vo = homeService.getGame(gameIdx);
 		model.addAttribute("vo", vo);
+		model.addAttribute("gameIdx", gameIdx);
 		
 		int totRecCnt = homeService.getGameViewRCTotRecCnt(gameIdx, "소식/정보");
 		int totPage = (totRecCnt % pageSize)== 0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
@@ -458,5 +481,48 @@ public class HomeController {
 		}
 		return str;
 	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/newsChange", method = RequestMethod.POST, produces = "application/text; charset=utf8")
+	public String newsChange(int page, int totPage, HttpSession session, HttpServletRequest request) {
+		String str = "";
+		int pageSize = 6;
+		int startIndexNo = (page - 1) * pageSize;
+		ArrayList<CommunityVO> newslists = communityService.getNewsList(startIndexNo, pageSize, "전체");
+		
+		str += "<div class=\"news-img\">";
+		if(newslists.size() > 0) {
+			for(int i=0; i<Math.min(2, newslists.size()); i++) {
+				str += "<div style=\"cursor:pointer;\" onclick=\"location.href='"+request.getContextPath()+"/news/"+newslists.get(i).getCmIdx()+"';\">";
+				if(newslists.get(i).getNewsThumnail().indexOf("http") == -1) str += "<img src=\""+request.getContextPath()+"/community/"+newslists.get(i).getNewsThumnail()+"\" alt=\"뉴스이미지\">";
+				else str += "<img src=\""+newslists.get(i).getNewsThumnail()+"\" alt=\"뉴스이미지\">";
+				str += "<div>"+newslists.get(i).getNewsTitle()+"</div></div>";
+			}
+			str += "</div>";
+		}
+		if(newslists.size() > 2) {
+			for(int j=2; j<Math.min(6, newslists.size()); j++) {
+				str += "<hr/><div class=\"news-text\" onclick=\"location.href='"+request.getContextPath()+"/news/"+newslists.get(j).getCmIdx()+"';\">"+newslists.get(j).getNewsTitle()+"</div>";
+			}
+		}
+		str += "<div class=\"news-page\">"
+			+ "<button class=\"prev\" onclick=\"newsChange("+(page-1)+","+totPage+")\"><i class=\"fa-solid fa-chevron-left fa-2xs\"></i></button>"
+			+ "<span class=\"page-info\">"+page+"/"+totPage+"</span>"
+			+ "<button class=\"next\" onclick=\"newsChange("+(page+1)+","+totPage+")\"><i class=\"fa-solid fa-chevron-right fa-2xs\"></i></button>"
+			+ "</div>";
+		return str;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/getAlram", method = RequestMethod.POST, produces = "application/text; charset=utf8")
+	public String getAlram(HttpSession session, HttpServletRequest request) {
+		int level = session.getAttribute("sLevel") == null ? 3 : (int)session.getAttribute("sLevel");
+		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
+		ArrayList<AlramVO> vos = homeService.getAlram(mid, level);
+		String str = "0|dfs";
+		return str;
+	}
+	
+	
 	
 }

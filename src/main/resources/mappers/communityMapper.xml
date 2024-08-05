@@ -30,6 +30,9 @@
 	<select id="getMyRecordList" resultType="com.spring.javaclassS4.vo.CommunityVO">
 		SELECT c.*, timestampdiff(hour, c.cmDate, now()) as hour_diff, timestampdiff(minute, cmDate, now()) as min_diff, m.idx, m.title, m.nickname, m.memImg, g.gameIdx, g.gameTitle FROM itCommunity c JOIN itMember m ON c.mid = m.mid LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid=#{mid} and c.part='일지' ORDER BY c.cmIdx desc limit #{startIndexNo},#{pageSize};
 	</select>
+	<select id="getMyGameList" resultType="com.spring.javaclassS4.vo.ReviewVO">
+		SELECT r.*, c.cmContent as cmContent, g.gameIdx as gameIdx, g.gameImg as gameImg, g.gameTitle as gameTitle FROM itReview r JOIN itGame g ON r.revGameIdx=g.gameIdx LEFT JOIN itCommunity c ON r.revMid=c.mid and r.revGameIdx=c.cmGameIdx and c.part='리뷰' WHERE r.revMid=#{mid} ORDER BY revIdx desc limit #{startIndexNo},#{pageSize};
+	</select>
 	<select id="showAllContent" resultType="com.spring.javaclassS4.vo.CommunityVO">
 		select * from itCommunity where cmIdx=#{cmIdx};
 	</select>

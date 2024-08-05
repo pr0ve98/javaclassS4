@@ -485,5 +485,15 @@ public class HomeServiceImpl implements HomeService {
 		return homeDAO.getAlram(mid, level);
 	}
 
+	@Override
+	public void followRead(String myMid, String youMid) {
+		homeDAO.followRead(myMid, youMid);
+	}
+
+	@Override
+	public void likeAndReplyRead(int idx, String part) {
+		homeDAO.likeAndReplyRead(idx, part);
+	}
+
 
 }

@@ -95,4 +95,6 @@ public interface CommunityService {
 	
 	public ArrayList<CommunityVO> getMyRecordList(String mid, String userMid, int startIndexNo, int pageSize);
 
+	public ArrayList<CommunityVO> getMyGameList(String mid, int startIndexNo, int pageSize);
+
 }

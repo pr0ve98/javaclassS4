@@ -75,4 +75,7 @@
 	<delete id="setReviewDelete">
 		delete from itReview where revMid=#{mid} and revGameIdx=#{gameIdx};
 	</delete>
+	<delete id="setReviewCommunity">
+		delete from itCommunity where mid=#{mid} and cmGameIdx=#{gameIdx} and part='리뷰';
+	</delete>
 </mapper>

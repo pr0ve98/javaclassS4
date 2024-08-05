@@ -74,6 +74,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public void setReviewDelete(String mid, int gameIdx) {
 		reviewDAO.setReviewDelete(mid, gameIdx);
+		reviewDAO.setReviewCommunity(mid, gameIdx);
 		int reviewCount = reviewDAO.getGameReviewCount(gameIdx);
 		if(reviewCount >= 3) {
 			List<Integer> reviewTotal = reviewDAO.getGameReviewTotal(gameIdx);

@@ -39,5 +39,12 @@ public class SettingController {
 		return "setting/pwdChange";
 	}
 	
+	@RequestMapping(value = "/memberOut", method = RequestMethod.GET)
+	public String memberOut(HttpSession session, Model model) {
+		String mid = (String) session.getAttribute("sMid");
+		if(mid == null) return "redirect:/";
+		return "setting/memberOut";
+	}
+	
 	
 }

@@ -13,4 +13,7 @@ public class ReviewVO {
 	// 게임 정보
 	private int gameIdx;
 	private String gameImg;
+	private String gameTitle;
+	
+	private String cmContent;
 }

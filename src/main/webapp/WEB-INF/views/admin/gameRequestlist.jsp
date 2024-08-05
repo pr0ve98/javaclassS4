@@ -267,7 +267,7 @@
 					steamPage:steamPage,
 					developer:developer,
 					gameImg:gameImg,
-					gameInfo:gameInfo
+					gameInfo:gameInfo,
 			}
 			
 			// query라는 객체를 넘기기 때문에 formData나 json형식으로 넘겨야

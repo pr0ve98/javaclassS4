@@ -62,4 +62,8 @@ public interface HomeService {
 
 	public ArrayList<AlramVO> getAlram(String mid, int level);
 
+	public void followRead(String myMid, String youMid);
+
+	public void likeAndReplyRead(int idx, String part);
+
 }

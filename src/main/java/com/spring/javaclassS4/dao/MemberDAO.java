@@ -33,4 +33,18 @@ public interface MemberDAO {
 
 	public FollowVO isMyFollower(@Param("sMid") String sMid, @Param("mid") String mid);
 
+	public void setReviewDelete(@Param("mid") String mid);
+
+	public void setGameListDelete(@Param("mid") String mid);
+
+	public void setFollowDelete(@Param("mid") String mid);
+
+	public void setLikeDelete(@Param("mid") String mid);
+
+	public void setReplyDelete(@Param("mid") String mid);
+	
+	public void setCommunityDelete(@Param("mid") String mid);
+
+	public void setMemberOut(@Param("mid") String mid);
+
 }

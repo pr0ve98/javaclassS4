@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- Interceptor 설정(정의) -->
+	<beans:bean id="Level0Interceptor" class="com.spring.javaclassS4.interceptor.Level0Interceptor" />
+	<beans:bean id="Level1Interceptor" class="com.spring.javaclassS4.interceptor.Level1Interceptor" />
+	<beans:bean id="Level3Interceptor" class="com.spring.javaclassS4.interceptor.Level3Interceptor" />
+	
+	<interceptors>
+		<interceptor> <!-- 비회원처리 -->
+			<mapping path="/setting/**"/>
+			<mapping path="/member/pwdChange"/>
+			<mapping path="/member/memberEdit"/>
+			<mapping path="/member/memberPhotoChange"/>
+			<mapping path="/member/memberIdChange"/>
+			<mapping path="/member/memberOut"/>
+			<mapping path="/member/memberOutOk"/>
+			<mapping path="/community/my"/>
+			<mapping path="/community/follow"/>
+			<beans:ref bean="Level3Interceptor"/>
+		</interceptor>
+		<interceptor> <!-- 기자처리 -->
+			<mapping path="/news/newsInput"/>
+			<mapping path="/news/**/edit"/>
+			<beans:ref bean="Level1Interceptor"/>
+		</interceptor>
+		<interceptor> <!-- 관리자 -->
+			<mapping path="/admin/**"/>
+			<beans:ref bean="Level0Interceptor" />
+		</interceptor>
+	</interceptors>
+	
+</beans:beans>

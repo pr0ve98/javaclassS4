@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS4.common.JavaclassProvide;
@@ -105,5 +106,22 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public FollowVO isMyFollower(String sMid, String mid) {
 		return memberDAO.isMyFollower(sMid, mid);
+	}
+
+	@Transactional
+	@Override
+	public String allDelete(String mid) {
+		try {
+			memberDAO.setReviewDelete(mid);
+			memberDAO.setGameListDelete(mid);
+			memberDAO.setFollowDelete(mid);
+			memberDAO.setLikeDelete(mid);
+			memberDAO.setReplyDelete(mid);
+			memberDAO.setCommunityDelete(mid);
+			memberDAO.setMemberOut(mid);
+			return "1";
+        } catch (Exception e) {
+            return "0";
+        }
 	}
 }

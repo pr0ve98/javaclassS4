@@ -1140,4 +1140,9 @@ public class CommunityServiceImpl implements CommunityService {
 		return vos;
 	}
 
+	@Override
+	public ArrayList<CommunityVO> getMyGameList(String mid, int startIndexNo, int pageSize) {
+		return communityDAO.getMyGameList(mid, startIndexNo, pageSize);
+	}
+
 }

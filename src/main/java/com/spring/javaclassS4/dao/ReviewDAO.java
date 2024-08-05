@@ -38,4 +38,6 @@ public interface ReviewDAO {
 
 	public void setInvenscore(@Param("invenscore") double invenscore, @Param("gameIdx") int gameIdx);
 
+	public void setReviewCommunity(@Param("mid") String mid, @Param("gameIdx") int gameIdx);
+
 }

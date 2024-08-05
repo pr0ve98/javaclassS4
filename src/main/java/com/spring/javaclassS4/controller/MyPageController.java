@@ -35,7 +35,7 @@ public class MyPageController {
 		String sMid = session.getAttribute("sMid")==null ? "" : (String)session.getAttribute("sMid");
 		
 		MemberVO member = memberService.getMemberIdCheck(mid);
-		if(member == null) return "redirect:/errorPage";
+		if(member == null || member.getLoginState().equals("OUT")) return "redirect:/errorPage";
 		model.addAttribute("member", member);
 		
 		String isFollow = "NO";
@@ -70,7 +70,7 @@ public class MyPageController {
 			@RequestParam(name="pageSize", defaultValue = "10", required = false) int pageSize) {
 		String sMid = session.getAttribute("sMid")==null ? "" : (String)session.getAttribute("sMid");
 		MemberVO member = memberService.getMemberIdCheck(mid);
-		if(member == null) return "redirect:/errorPage";
+		if(member == null || member.getLoginState().equals("OUT")) return "redirect:/errorPage";
 		model.addAttribute("member", member);
 		
 		int totRecCnt = communityService.getMygameAndPart(mid, "review");
@@ -91,7 +91,7 @@ public class MyPageController {
 			@RequestParam(name="pageSize", defaultValue = "10", required = false) int pageSize) {
 		String sMid = session.getAttribute("sMid")==null ? "" : (String)session.getAttribute("sMid");
 		MemberVO member = memberService.getMemberIdCheck(mid);
-		if(member == null) return "redirect:/errorPage";
+		if(member == null || member.getLoginState().equals("OUT")) return "redirect:/errorPage";
 		model.addAttribute("member", member);
 		
 		if(sMid != null) {
@@ -117,6 +117,27 @@ public class MyPageController {
 		model.addAttribute("cmVOS", cmVOS);
 		
 		return "mypage/myrecord";
+	}
+	
+	@RequestMapping(value = "/{mid}/mygame", method = RequestMethod.GET)
+	public String mygame(HttpSession session, Model model, @PathVariable String mid,
+			@RequestParam(name="page", defaultValue = "1", required = false) int page,
+			@RequestParam(name="pageSize", defaultValue = "12", required = false) int pageSize) {
+		MemberVO member = memberService.getMemberIdCheck(mid);
+		if(member == null || member.getLoginState().equals("OUT")) return "redirect:/errorPage";
+		model.addAttribute("member", member);
+		
+		int totRecCnt = communityService.getMygameAndPart(mid, "game");
+		int totPage = (totRecCnt % pageSize)==0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize)+1;
+		int startIndexNo = (page - 1) * pageSize;
+		model.addAttribute("totRecCnt", totRecCnt);
+		model.addAttribute("page", page);
+		model.addAttribute("totPage", totPage);
+		
+		ArrayList<CommunityVO> vos = communityService.getMyGameList(mid, startIndexNo, pageSize);
+		model.addAttribute("vos", vos);
+		
+		return "mypage/mygame";
 	}
 	
 }

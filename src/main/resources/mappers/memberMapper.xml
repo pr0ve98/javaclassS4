@@ -43,4 +43,30 @@
 	<update id="pwdChange">
 		UPDATE itMember set pwd=#{pwd} where mid=#{mid};
 	</update>
+	<update id="setMemberOut">
+		UPDATE itMember set loginState='OUT' where mid=#{mid};
+	</update>
+	
+	
+	
+	
+	
+	<delete id="setReviewDelete">
+		delete from itReview where revMid=#{mid};
+	</delete>
+	<delete id="setGameListDelete">
+		delete from itGameList where glMid=#{mid};
+	</delete>
+	<delete id="setFollowDelete">
+		delete from itFollow where youMid=#{mid} or myMid=#{mid};
+	</delete>
+	<delete id="setLikeDelete">
+		delete from itLike where likeMid=#{mid};
+	</delete>
+	<delete id="setReplyDelete">
+		delete from itReply where replyMid=#{mid};
+	</delete>
+	<delete id="setCommunityDelete">
+		delete from itCommunity where mid=#{mid};
+	</delete>
 </mapper>

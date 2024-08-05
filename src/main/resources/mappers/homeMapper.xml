@@ -84,10 +84,27 @@
 	</select>
 	<select id="getAlram" resultType="com.spring.javaclassS4.vo.AlramVO">
 		<if test="level != 0">
-			SELECT NULL AS cmIdx, f.myMid AS youMid, '팔로우' AS type, f.followDate AS date, m.nickname AS youName, m.memImg AS youImg, NULL AS gameIdx, NULL AS gameTitle, NULL AS gameImg, NULL AS comType FROM itFollow f JOIN itMember m ON f.myMid = m.mid WHERE f.youMid = #{mid} AND f.followRead = 0 UNION ALL 
-			SELECT l.likeCmIdx AS cmIdx, l.likeMid AS youMid, '좋아요' AS type, l.likeDate AS date, m.nickname AS youName, m.memImg AS youImg, g.gameIdx AS gameIdx, g.gameTitle AS gameTitle, g.gameImg AS gameImg, NULL AS comType FROM itLike l JOIN itMember m ON l.likeMid = m.mid JOIN itCommunity c ON l.likeCmIdx = c.cmIdx JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid = #{mid} AND l.likeMid != #{mid} AND l.likeRead = 0 UNION ALL 
-			SELECT r.replyCmIdx AS cmIdx, r.replyMid AS youMid, '댓글' AS type, r.replyDate AS date, m.nickname AS youName, m.memImg AS youImg, g.gameIdx AS gameIdx, g.gameTitle AS gameTitle, g.gameImg AS gameImg, NULL AS comType FROM itReply r JOIN itMember m ON r.replyMid = m.mid JOIN itCommunity c ON r.replyCmIdx = c.cmIdx LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid = #{mid} AND r.replyRead = 0;
-						 
+			SELECT NULL AS idx, NULL AS cmIdx, f.myMid AS youMid, '팔로우' AS type, f.followDate AS date, m.nickname AS youName, m.memImg AS youImg, NULL AS gameIdx, NULL AS gameTitle, NULL AS gameImg, NULL AS comType FROM itFollow f JOIN itMember m ON f.myMid = m.mid WHERE f.youMid = #{mid} AND f.followRead = 0 UNION ALL 
+			SELECT l.likeIdx AS idx, l.likeCmIdx AS cmIdx, l.likeMid AS youMid, '좋아요' AS type, l.likeDate AS date, m.nickname AS youName, m.memImg AS youImg, g.gameIdx AS gameIdx, g.gameTitle AS gameTitle, g.gameImg AS gameImg, NULL AS comType FROM itLike l JOIN itMember m ON l.likeMid = m.mid JOIN itCommunity c ON l.likeCmIdx = c.cmIdx JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid = #{mid} AND l.likeMid != #{mid} AND l.likeRead = 0 UNION ALL 
+			SELECT r.replyIdx AS idx, r.replyCmIdx AS cmIdx, r.replyMid AS youMid, '댓글' AS type, r.replyDate AS date, m.nickname AS youName, m.memImg AS youImg, g.gameIdx AS gameIdx, g.gameTitle AS gameTitle, g.gameImg AS gameImg, NULL AS comType FROM itReply r JOIN itMember m ON r.replyMid = m.mid JOIN itCommunity c ON r.replyCmIdx = c.cmIdx LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE c.mid = #{mid} AND r.replyMid != #{mid} AND r.replyParentIdx is NULL AND r.replyRead = 0 UNION ALL 
+			SELECT r1.replyIdx AS idx, r1.replyCmIdx AS cmIdx, r1.replyMid AS youMid, '답글' AS type, r1.replyDate AS date, m.nickname AS youName, m.memImg AS youImg, g.gameIdx AS gameIdx, g.gameTitle AS gameTitle, g.gameImg AS gameImg, NULL AS comType FROM itReply r1 JOIN itMember m ON r1.replyMid = m.mid JOIN itCommunity c ON r1.replyCmIdx = c.cmIdx LEFT JOIN itGame g ON c.cmGameIdx = g.gameIdx WHERE r1.replyRead = 0 AND r1.replyParentIdx IS NOT NULL AND EXISTS (SELECT 1 FROM itReply r2 WHERE r2.replyIdx = r1.replyParentIdx AND r2.replyMid = #{mid}) AND r1.replyMid != #{mid};
+		</if>
+		<if test="level == 0">
+			SELECT count(*) AS adminCount, '신고' AS type FROM itReport WHERE complete = 0 UNION ALL 
+			SELECT count(*) AS adminCount, '게임요청' AS type FROM itGameRequest WHERE grComplete = 0 UNION ALL 
+			SELECT count(*) AS adminCount, '문의' AS type FROM itSupport WHERE supComplete = 0;
 		</if>
 	</select>
+	
+	
+	
+	
+	
+	<update id="followRead">
+		update itFollow set followRead=1 where myMid=#{youMid} and youMid=#{myMid};
+	</update>
+	<update id="likeAndReplyRead">
+		<if test="part == '좋아요'">update itLike set likeRead=1 where likeIdx=#{idx};</if>
+		<if test="part == '댓글'">update itReply set replyRead=1 where replyIdx=#{idx};</if>
+	</update>
 </mapper>

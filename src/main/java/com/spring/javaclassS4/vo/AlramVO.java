@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class AlramVO {
+	private int idx;
 	private int cmIdx;
 	private String type;
 	private String youMid;
@@ -14,4 +15,6 @@ public class AlramVO {
 	private String gameImg;
 	private int comType;
 	private String date;
+	
+	private int adminCount;
 }

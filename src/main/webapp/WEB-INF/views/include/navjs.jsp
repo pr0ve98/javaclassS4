@@ -153,6 +153,7 @@
     	else if(flag == 'reviewwrite') popup = document.querySelector('#popup-reviewwrite');
     	else if(flag == 'pwdreset') popup = document.querySelector('#popup-pwdreset');
     	else if(flag == 'cmview') popup = document.querySelector('#popup-cmview');
+    	else if(flag == 'v') popup = document.querySelector('#popup-v');
     	const html = document.querySelector('html');
     	popup.classList.add('hide');
     	html.style.overflow = 'auto';
@@ -271,8 +272,12 @@
 					document.getElementById('alramCount').style.display = 'flex';
 					document.getElementById('malramCount').style.display = 'flex';
 				}
-				$("#alramDropdown").text(res[1]);
-				$("#malramDropdown").text(res[1]);
+				else {
+					document.getElementById('alramCount').style.display = 'none';
+					document.getElementById('malramCount').style.display = 'none';
+				}
+				$("#alramDropdown").html(res[1]);
+				$("#malramDropdown").html(res[1]);
 			},
 			error : function() {
 				alert("오류!!");
@@ -523,7 +528,7 @@
  		});
 	}
  	
-	function gameViewCommunityView(cmIdx) {
+	function gameViewCommunityView(cmIdx, part) {
     	const popup = document.querySelector('#popup-cmview');
     	const html = document.querySelector('html');
     	const popupContent = document.querySelector('.popup-cmview-content');
@@ -537,7 +542,8 @@
 		        popup.classList.remove('hide');
 		        html.style.overflow = 'hidden';
 		        
-	            popupContent.scrollTop = 0; // 스크롤 상단으로!
+	            if(part == '좋아요') popupContent.scrollTop = 0; // 스크롤 상단으로!
+	            else popupContent.scrollTop = 100;
 		        
 		     	// 팝업 배경을 클릭했을 때 팝업 닫기
 	            popup.addEventListener('click', function(e) {
@@ -876,6 +882,35 @@
  			success : function() {
  				alert("신고가 정상접수 되었습니다!");
  				closePopup('report');
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
+	}
+ 	
+ 	function followRead(myMid, youMid) {
+ 		$.ajax({
+ 			url : "${ctp}/followRead",
+ 			type : "post",
+ 			data : {myMid:myMid, youMid:youMid},
+ 			success : function() {
+ 				location.href='${ctp}/mypage/'+youMid;
+			},
+ 			error : function() {
+				alert("전송오류!");
+			}
+ 		});
+	}
+ 	
+ 	function likeAndReplyRead(idx, cmIdx, part) {
+ 		$.ajax({
+ 			url : "${ctp}/likeAndReplyRead",
+ 			type : "post",
+ 			data : {idx:idx, part:part},
+ 			success : function() {
+ 				gameViewCommunityView(cmIdx, part);
+ 				getAlram();
 			},
  			error : function() {
 				alert("전송오류!");

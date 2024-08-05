@@ -107,4 +107,7 @@ public interface CommunityDAO {
 
 	public int getMyReviewCnt(@Param("mid") String mid);
 
+	public ArrayList<CommunityVO> getMyGameList(@Param("mid") String mid, @Param("startIndexNo") int startIndexNo, 
+			@Param("pageSize") int pageSize);
+
 }

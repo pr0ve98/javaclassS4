@@ -69,9 +69,10 @@
 		gap: 30px;
 		align-items: center;
 	}
-	.right-menu img {
+	.imgButton {
 		border-radius: 50%;
 		object-fit: cover;
+		cursor: pointer;
 	}
 	.profile-menu img {
 		width: 50px;
@@ -567,7 +568,7 @@
 	 #popup-edit .popup-edit-content, #popup-replyedit .popup-replyedit-content, #popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content,
 	 #popup-report .popup-report-content, #popup-support .popup-support-content, #popup-reviewwrite .popup-reviewwrite-content,
 	 #popup-pwdreset .popup-pwdreset-content, #popup-ftgameedit .popup-ftgameedit-content, 
-	 #popup-cmview .popup-cmview-content{
+	 #popup-cmview .popup-cmview-content, #popup-v .popup-v-content{
 	  padding: 20px;
 	  background: #32373d;
 	  border-radius: 5px;
@@ -579,7 +580,7 @@
 	#popup-write .popup-write-content, #popup-gamesearch .popup-gamesearch-content,
 	#popup-edit .popup-edit-content, #popup-reviewwrite .popup-reviewwrite-content {width: 700px;}
 	#popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content, #popup-ftgameedit .popup-ftgameedit-content, 
-	#popup-cmview .popup-cmview-content {width:500px;}
+	#popup-cmview .popup-cmview-content, #popup-v .popup-v-content {width:500px;}
 	#popup-report .popup-report-content, #popup-support .popup-support-content, #popup-pwdreset .popup-pwdreset-content {width: 330px;}
 	
 	.popup-open {
@@ -594,6 +595,10 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-bottom: 30px;
+	}
+	.popup-cmview-header {
+		display: flex;
+		justify-content: flex-end;
 	}
 	.popup-write-header, .popup-gamesearch-header, .popup-edit-header, .popup-replyedit-header {
 		display: flex;
@@ -781,7 +786,7 @@
 	    border-radius: 5px;
 	    padding: 10px;
 	    font-family: 'SUITE-Regular';
-	    width: 300px;
+	    width: 350px;
 	}
 	#mprofileDropdown, #malramDropdown {
 	    display: none;
@@ -1625,6 +1630,7 @@
 	.left-menu-box {
 		padding: 10px 10px 10px 0;
     	font-size: 16px;
+    	cursor: pointer;
 	}
 	.left-menu-box:hover {
 		background-color: #161d25;
@@ -1646,6 +1652,33 @@
         display: block;
         font-size: 24px;
         font-weight: bold;
+    }
+    .mygame-box {
+    	width: 290px;
+    	padding: 0;
+    }
+    .mygame-backimg {
+    	width: 100%;
+    	height: 150px;
+    	object-fit:cover;
+    	border-radius: 8px;
+    }
+    .alram-box {
+    	padding: 10px;
+    	cursor: pointer;
+    	display: flex;
+    	justify-content: space-between;
+    	align-items: center;
+    }
+    .alram-box:hover {
+    	background-color: #161d25;
+    }
+    .alram-img {
+    	border-radius: 8px;
+    	width: 50px;
+    	height: 50px;
+    	object-fit: cover;
+    	margin-left: 10px;
     }
 	@media screen and (min-width: 1200px) {
 		.game-item {
@@ -1910,6 +1943,9 @@
 			width: 100%;
 		}
 		.setting-main {flex-direction: column;}
+	}
+	@media screen and (max-width: 767px) {
+		.mygame-box {width:100%;}
 	}
 	@media screen and (max-width: 567px) {
 		.game-selection {justify-content: start;}

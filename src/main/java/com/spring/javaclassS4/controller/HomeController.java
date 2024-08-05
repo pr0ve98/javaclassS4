@@ -519,10 +519,81 @@ public class HomeController {
 		int level = session.getAttribute("sLevel") == null ? 3 : (int)session.getAttribute("sLevel");
 		String mid = session.getAttribute("sMid") == null ? "" : (String)session.getAttribute("sMid");
 		ArrayList<AlramVO> vos = homeService.getAlram(mid, level);
-		String str = "0|dfs";
+		int allCount = 0;
+		
+		if(level == 0) {
+			for(AlramVO vo : vos) {
+				allCount += vo.getAdminCount();
+			}
+		}
+		else allCount = vos.size();
+		
+		String str = allCount+"|";
+		str += "<div class=\"alram-header\">"
+				+ "<div style=\"font-weight: bold;\">새 소식</div>"
+				+ "<div style=\"color: #00c722;\"><b>"+allCount+"</b></div>"
+				+ "</div><hr/>"
+				+ "<div style=\"height: 277px;\" class=\"scrollbar\">";
+		if(allCount == 0) str += "<div style=\"text-align: center; margin: 100px 0;\">새 소식이 없습니다.</div>";
+		else {
+			for(AlramVO vo : vos) {
+				if(vo.getType().equals("팔로우")) {
+					str += "<div class=\"alram-box\" onclick=\"followRead('"+mid+"', '"+vo.getYouMid()+"')\">"
+						+ "<div><img src=\""+request.getContextPath()+"/member/"+vo.getYouImg()+"\" class=\"reply-pic\"><b style=\"color:#00c722;\">"+vo.getYouName()+"</b>님이 당신을 팔로우합니다!</div>"
+						+ "</div>";
+				}
+				else if(vo.getType().equals("좋아요")) {
+					str += "<div class=\"alram-box\" onclick=\"likeAndReplyRead("+vo.getIdx()+", "+vo.getCmIdx()+", '좋아요')\">"
+							+ "<div><img src=\""+request.getContextPath()+"/member/"+vo.getYouImg()+"\" class=\"reply-pic\"><b style=\"color:#00c722;\">"+vo.getYouName()+"</b>님이 내 글을 좋아합니다</div>";
+					if(vo.getGameImg().indexOf("http") == -1) str += "<span><img src=\"${ctp}/game/"+vo.getGameImg()+"\" class=\"alram-img\"></span>";
+					else str += "<span><img src=\""+vo.getGameImg()+"\" class=\"alram-img\"></span>";
+					str += "</div>";
+				}
+				else if(vo.getType().equals("댓글")) {
+					str += "<div class=\"alram-box\" onclick=\"likeAndReplyRead("+vo.getIdx()+", "+vo.getCmIdx()+", '댓글')\">"
+							+ "<div><img src=\""+request.getContextPath()+"/member/"+vo.getYouImg()+"\" class=\"reply-pic\"><b style=\"color:#00c722;\">"+vo.getYouName()+"</b>님이 댓글을 달았습니다</div>";
+					if(vo.getGameImg().indexOf("http") == -1) str += "<span><img src=\"${ctp}/game/"+vo.getGameImg()+"\" class=\"alram-img\"></span>";
+					else str += "<span><img src=\""+vo.getGameImg()+"\" class=\"alram-img\"></span>";
+					str += "</div>";
+				}
+				else if(vo.getType().equals("답글")) {
+					str += "<div class=\"alram-box\" onclick=\"likeAndReplyRead("+vo.getIdx()+", "+vo.getCmIdx()+", '댓글')\">"
+							+ "<div><img src=\""+request.getContextPath()+"/member/"+vo.getYouImg()+"\" class=\"reply-pic\"><b style=\"color:#00c722;\">"+vo.getYouName()+"</b>님이 답글을 달았습니다</div>";
+					if(vo.getGameImg().indexOf("http") == -1) str += "<span><img src=\"${ctp}/game/"+vo.getGameImg()+"\" class=\"alram-img\"></span>";
+					else str += "<span><img src=\""+vo.getGameImg()+"\" class=\"alram-img\"></span>";
+					str += "</div>";
+				}
+				else if(vo.getType().equals("신고")) {
+					str += "<div class=\"alram-box\" style=\"padding:33px 10px; justify-content: flex-start;\" onclick=\"location.href='"+request.getContextPath()+"/admin/reportlist';\">"
+							+ "<b style=\"color:#00c722;\">"+vo.getAdminCount()+"</b>건의 신고가 있습니다";
+					str += "</div>";
+				}
+				else if(vo.getType().equals("게임요청")) {
+					str += "<div class=\"alram-box\" style=\"padding:33px 10px; justify-content: flex-start;\" onclick=\"location.href='"+request.getContextPath()+"/admin/gameRequestlist';\">"
+							+ "<b style=\"color:#00c722;\">"+vo.getAdminCount()+"</b>건의 게임 요청이 있습니다";
+					str += "</div>";
+				}
+				else if(vo.getType().equals("문의")) {
+					str += "<div class=\"alram-box\" style=\"padding:33px 10px; justify-content: flex-start;\" onclick=\"location.href='"+request.getContextPath()+"/admin/supportlist';\">"
+							+ "<b style=\"color:#00c722;\">"+vo.getAdminCount()+"</b>건의 문의가 있습니다";
+					str += "</div>";
+				}
+			}
+		}
+		str += "</div>";		
 		return str;
 	}
 	
+	@ResponseBody
+	@RequestMapping(value = "/followRead", method = RequestMethod.POST)
+	public void followRead(String myMid, String youMid) {
+		homeService.followRead(myMid, youMid);
+	}
 	
+	@ResponseBody
+	@RequestMapping(value = "/likeAndReplyRead", method = RequestMethod.POST)
+	public void likeAndReplyRead(int idx, String part) {
+		homeService.likeAndReplyRead(idx, part);
+	}
 	
 }

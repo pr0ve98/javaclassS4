@@ -58,4 +58,8 @@ public interface HomeDAO {
 	public ArrayList<CommunityVO> homeCommunity(@Param("part") String part);
 
 	public ArrayList<AlramVO> getAlram(@Param("mid") String mid, @Param("level") int level);
+
+	public void followRead(@Param("myMid") String myMid, @Param("youMid") String youMid);
+
+	public void likeAndReplyRead(@Param("idx") int idx, @Param("part") String part);
 }

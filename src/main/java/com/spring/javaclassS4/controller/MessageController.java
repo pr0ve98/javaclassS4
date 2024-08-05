@@ -55,6 +55,22 @@ public class MessageController {
 			model.addAttribute("msg", "영구 정지된 유저입니다");
 			model.addAttribute("url", "main");
 		}
+		else if(msgFlag.equals("adminNo")) {
+			model.addAttribute("msg", "관리자만 사용 가능합니다!");
+			model.addAttribute("url", "main");
+		}
+		else if(msgFlag.equals("memberNo")) {
+			model.addAttribute("msg", "회원만 사용 가능합니다!");
+			model.addAttribute("url", "main");
+		}
+		else if(msgFlag.equals("memberLevelNo")) {
+			model.addAttribute("msg", "이 기능을 사용할 수 없는 회원입니다!");
+			model.addAttribute("url", "main");
+		}
+		else if(msgFlag.equals("memberOutNo")) {
+			model.addAttribute("msg", "탈퇴 실패...");
+			model.addAttribute("url", "setting/memberOut");
+		}
 		
 		return "include/message";
 	}

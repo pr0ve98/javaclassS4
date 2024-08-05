@@ -56,19 +56,22 @@
  			type : "post",
  			data : {contentPart:contentPart, contentIdx:contentIdx},
  			success : function(response) {
- 				let res = response.split("|");
- 				$("#contentPartTitle").html(res[0]);
- 				$("#cmContent").html(res[1]);
+ 				if(response == "0") alert("이미 삭제된 글/댓글입니다");
+ 				else {
+	 				let res = response.split("|");
+	 				$("#contentPartTitle").html(res[0]);
+	 				$("#cmContent").html(res[1]);
+	 		 		
+	 		    	const popup = document.querySelector('#popup-v');
+	 		    	const html = document.querySelector('html');
+	 		        popup.classList.remove('hide');
+	 		        html.style.overflow = 'hidden';
+ 				}
 			},
  			error : function() {
 				alert("전송오류!");
 			}
  		});
- 		
-    	const popup = document.querySelector('#popup-report');
-    	const html = document.querySelector('html');
-        popup.classList.remove('hide');
-        html.style.overflow = 'hidden';
 	}
  	
  	function reportOk(reIdx, banMid, banReason, contentPart, contentIdx) {
@@ -130,6 +133,9 @@
 	}
 	
 </script>
+<style>
+	#cmContent iframe {width: 100%;}
+</style>
 <jsp:include page="/WEB-INF/views/include/navjs.jsp" />
 <jsp:include page="/WEB-INF/views/include/maincss.jsp" />
 </head>
@@ -213,11 +219,11 @@
 </main>
 <jsp:include page="/WEB-INF/views/include/footer.jsp" />
 <jsp:include page="/WEB-INF/views/include/navPopup.jsp" />
-<div id="popup-report" class="hide">
-  <div class="popup-report-content scrollbar">
+<div id="popup-v" class="hide">
+  <div class="popup-v-content scrollbar">
   		<div class="popup-replyedit-header mb-4">
             <span class="e-header-text">내용 확인하기</span>
-    		<div style="cursor:pointer;" onclick="closePopup('report')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+    		<div style="cursor:pointer;" onclick="closePopup('v')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
 		<div class="text-center mb-4" id="contentPartTitle"></div>
 		<hr/>

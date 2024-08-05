@@ -191,8 +191,7 @@
 </div>
 <div id="popup-cmview" class="hide">
   <div class="popup-cmview-content scrollbar" style="background-color: #161d25;">
-  		<div class="popup-write-header">
-            <span class="header-text"></span>
+  		<div class="popup-cmview-header">
     		<div style="cursor:pointer;" onclick="closePopup('cmview')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
 		<hr/>

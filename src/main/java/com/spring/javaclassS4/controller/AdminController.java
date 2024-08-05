@@ -64,6 +64,7 @@ public class AdminController {
 		return "admin/gamelist";
 	}
 	
+	@Transactional
 	@ResponseBody
 	@RequestMapping(value = "/gameInput", method = RequestMethod.POST)
 	public String gameInput(@RequestParam("fileName") MultipartFile fileName, @RequestParam("gameTitle") String gameTitle,
@@ -288,10 +289,12 @@ public class AdminController {
 		
 		if(contentPart.equals("게시글")) {
 			CommunityVO cvo = communityService.getCommunityIdx(contentIdx);
+			if(cvo == null) return "0";
 			return "<font color=\"#fff\"><b>"+cvo.getMid()+"</b></font>님이 남긴 "+contentPart+"|"+cvo.getCmContent();
 		}
 		else {
 			ReplyVO rvo = adminService.getReplyIdx(contentIdx);
+			if(rvo == null) return "0";
 			return "<font color=\"#fff\"><b>"+rvo.getReplyMid()+"</b></font>님이 남긴 "+contentPart+"|"+rvo.getReplyContent();
 		}
 	}

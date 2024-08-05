@@ -238,4 +238,18 @@ public class MemberController {
 		return "1";
 	}
 	
+	@RequestMapping(value = "/memberOutOk", method = RequestMethod.GET)
+	public String memberOut(HttpSession session) {
+		String mid = (String) session.getAttribute("sMid");
+		if(mid == null) return "redirect:/";
+		
+		String res = memberService.allDelete(mid);
+		if(res.equals("1")) {
+			MemberVO vo = memberService.getMemberIdCheck(mid);
+			if(vo.getPwd().equals("kakaoMember")) return "redirect:/member/kakaoLogout";
+			else return "redirect:/member/memberLogout";
+		}
+		else return "redirect:/message/memberOutNo";
+	}
+	
 }

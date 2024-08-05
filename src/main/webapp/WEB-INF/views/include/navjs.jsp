@@ -261,28 +261,30 @@
 	}
 	
  	function getAlram() {
- 		$.ajax({
-			url : "${ctp}/getAlram",
-			type : "post",
-			success : function(response) {
-				let res = response.split("|");
-				if(res[0] != "0") {
-					$("#alramCount").text(res[0]);
-					$("#malramCount").text(res[0]);
-					document.getElementById('alramCount').style.display = 'flex';
-					document.getElementById('malramCount').style.display = 'flex';
+ 		if('${sMid}' != '') {
+	 		$.ajax({
+				url : "${ctp}/getAlram",
+				type : "post",
+				success : function(response) {
+					let res = response.split("|");
+					if(res[0] != "0") {
+						$("#alramCount").text(res[0]);
+						$("#malramCount").text(res[0]);
+						document.getElementById('alramCount').style.display = 'flex';
+						document.getElementById('malramCount').style.display = 'flex';
+					}
+					else {
+						document.getElementById('alramCount').style.display = 'none';
+						document.getElementById('malramCount').style.display = 'none';
+					}
+					$("#alramDropdown").html(res[1]);
+					$("#malramDropdown").html(res[1]);
+				},
+				error : function() {
+					alert("오류!!");
 				}
-				else {
-					document.getElementById('alramCount').style.display = 'none';
-					document.getElementById('malramCount').style.display = 'none';
-				}
-				$("#alramDropdown").html(res[1]);
-				$("#malramDropdown").html(res[1]);
-			},
-			error : function() {
-				alert("오류!!");
-			}
-		});
+			});
+ 		}
 	}
  	
  	document.addEventListener('DOMContentLoaded', getAlram);

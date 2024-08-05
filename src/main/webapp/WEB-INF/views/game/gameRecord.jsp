@@ -343,7 +343,7 @@
         });
 	}
  	
- 	function showGameEditPopup() {
+ 	function showGameRequestEditPopup() {
  		let platforms = '${vo.platform}'.split(", ");
 		platforms.forEach(platform => {
 		    document.querySelectorAll('.eg-button').forEach(button => {
@@ -428,7 +428,7 @@
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
-<main>
+<main style="padding: 0 20px;">
 	<div class="mask">
 	  <img class="loadingImg" src='${ctp}/images/loding.gif'>
 	</div>
@@ -479,7 +479,7 @@
 	            <div class="tab active" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/record';">일지 ${ilgiCnt}</div>
 	            <div class="tab" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/info';">소식/정보 ${infoCnt}</div>
 	        </div>
-	        <button class="editplz-button" onclick="showGameEditPopup()">정보수정요청</button>
+	        <c:if test="${sMid != null}"><button class="editplz-button" onclick="showGameRequestEditPopup()">정보수정요청</button></c:if>
 	    </div>
 	    <hr/>
 	    <c:if test="${fn:length(cmVOS) != 0}"><div class="editplz-button mt-2" style="background-color:#00c72299;" onclick="showPopupWrite()">일지 작성</div></c:if>

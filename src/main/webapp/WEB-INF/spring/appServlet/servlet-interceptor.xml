@@ -23,6 +23,7 @@
 			<mapping path="/member/memberOutOk"/>
 			<mapping path="/community/my"/>
 			<mapping path="/community/follow"/>
+			<mapping path="/admin/gameRequestInput"/>
 			<beans:ref bean="Level3Interceptor"/>
 		</interceptor>
 		<interceptor> <!-- 기자처리 -->
@@ -32,8 +33,9 @@
 		</interceptor>
 		<interceptor> <!-- 관리자 -->
 			<mapping path="/admin/**"/>
+			<exclude-mapping path="/admin/gameRequestInput"/>
+			<exclude-mapping path="/admin/supportInput"/>
 			<beans:ref bean="Level0Interceptor" />
 		</interceptor>
 	</interceptors>
-	
 </beans:beans>

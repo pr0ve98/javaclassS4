@@ -33,10 +33,6 @@
     let currentRating = 0;
 	
 	$(document).ready(function() {
-		// 페이지가 로딩될 때 로딩페이지 보여주기
-		const mask = document.querySelector('.mask');
-		const html = document.querySelector('html');
-		html.style.overflow = 'hidden';
 		
 		// 무한스크롤
 		function rootData() {
@@ -195,7 +191,6 @@
 	        	success : function(response) {
 	        		let res = response.split("|");
 	        		let ratingCount = [res[0], res[1], res[2], res[3], res[4]];
-	        		ratingChart(ratingCount,res[5]);
 				},
 				error : function() {
 					alert("전송오류!");
@@ -212,7 +207,6 @@
 	        	success : function(response) {
 	        		let res = response.split("|");
 	        		let ratingCount = [res[0], res[1], res[2], res[3], res[4]];
-	        		ratingChart(ratingCount,res[5]);
 				},
 				error : function() {
 					alert("전송오류!");
@@ -402,7 +396,7 @@
         });
 	}
  	
- 	function showGameEditPopup() {
+ 	function showGameRequestEditPopup() {
  		let platforms = '${vo.platform}'.split(", ");
 		platforms.forEach(platform => {
 		    document.querySelectorAll('.eg-button').forEach(button => {
@@ -487,7 +481,7 @@
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
-<main>
+<main style="padding: 0 20px;">
 	<div class="mask">
 	  <img class="loadingImg" src='${ctp}/images/loding.gif'>
 	</div>
@@ -538,7 +532,7 @@
 	            <div class="tab" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/record';">일지 ${ilgiCnt}</div>
 	            <div class="tab" onclick="location.href='${ctp}/gameview/${vo.gameIdx}/info';">소식/정보 ${infoCnt}</div>
 	        </div>
-	        <button class="editplz-button" onclick="showGameEditPopup()">정보수정요청</button>
+	        <c:if test="${sMid != null}"><button class="editplz-button" onclick="showGameRequestEditPopup()">정보수정요청</button></c:if>
 	    </div>
 	    <hr/>
 	    <c:if test="${fn:length(cmVOS) != 0}">

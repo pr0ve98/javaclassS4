@@ -235,7 +235,7 @@
 	}
 	
 	
-	function showGameEditPopup(voString) {
+	function showGMEditPopup(voString) {
 		let vo = parseGameVO(voString);
 		
 		if(vo.platform != null && vo.platform != ''){
@@ -533,11 +533,8 @@
 			<div>총 ${totRecCnt}개<button class="badge badge-warning ml-3" onclick="showPopupAdd()">추가</button></div>
 			<select id="viewpart" name="part" class="dropdown-btn" onchange="partchange()">
 				<option value="gameIdx desc" ${viewpart == 'gameIdx desc' ? 'selected' : ''}>최근 등록된순</option>
-				<option value="gameIdx desc">많이 담은순</option>
 				<option value="showDate desc" ${viewpart == 'showDate desc' ? 'selected' : ''}>발매일 최신순</option>
 				<option value="showDate" ${viewpart == 'showDate' ? 'selected' : ''}>발매일 오래된순</option>
-				<option value="gameIdx desc">인벤스코어 높은순</option>
-				<option value="gameIdx desc">인벤스코어 낮은순</option>
 				<option value="metascore desc" ${viewpart == 'metascore desc' ? 'selected' : ''}>메타스코어 높은순</option>
 				<option value="metascore" ${viewpart == 'metascore' ? 'selected' : ''}>메타스코어 낮은순</option>
 			</select>
@@ -575,7 +572,7 @@
 						<c:if test="${vo.metascore != 0.0}">&nbsp;&nbsp;<img src="https://djf7qc4xvps5h.cloudfront.net/resource/minimap/icon/color/Metacritic.svg" alt="" class="icon" width="18px">${vo.metascore}</c:if>
 					</td>
 					<td>
-						<button class="badge badge-success" onclick="showGameEditPopup('${fn:replace(fn:replace(fn:replace(vo, '\'', ''), '\"', '&quot;'), newLine, '<br/>')}')">수정</button>
+						<button class="badge badge-success" onclick="showGMEditPopup('${fn:replace(fn:replace(fn:replace(vo, '\'', ''), '\"', '&quot;'), newLine, '<br/>')}')">수정</button>
 						<button class="badge badge-danger" onclick="gameDelete(${vo.gameIdx}, '${vo.gameImg}')">삭제</button>
 					</td>
 				</tr>

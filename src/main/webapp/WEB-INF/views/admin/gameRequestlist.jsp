@@ -419,7 +419,7 @@
  	
  	function requestNo() {
  		let grIdx = $("#grIdx").val();
- 		let reason = $("select[name=reason]").val();
+ 		let reason = $("select[name=vreason]").val();
  		
  		$.ajax({
  			url : "${ctp}/admin/requestNo",
@@ -436,7 +436,7 @@
 	}
  	
  	function NoPopup(grIdx) {
-    	const popup = document.querySelector('#popup-report');
+    	const popup = document.querySelector('#popup-v');
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
         html.style.overflow = 'hidden';
@@ -611,13 +611,13 @@
 		</div>
   </div>
 </div>
-<div id="popup-report" class="hide">
-  <div class="popup-report-content scrollbar">
+<div id="popup-v" class="hide">
+  <div class="popup-v-content scrollbar">
   		<div class="popup-replyedit-header mb-4">
             <span class="e-header-text">등록/수정 거절</span>
     		<div style="cursor:pointer;" onclick="closePopup('report')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
-		<div class="text-center mb-4"><select class="dropdown-btn" name="reason">
+		<div class="text-center mb-4"><select class="dropdown-btn" name="vreason">
 			<option value="">거절사유 선택</option>
 			<option>이미 등록(변경)됨</option>
 			<option>해당 게임 없음</option>

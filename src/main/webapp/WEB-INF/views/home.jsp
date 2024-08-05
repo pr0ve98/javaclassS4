@@ -338,7 +338,7 @@
 							</c:if>
 						</c:forEach>
 					</div>
-					<c:forEach var="ht" items="${saleCommunity}" varStatus="st6">
+					<c:forEach var="sc" items="${saleCommunity}" varStatus="st6">
 						<c:if test="${st6.index >= 2}">
 							<hr/>
 							<div class="popcommunity-text" onclick="gameViewCommunityView(${sc.cmIdx})"><span class="category">${sc.part}</span>${sc.onlyText}</div>

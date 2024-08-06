@@ -86,7 +86,6 @@
 	        const zeroRatingArea1 = container.querySelector('#zero-rating-area1');
 	        const zeroRatingArea2 = container.querySelector('#zero-rating-area2');
 	        const gameIdx = parseInt(container.getAttribute('data-game-idx'));
-	        const state = container.querySelectorAll('.review-star-add');
 	        let currentRating = parseInt(container.getAttribute('data-rating')) || 0; // 초기 별점 값을 가져옴(이미 리뷰한 게임)
 	
 	        // 초기 별점 설정
@@ -146,8 +145,63 @@
 	                else inputReview(gameIdx, currentRating, state); // 별점 저장
 	            });
 	        });
+	        
+	        const buttonss = container.querySelectorAll('.state-button');
+
+	        buttonss.forEach(button => {
+	            button.addEventListener('click', function() {
+	                // 모든 버튼에서 selected 클래스를 제거
+	                buttons.forEach(btn => {
+	                    if (btn !== button) {
+	                        btn.classList.remove('selected');
+	                    }
+	                });
+	                
+	                // 클릭된 버튼의 selected 클래스를 토글
+	                const isSelected = button.classList.toggle('selected');
+	                if (isSelected) {
+	    	            const state = this.getAttribute('data-state');
+	    	            switch (state) {
+	    	                case 'play':
+	    	                    stateIcon.src = '${ctp}/images/playIcon.svg';
+	    	                    $("#statetext" + gameIdx).html("<font color=\"#fff\">하고있어요</font>");
+	    	                    break;
+	    	                case 'done':
+	    	                    stateIcon.src = '${ctp}/images/doneIcon.png';
+	    	                    $("#statetext" + gameIdx).html("<font color=\"#fff\">다했어요</font>");
+	    	                    break;
+	    	                case 'stop':
+	    	                    stateIcon.src = '${ctp}/images/stopIcon.svg';
+	    	                    $("#statetext" + gameIdx).html("<font color=\"#fff\">그만뒀어요</font>");
+	    	                    break;
+	    	                case 'folder':
+	    	                    stateIcon.src = '${ctp}/images/folderIcon.svg';
+	    	                    $("#statetext" + gameIdx).html("<font color=\"#fff\">모셔놨어요</font>");
+	    	                    break;
+	    	                case 'pin':
+	    	                    stateIcon.src = '${ctp}/images/pinIcon.svg';
+	    	                    $("#statetext" + gameIdx).html("<font color=\"#fff\">관심있어요</font>");
+	    	                    break;
+	    	                default:
+	    	                    stateIcon.src = '${ctp}/images/noneIcon.svg';
+	    	                    $("#statetext" + gameIdx).html("현재 게임 상태를 선택해주세요");
+	    	                    break;
+	    	            }
+	    	        } else {
+	    	            stateIcon.src = '${ctp}/images/noneIcon.svg';
+	    	            $("#statetext" + gameIdx).html("현재 게임 상태를 선택해주세요");
+	    	        }
+
+	    	        const stateButton = container.querySelector('.state-button.selected');
+	    	        const state = stateButton ? stateButton.getAttribute('data-state') || 'none' : 'none';
+	    	        if (currentRating == 0 && state == 'none') deleteReview(gameIdx);
+	    	        else inputReview(gameIdx, currentRating, state); // 별점 저장
+	            });
+	        });
 
 	    });
+	    
+	    
 	
     	
 	 	// 별점 색 채우기 함수
@@ -188,6 +242,7 @@
                 
                 // 클릭된 버튼의 selected 클래스를 토글
                 const isSelected = button.classList.toggle('selected');
+                
             });
         });
 	
@@ -462,7 +517,7 @@
 											</div>
 										</div>
 									</div>
-									<div id="statetext${vo.revIdx}">
+									<div id="statetext${vo.revGameIdx}">
 										<c:if test="${vo.state == 'play'}"><font color="#fff">하고있어요</font></c:if>
 										<c:if test="${vo.state == 'done'}"><font color="#fff">다했어요</font></c:if>
 										<c:if test="${vo.state == 'stop'}"><font color="#fff">그만뒀어요</font></c:if>

@@ -544,7 +544,7 @@
 		        popup.classList.remove('hide');
 		        html.style.overflow = 'hidden';
 		        
-	            if(part == '좋아요') popupContent.scrollTop = 0; // 스크롤 상단으로!
+	            if(part != '댓글') popupContent.scrollTop = 0; // 스크롤 상단으로!
 	            else popupContent.scrollTop = 100;
 		        
 		     	// 팝업 배경을 클릭했을 때 팝업 닫기

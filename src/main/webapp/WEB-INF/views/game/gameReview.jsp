@@ -481,7 +481,7 @@
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
-<main style="padding: 0 20px;">
+<main style="padding: 0 20px 70px;">
 	<div class="mask">
 	  <img class="loadingImg" src='${ctp}/images/loding.gif'>
 	</div>

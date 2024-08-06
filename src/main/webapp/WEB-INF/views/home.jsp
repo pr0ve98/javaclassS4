@@ -148,7 +148,7 @@
 			<div class="mygames">
 				<div class="mygames-title">
 					<span>🎮 내 게임</span>
-					<c:if test="${sMid != null}"><span class="more">내 게임</span></c:if>
+					<c:if test="${sMid != null}"><span class="more" onclick="location.href='${ctp}/mypage/${sMid}/mygame';">내 게임</span></c:if>
 				</div>
 				<div class="content-box">
 			        <div class="game-status">

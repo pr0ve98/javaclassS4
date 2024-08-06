@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:set var="ctp" value="${pageContext.request.contextPath}"/>
 <style>
-		@font-face{
+	@font-face{
 		font-family:'DNFBitBitv2';
 		font-style:normal;
 		font-weight:400;

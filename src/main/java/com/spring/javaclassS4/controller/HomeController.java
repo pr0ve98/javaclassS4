@@ -267,7 +267,7 @@ public class HomeController {
 		    str += "</div>";
 		}
 	    str += "<div class=\"community-content\">";
-	    str += "<div class=\"cm-content\" id=\"cmContent" + vo.getCmIdx() + "\">" + vo.getCmContent() + "</div>";
+	    str += "<div class=\"cm-content\" style=\"max-height: none;\" id=\"cmContent" + vo.getCmIdx() + "\">" + vo.getCmContent() + "</div>";
 	    
 	    str += "<div style=\"color:#b2bdce; font-size:12px;\" class=\"mt-2\">";
 	    

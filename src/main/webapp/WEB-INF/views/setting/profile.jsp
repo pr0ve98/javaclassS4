@@ -19,7 +19,7 @@
 	
 	document.addEventListener('DOMContentLoaded', function() {
  	    const mid = document.getElementById('mid');
- 	    const submitBtn = document.getElementById('submitBtn');
+ 	    const submitBtn = document.getElementById('idChangeBtn');
 
  	    const midError = document.getElementById('mid-error');
  	    
@@ -215,7 +215,7 @@
 				<c:if test="${idChange != 'OK'}">
 					<input type="text" name="mid" id="mid" value="${sMid}" placeholder="아이디를 입력하세요" maxlength="20" class="form-control forminput" style="width: 100%;" />
 					<div class="error-msg" id="mid-error">아이디는 최초 1회만 변경가능하니 신중히 입력해주세요</div>
-					<div class="text-right"><button class="joinBtn mb-3" id="submitBtn" onclick="idChange()">아이디 변경</button></div>
+					<div class="text-right"><button class="joinBtn mb-3" id="idChangeBtn" onclick="idChange()">아이디 변경</button></div>
 				</c:if>
 				<hr/>
 				<div class="setting-title">프로필 이미지</div>

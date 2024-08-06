@@ -67,7 +67,7 @@
 		}
 	}
 	
-	function contentDelete(cmIdx) {
+	function newsDelete(cmIdx) {
 		let ans = confirm("정말로 삭제하시겠습니까?");
 		if(ans) {
 			$.ajax({
@@ -312,14 +312,14 @@
 				<div><i class="fa-solid fa-comment-dots"></i>&nbsp;&nbsp;${cmVO.replyCount}</div>
 				<div class="deleteEditNewsPC ml-2">
 					<c:if test="${sMid == cmVO.mid}"><span class="mr-2" style="cursor: pointer;" onclick="location.href='${ctp}/news/${cmVO.cmIdx}/edit';">수정</span></c:if>
-					<c:if test="${sMid == cmVO.mid || sLevel == 0}"><span style="cursor: pointer;" onclick="contentDelete(${cmVO.cmIdx})">삭제</span></c:if>
+					<c:if test="${sMid == cmVO.mid || sLevel == 0}"><span style="cursor: pointer;" onclick="newsDelete(${cmVO.cmIdx})">삭제</span></c:if>
 				</div>
 			</div>
 		</div>
 		<hr/>
 		<div class="deleteEditNewsMB text-right">
 			<c:if test="${sMid == cmVO.mid}"><span class="mr-2" style="cursor: pointer;" onclick="location.href='${ctp}/news/${cmVO.cmIdx}/edit';">수정</span></c:if>
-			<c:if test="${sMid == cmVO.mid || sLevel == 0}"><span style="cursor: pointer;" onclick="contentDelete(${cmVO.cmIdx})">삭제</span></c:if>
+			<c:if test="${sMid == cmVO.mid || sLevel == 0}"><span style="cursor: pointer;" onclick="newsDelete(${cmVO.cmIdx})">삭제</span></c:if>
 		</div>
 		<div class="community-content" style="margin-bottom: 100px;">
 			${cmVO.cmContent}

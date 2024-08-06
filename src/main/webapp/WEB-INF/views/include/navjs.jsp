@@ -154,6 +154,7 @@
     	else if(flag == 'pwdreset') popup = document.querySelector('#popup-pwdreset');
     	else if(flag == 'cmview') popup = document.querySelector('#popup-cmview');
     	else if(flag == 'v') popup = document.querySelector('#popup-v');
+    	else if(flag == 'ban') popup = document.querySelector('#popup-ban');
     	const html = document.querySelector('html');
     	popup.classList.add('hide');
     	html.style.overflow = 'auto';
@@ -462,6 +463,12 @@
 
 	}
 	function showGameEditPopup() {
+		let mid = '${sMid}';
+		if(mid == '') {
+			showPopupLogin();
+			return false;
+		}
+		
     	const popup = document.querySelector('#popup-ftgameedit');
     	const html = document.querySelector('html');
         popup.classList.remove('hide');

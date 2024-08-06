@@ -615,7 +615,7 @@
   <div class="popup-v-content scrollbar">
   		<div class="popup-replyedit-header mb-4">
             <span class="e-header-text">등록/수정 거절</span>
-    		<div style="cursor:pointer;" onclick="closePopup('report')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+    		<div style="cursor:pointer;" onclick="closePopup('v')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
 		<div class="text-center mb-4"><select class="dropdown-btn" name="vreason">
 			<option value="">거절사유 선택</option>

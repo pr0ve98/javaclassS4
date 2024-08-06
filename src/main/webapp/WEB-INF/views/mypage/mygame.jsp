@@ -298,6 +298,12 @@
 		const html = document.querySelector('html');
 		html.style.overflow = 'hidden';
 		
+		const buttons = document.querySelectorAll('.state-button');
+		
+ 	    buttons.forEach(function(button) {
+ 	        button.classList.remove('selected');
+ 	    });
+		
  		document.getElementById("writeGameIdx").value = gameIdx;
  		if(gameImg.indexOf('http') == -1) {
 	 		document.getElementById("reviewWriteImg").src = "${ctp}/game/"+gameImg;
@@ -315,7 +321,6 @@
             }
         });
  		
- 		const buttons = document.querySelectorAll('.state-button');
  	    buttons.forEach(function(button) {
  	        if (button.getAttribute('data-state') == state) {
  	            button.classList.add('selected');
@@ -415,7 +420,7 @@
 					<div class="review-add">
 						<div style="display: flex; justify-content: space-between; align-items: center;">
 							<div class="review-add-title" onclick="location.href='${ctp}/gameview/${vo.gameIdx}';">${vo.gameTitle}</div>
-							<div style="position: relative; cursor: pointer;">
+							<div style="position: relative; ${sMid != vo.revMid ? '' : 'cursor:pointer;'}">
 								<img id="stateIcon" src="${ctp}/images/${vo.state == null ? 'none' : vo.state}Icon.svg" onclick="toggleReviewMenu(${vo.revIdx}, '${vo.revMid}')">
 								<div id="contentMenu${vo.revIdx}" class="review-menu">
 						        	<div class="review-menu-star">
@@ -471,7 +476,7 @@
 						<div style="display:flex; align-items:center; gap:2px;">
 							<c:if test="${sMid == vo.revMid}">
 					        	<div class="review-menu-star">
-									<div id="zero-rating-area1" style="position: absolute; left: 0px; width: 20px; height: 24px; cursor: pointer;"></div>
+									<div id="zero-rating-area1" style="position: absolute; left: -10px; width: 10px; height: 24px; cursor: pointer;"></div>
 									<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="1"></span>
 									<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="2"></span>
 									<span class="review-star-add mr-1" style="width: 25px; height: 25px;" data-index="3"></span>
@@ -583,7 +588,7 @@
 		<hr/>
         <textarea id="summernote" name="content"></textarea>
         <div class="footer text-right" style="display: block;">
-            <button class="post-button" onclick="">게시하기</button>
+            <button class="post-button">게시하기</button>
         </div>
         <!-- Summernote JS -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
@@ -607,7 +612,7 @@
 		        	return false;
 		        }
 		        
-		        if (content == '' || content == '<p><br></p>') {
+		        if (content == '<p></p>' || content == '<p><br></p>') {
 		            alert("글 내용을 입력하세요!");
 		            $('#summernote').focus();
 		            return false;

@@ -236,7 +236,7 @@ public class CommunityController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/memGameListEdit", method = RequestMethod.POST, produces = "application/text; charset=utf8")
-	public String memGameListEditPost(int gameIdx, HttpSession session) {
+	public String memGameListEditPost(int gameIdx, HttpSession session, HttpServletRequest request) {
 		String mid = (String) session.getAttribute("sMid");
 		
 		if(mid == null) return "redirect:/";
@@ -265,12 +265,15 @@ public class CommunityController {
 	        } else if (game.equals(String.valueOf(gameIdx)) && gameExists) {
 	            activeClass = "active";
 	        }
-	        str += "<button class=\"game-button " + activeClass + "\" data-game=\"" + vo.getGameTitle() + "\" data-idx=\"" + vo.getGameIdx() + "\">"
-	                + "<img src=\"" + vo.getGameImg() + "\" alt=\"" + vo.getGameIdx() + "\">"
-	                + "<div class=\"game-name\">" + vo.getGameTitle() + "</div></button>";
-	        str2 += "<button class=\"gameedit-button " + activeClass + "\" data-game=\"" + vo.getGameTitle() + "\" data-editidx=\"" + vo.getGameIdx() + "\">"
-	        		+ "<img src=\"" + vo.getGameImg() + "\" alt=\"" + vo.getGameIdx() + "\">"
-	        		+ "<div class=\"game-name\">" + vo.getGameTitle() + "</div></button>";
+	        str += "<button class=\"game-button " + activeClass + "\" data-game=\"" + vo.getGameTitle() + "\" data-idx=\"" + vo.getGameIdx() + "\">";
+	        if(vo.getGameImg().indexOf("http") == -1) str += "<img src=\""+request.getContextPath()+"/game/" + vo.getGameImg() + "\" alt=\"" + vo.getGameIdx() + "\">";
+	        else str += "<img src=\"" + vo.getGameImg() + "\" alt=\"" + vo.getGameIdx() + "\">";
+	        str += "<div class=\"game-name\">" + vo.getGameTitle() + "</div></button>";
+	        
+	        str2 += "<button class=\"gameedit-button " + activeClass + "\" data-game=\"" + vo.getGameTitle() + "\" data-editidx=\"" + vo.getGameIdx() + "\">";
+	        if(vo.getGameImg().indexOf("http") == -1) str2 += "<img src=\""+request.getContextPath()+"/game/" + vo.getGameImg() + "\" alt=\"" + vo.getGameIdx() + "\">";
+	        else str2 += "<img src=\"" + vo.getGameImg() + "\" alt=\"" + vo.getGameIdx() + "\">";
+	        str2 += "<div class=\"game-name\">" + vo.getGameTitle() + "</div></button>";
 	    }
 	    return str + "|" + str2;
 	}
@@ -367,7 +370,7 @@ public class CommunityController {
 		    if (vo.getPart().equals("소식/정보")) str += "<span class=\"badge badge-secondary\">소식/정보</span>&nbsp;";
 		    else if (vo.getPart().equals("자유")) str += "<span class=\"badge badge-secondary\">자유글</span>&nbsp;";
 		    else if (vo.getPart().equals("세일")) str += "<span class=\"badge badge-secondary\">세일정보</span>&nbsp;";
-		    else str += "<div style=\"color:#b2bdce; font-size:12px; cursor:pointer;\" onclick=\"location.href='"+request.getContextPath()+"/gameview/"+vo.getCmGameIdx()+"';\"><i class=\"fa-solid fa-gamepad fa-xs\" style=\"color: #b2bdce;\"></i>&nbsp;" + vo.getGameTitle() + "</div>";
+		    if(!vo.getPart().equals("자유")) str += "<div style=\"color:#b2bdce; font-size:12px; cursor:pointer;\" onclick=\"location.href='"+request.getContextPath()+"/gameview/"+vo.getCmGameIdx()+"';\"><i class=\"fa-solid fa-gamepad fa-xs\" style=\"color: #b2bdce;\"></i>&nbsp;" + vo.getGameTitle() + "</div>";
 		    
 		    str += "</div></div></div>";
 		    

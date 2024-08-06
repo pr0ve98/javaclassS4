@@ -568,7 +568,7 @@
 	 #popup-edit .popup-edit-content, #popup-replyedit .popup-replyedit-content, #popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content,
 	 #popup-report .popup-report-content, #popup-support .popup-support-content, #popup-reviewwrite .popup-reviewwrite-content,
 	 #popup-pwdreset .popup-pwdreset-content, #popup-ftgameedit .popup-ftgameedit-content, 
-	 #popup-cmview .popup-cmview-content, #popup-v .popup-v-content{
+	 #popup-cmview .popup-cmview-content, #popup-v .popup-v-content, #popup-ban .popup-ban-content{
 	  padding: 20px;
 	  background: #32373d;
 	  border-radius: 5px;
@@ -581,7 +581,7 @@
 	#popup-edit .popup-edit-content, #popup-reviewwrite .popup-reviewwrite-content {width: 700px;}
 	#popup-add .popup-add-content, #popup-gameedit .popup-gameedit-content, #popup-ftgameedit .popup-ftgameedit-content, 
 	#popup-cmview .popup-cmview-content, #popup-v .popup-v-content {width:500px;}
-	#popup-report .popup-report-content, #popup-support .popup-support-content, #popup-pwdreset .popup-pwdreset-content {width: 330px;}
+	#popup-report .popup-report-content, #popup-support .popup-support-content, #popup-pwdreset .popup-pwdreset-content, #popup-ban .popup-ban-content {width: 330px;}
 	
 	.popup-open {
 		overflow: hidden;

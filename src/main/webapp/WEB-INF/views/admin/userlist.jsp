@@ -82,8 +82,8 @@
  		});
 	}
 	
- 	function reportPopup(banMid) {
-    	const popup = document.querySelector('#popup-report');
+ 	function banPopup(banMid) {
+    	const popup = document.querySelector('#popup-ban');
     	const html = document.querySelector('html');
         popup.classList.remove('hide');
         html.style.overflow = 'hidden';
@@ -91,7 +91,7 @@
 	}
  	
  	function banInput() {
-		let reason = $("select[name=reason]").val();
+		let reason = $("select[name=banreason]").val();
 		let banMid = $("#banMid").val();
 		
 		if(reason == '') {
@@ -230,7 +230,7 @@
 							<button id="levelOkBtn${vo.idx}" style="display: none" class="badge badge-primary" onclick="levelChangeOk(${vo.idx}, '${vo.nickname}')">적용</button>
 							<button id="levelCanBtn${vo.idx}" style="display: none" class="badge badge-secondary" onclick="levelChangeCancle(${vo.idx})">취소</button>
 							<c:if test="${vo.loginState == 'NO' && vo.level != 0}"><button class="badge badge-success" onclick="reportDown('${vo.mid}')">제재 풀기</button></c:if>
-							<c:if test="${vo.loginState == 'OK' && vo.level != 0}"><button class="badge badge-danger" onclick="reportPopup('${vo.mid}')">제재하기</button></c:if>
+							<c:if test="${vo.loginState == 'OK' && vo.level != 0}"><button class="badge badge-danger" onclick="banPopup('${vo.mid}')">제재하기</button></c:if>
 						</td>
 					</tr>
 				</c:forEach>
@@ -245,13 +245,13 @@
 </main>
 <jsp:include page="/WEB-INF/views/include/footer.jsp" />
 <jsp:include page="/WEB-INF/views/include/navPopup.jsp" />
-<div id="popup-report" class="hide">
-  <div class="popup-report-content scrollbar">
+<div id="popup-ban" class="hide">
+  <div class="popup-ban-content scrollbar">
   		<div class="popup-replyedit-header mb-4">
             <span class="e-header-text">제재하기</span>
-    		<div style="cursor:pointer;" onclick="closePopup('report')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
+    		<div style="cursor:pointer;" onclick="closePopup('ban')"><i class="fa-solid fa-x fa-lg" style="color: #b2bdce;"></i></div>
 		</div>
-		<div class="text-center mb-4"><select class="dropdown-btn" name="reason">
+		<div class="text-center mb-4"><select class="dropdown-btn" name="banreason">
 			<option value="">신고사유 선택</option>
 			<option>스팸</option>
 			<option>스포일러</option>
